@@ -1,7 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 
 // hello Elizabeth — testing
@@ -12,5 +14,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    public void moveToTone(View view){
+        Intent intent = new Intent(MainActivity.this, ToneAnalyzerActivity.class);
+        startActivity(intent);
     }
 }
