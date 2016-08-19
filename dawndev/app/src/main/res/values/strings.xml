@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ProjectCLVR</string>
+    <string name="title_activity_personality">PersonalityActivity</string>
+    <string name="personality_username">96910b44-f655-41ed-b085-b6c1acc0e58b</string>
+    <string name="personality_password">tg0R5fPSb3aE</string>
 </resources>
