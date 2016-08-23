@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.agile.dawndev.projectclvr.ToneAnalyzerActivity">
+    tools:context="com.agile.dawndev.projectclvr.ToneAnalyzerActivity"
+    >
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,14 +22,32 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_tone_analyzer" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        >
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:id="@+id/inputText_et"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analyze the text"
+            android:id="@+id/analyze_text_button"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:maxLines = "25"
+
+            android:layout_height="match_parent"
+            android:scrollbars = "vertical"
+            android:id="@+id/outputTextView"/>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
