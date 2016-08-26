@@ -9,6 +9,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
@@ -43,9 +44,8 @@ private ToneAnalyzer toneAnalyzerService;
         outputTextView = (TextView) findViewById(R.id.outputTextView);
 
 Button analyzeTextButton = (Button) findViewById(R.id.analyze_text_button);
-        outputTextView.setMovementMethod(new ScrollingMovementMethod());
 
-
+        outputTextView.setText(Constants.ToneAnalyzerResult);
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
             @Override

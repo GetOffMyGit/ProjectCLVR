@@ -20,7 +20,8 @@
         <activity
             android:name=".ToneAnalyzerActivity"
             android:label="@string/title_activity_tone_analyzer"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ToneAnalyzerGraph"></activity>
     </application>
 
 </manifest>

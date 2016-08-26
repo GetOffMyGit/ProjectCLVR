@@ -20,4 +20,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, ToneAnalyzerActivity.class);
         startActivity(intent);
     }
+    public void moveToToneResult(View view){
+        Intent intent = new Intent(MainActivity.this, ToneAnalyzerGraph.class);
+        startActivity(intent);
+    }
 }
