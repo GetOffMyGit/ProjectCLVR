@@ -22,4 +22,11 @@
         android:id="@+id/question_name"
         android:layout_below="@id/hello"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="paul smells"
+        android:id="@+id/question_name2"
+        android:layout_below="@id/question_name"/>
+
 </RelativeLayout>

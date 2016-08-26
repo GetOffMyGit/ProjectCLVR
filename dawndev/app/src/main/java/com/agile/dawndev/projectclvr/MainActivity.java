@@ -13,12 +13,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mQuestion;
+    private TextView mQuestion2;
+
     private DatabaseReference mDatabase;
     private DatabaseReference mRef;
     private FirebaseAuth mAuth;
+    private ArrayList<Integer> mTests;
+    private Integer mTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +32,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         mQuestion = (TextView) findViewById(R.id.question_name);
+        mQuestion2 = (TextView) findViewById(R.id.question_name2);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mTests = new ArrayList<Integer>();
 
 
-        mRef = mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("tests");
-//        mQuestion.setText(mRef.child("1").getKey());
-
-
-
-        mRef.addValueEventListener(new ValueEventListener() {
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("tests").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Log.e("Count " ,""+snapshot.getChildrenCount());
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     Log.e("Get Data", postSnapshot.toString());
-                    Question question = postSnapshot.getValue(Question.class);
-                    Log.d("nikhil", question.getQuestionText());
+                    Boolean exists = (Boolean) postSnapshot.getValue();
+                    if (exists ==  true ) {
+                        mTests.add(Integer.parseInt(postSnapshot.getKey()));
+                        Log.e("testNumber", postSnapshot.getKey());
+                        mTest = Integer.parseInt(postSnapshot.getKey());
+                        Log.e("mTest", Integer.toString(mTest));
+
+                    }
+//                    Question question = postSnapshot.getValue(Question.class);
+//                    Log.d("nikhil", question.getQuestionText());
                 }
             }
             @Override
@@ -51,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
+
+
 }
