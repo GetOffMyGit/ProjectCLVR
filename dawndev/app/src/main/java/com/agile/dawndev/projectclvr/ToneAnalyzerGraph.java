@@ -12,18 +12,41 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ToneAnalyzerGraph extends AppCompatActivity {
     private RadarChart mChart;
-
+    private JSONObject jsonObj;
+    private JSONObject loudScreaming;
+    private JSONArray loudScreaminng;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tone_analyzer_graph);
 
         mChart = (RadarChart) findViewById(R.id.chart1);
+
+        try {
+             jsonObj = new JSONObject(Constants.ToneAnalyzerResult).getJSONObject("document_tone");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+             loudScreaming = jsonObj.getJSONObject("document_tone");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+             loudScreaminng = loudScreaming.getJSONArray("tone_categories");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
 
