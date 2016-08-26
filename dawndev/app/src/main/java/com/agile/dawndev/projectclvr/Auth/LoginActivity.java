@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.agile.dawndev.projectclvr.MainActivity;
+import com.agile.dawndev.projectclvr.Models.User;
 import com.agile.dawndev.projectclvr.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,6 +28,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class LoginActivity extends AppCompatActivity implements
@@ -37,6 +41,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -62,8 +67,17 @@ public class LoginActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         // Gets instance of Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            writeNewUser();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+
 
 
         // Listener for the current state of Firebase Auth (Checks if somebody is logged in or not)
@@ -72,7 +86,6 @@ public class LoginActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
@@ -115,10 +128,25 @@ public class LoginActivity extends AppCompatActivity implements
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+                Log.d("login", "check");
+
             } else {
                 // Google Sign In failed, update UI appropriately
                 updateUI(null);
             }
+        }
+    }
+
+    private void writeNewUser() {
+
+        FirebaseUser fbUser = mAuth.getCurrentUser();
+
+        DatabaseReference mUser = mDatabase.child("users").child(fbUser.getUid());
+        if (mUser == null) {
+            Log.d("login", "check2");
+
+            User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
+            mDatabase.child("users").child(fbUser.getUid()).setValue(user);
         }
     }
 
@@ -139,6 +167,8 @@ public class LoginActivity extends AppCompatActivity implements
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                        }
+                        else {
                         }
                     }
                 });
