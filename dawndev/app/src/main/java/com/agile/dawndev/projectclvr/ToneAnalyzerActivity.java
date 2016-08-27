@@ -10,17 +10,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import lecho.lib.hellocharts.view.ColumnChartView;
 
 public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnalyzerAsync.Tone {
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
-    private TextView outputTextView;
+    private ColumnChartView outputView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +46,22 @@ public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnaly
                 + "Our product is in no way inferior to the competitor products. "
                 + "Our clients are hungry for analytical tools to improve their "
                 + "business outcomes. Economy has nothing to do with it.");
-        outputTextView = (TextView) findViewById(R.id.outputTextView);
+        outputView = (ColumnChartView) findViewById(R.id.output);
 
         Button analyzeTextButton = (Button) findViewById(R.id.analyze_text_button);
-        outputTextView.setMovementMethod(new ScrollingMovementMethod());
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = inputEditText.getText().toString();
-                new ToneAnalyzerAsync().execute(toneAnalyzerService, text, outputTextView);
+                new ToneAnalyzerAsync().execute(toneAnalyzerService, text, outputView);
             }
         });
 
     }
 
     @Override
-    public void getText(String string) {
-        outputTextView.setText(string);
+    public void setChart(JSONObject result) {
+
     }
 }
