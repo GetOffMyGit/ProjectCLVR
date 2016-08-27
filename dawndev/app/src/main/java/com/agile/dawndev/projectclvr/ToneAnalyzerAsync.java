@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
@@ -50,21 +52,26 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
             try {
                 JSONObject reader = new JSONObject(result);
 
-                List<Column> columns = new ArrayList<Column>();
-                List<SubcolumnValue> values = new ArrayList<SubcolumnValue>();
+                // Emotion Tone Graph
+                List<Column> emotionToneColumns = new ArrayList<Column>();
+                String[] emotionToneLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
+                List<AxisValue> emotionAxisValues = new ArrayList<AxisValue>();
+                JSONArray emotionToneCategories  = reader.getJSONArray("tone_categories");
+                JSONArray emotionTones = emotionToneCategories.getJSONObject(0).getJSONArray("tones");
 
-                JSONArray tone_categories  = reader.getJSONArray("tone_categories");
-                JSONArray tones = tone_categories.getJSONObject(0).getJSONArray("tones");
-
-                for(int i = 0; i<tones.length(); i++){
-                    values.add(new SubcolumnValue((float)tones.getJSONObject(i).getDouble("score"), ChartUtils.pickColor()));
+                for(int i = 0; i<emotionTones.length(); i++){
+                    List<SubcolumnValue> subColumn = new ArrayList<SubcolumnValue>();
+                    subColumn.add(new SubcolumnValue((float)emotionTones.getJSONObject(i).getDouble("score"), ChartUtils.pickColor()));
+                    emotionToneColumns.add(new Column(subColumn));
+                    emotionAxisValues.add(new AxisValue(i).setLabel(emotionToneLabels[i]));
                 }
 
-                Column column = new Column(values);
-                columns.add(column);
+                ColumnChartData emotionColumnChart = new ColumnChartData(emotionToneColumns);
+                emotionColumnChart.setAxisXBottom(new Axis(emotionAxisValues).setHasLines(true));
+                emotionColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
+                outputView.setColumnChartData(emotionColumnChart);
 
-                ColumnChartData data = new ColumnChartData(columns);
-                outputView.setColumnChartData(data);
+                
 
             } catch (JSONException e) {
                 e.printStackTrace();
