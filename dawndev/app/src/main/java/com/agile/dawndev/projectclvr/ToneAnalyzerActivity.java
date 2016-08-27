@@ -1,5 +1,6 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -21,10 +23,16 @@ import org.w3c.dom.Text;
 
 import lecho.lib.hellocharts.view.ColumnChartView;
 
+import static java.security.AccessController.getContext;
+
 public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnalyzerAsync.Tone {
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
-    private ColumnChartView outputView;
+
+//    private LinearLayout graphs;
+    private ColumnChartView emotionToneView;
+    private ColumnChartView languageToneView;
+    private ColumnChartView socialToneView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +54,20 @@ public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnaly
                 + "Our product is in no way inferior to the competitor products. "
                 + "Our clients are hungry for analytical tools to improve their "
                 + "business outcomes. Economy has nothing to do with it.");
-        outputView = (ColumnChartView) findViewById(R.id.output);
+
+        emotionToneView = (ColumnChartView) findViewById(R.id.emotion_tone);
+        languageToneView = (ColumnChartView) findViewById(R.id.language_tone);
+        socialToneView = (ColumnChartView) findViewById(R.id.social_tone);
+//        graphs = (LinearLayout) findViewById(R.id.graphs);
 
         Button analyzeTextButton = (Button) findViewById(R.id.analyze_text_button);
+
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = inputEditText.getText().toString();
-                new ToneAnalyzerAsync().execute(toneAnalyzerService, text, outputView);
+                new ToneAnalyzerAsync(ToneAnalyzerActivity.this).execute(toneAnalyzerService, text, emotionToneView, languageToneView, socialToneView);
             }
         });
 

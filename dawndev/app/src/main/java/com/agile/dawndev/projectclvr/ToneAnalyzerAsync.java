@@ -1,7 +1,11 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
@@ -22,18 +26,36 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
+import static android.app.PendingIntent.getActivity;
+import static java.security.AccessController.getContext;
+
 /**
  * Created by Zoe on 19/08/16.
  */
 public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
-    private ColumnChartView outputView;
+    private Context context;
+
+    private ColumnChartView emotionToneView;
+    private ColumnChartView languageToneView;
+    private ColumnChartView socialToneView;
+//    private LinearLayout graphsView;
+
     boolean useAPI = false;
+
+    public ToneAnalyzerAsync(Context context){
+        this.context = context;
+    }
 
     @Override
     protected String doInBackground(Object... input) {
         ToneAnalyzer service = (ToneAnalyzer) input[0];
         String text = (String) input[1];
-        outputView = (ColumnChartView) input[2];
+
+//        graphsView = (LinearLayout) input[2];
+        emotionToneView = (ColumnChartView) input[2];
+        languageToneView = (ColumnChartView) input[3];
+        socialToneView = (ColumnChartView) input[4];
+
         if(this.useAPI){
             ToneAnalysis tone = service.getTone(text, null).execute();
             System.out.println(tone.getDocumentTone().toString());
@@ -59,19 +81,49 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
                 JSONArray emotionToneCategories  = reader.getJSONArray("tone_categories");
                 JSONArray emotionTones = emotionToneCategories.getJSONObject(0).getJSONArray("tones");
 
-                for(int i = 0; i<emotionTones.length(); i++){
-                    List<SubcolumnValue> subColumn = new ArrayList<SubcolumnValue>();
-                    subColumn.add(new SubcolumnValue((float)emotionTones.getJSONObject(i).getDouble("score"), ChartUtils.pickColor()));
-                    emotionToneColumns.add(new Column(subColumn));
-                    emotionAxisValues.add(new AxisValue(i).setLabel(emotionToneLabels[i]));
-                }
+                addColumns(emotionToneColumns, emotionAxisValues, emotionTones, emotionToneLabels);
 
                 ColumnChartData emotionColumnChart = new ColumnChartData(emotionToneColumns);
                 emotionColumnChart.setAxisXBottom(new Axis(emotionAxisValues).setHasLines(true));
                 emotionColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
-                outputView.setColumnChartData(emotionColumnChart);
+                emotionToneView.setColumnChartData(emotionColumnChart);
 
-                
+//                ColumnChartView emotionToneChartView = new ColumnChartView(context);
+//                emotionToneChartView.setColumnChartData(emotionColumnChart);
+//                graphsView.addView(emotionToneChartView);
+
+                // Emotion Tone Graph
+                List<Column> languageToneColumns = new ArrayList<Column>();
+                String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
+                List<AxisValue> languageAxisValues = new ArrayList<AxisValue>();
+                JSONArray languageToneCategories  = reader.getJSONArray("tone_categories");
+                JSONArray languageTones = languageToneCategories.getJSONObject(1).getJSONArray("tones");
+
+                addColumns(languageToneColumns, languageAxisValues, languageTones, languageToneLabels);
+
+                ColumnChartData languageColumnChart = new ColumnChartData(languageToneColumns);
+                languageColumnChart.setAxisXBottom(new Axis(languageAxisValues).setHasLines(true));
+                languageColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
+                languageToneView.setColumnChartData(languageColumnChart);
+
+//                ColumnChartView languageToneChartView = new ColumnChartView(context);
+//                languageToneChartView.setColumnChartData(languageColumnChart);
+//                graphsView.addView(languageToneChartView);
+
+
+                // Social Tone Graph
+                List<Column> socialToneColumns = new ArrayList<Column>();
+                String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+                List<AxisValue> socialAxisValues = new ArrayList<AxisValue>();
+                JSONArray socialToneCategories  = reader.getJSONArray("tone_categories");
+                JSONArray socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
+
+                addColumns(socialToneColumns, socialAxisValues, socialTones, socialToneLabels);
+
+                ColumnChartData socialColumnChart = new ColumnChartData(socialToneColumns);
+                socialColumnChart.setAxisXBottom(new Axis(languageAxisValues).setHasLines(true));
+                socialColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
+                socialToneView.setColumnChartData(socialColumnChart);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -79,6 +131,21 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
 
         }
     }
+
+    private void addColumns(List<Column> columns, List<AxisValue> axisValues, JSONArray dataArray, String[] dataLabels){
+        for(int i = 0; i<dataArray.length(); i++){
+            List<SubcolumnValue> subColumn = new ArrayList<SubcolumnValue>();
+            try {
+                subColumn.add(new SubcolumnValue((float)dataArray.getJSONObject(i).getDouble("score"), ChartUtils.pickColor()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            columns.add(new Column(subColumn));
+            axisValues.add(new AxisValue(i).setLabel(dataLabels[i]));
+        }
+    }
+
+
 
     interface Tone {
         void setChart(JSONObject result);
