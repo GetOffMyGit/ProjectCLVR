@@ -1,35 +1,22 @@
 package com.agile.dawndev.projectclvr;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import lecho.lib.hellocharts.view.ColumnChartView;
 
-import static java.security.AccessController.getContext;
-
-public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnalyzerAsync.Tone {
+public class ToneAnalyzerActivity extends AppCompatActivity{
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
 
-//    private LinearLayout graphs;
     private ColumnChartView emotionToneView;
     private ColumnChartView languageToneView;
     private ColumnChartView socialToneView;
@@ -58,7 +45,6 @@ public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnaly
         emotionToneView = (ColumnChartView) findViewById(R.id.emotion_tone);
         languageToneView = (ColumnChartView) findViewById(R.id.language_tone);
         socialToneView = (ColumnChartView) findViewById(R.id.social_tone);
-//        graphs = (LinearLayout) findViewById(R.id.graphs);
 
         Button analyzeTextButton = (Button) findViewById(R.id.analyze_text_button);
 
@@ -70,11 +56,6 @@ public class ToneAnalyzerActivity extends AppCompatActivity implements ToneAnaly
                 new ToneAnalyzerAsync(ToneAnalyzerActivity.this).execute(toneAnalyzerService, text, emotionToneView, languageToneView, socialToneView);
             }
         });
-
-    }
-
-    @Override
-    public void setChart(JSONObject result) {
 
     }
 }

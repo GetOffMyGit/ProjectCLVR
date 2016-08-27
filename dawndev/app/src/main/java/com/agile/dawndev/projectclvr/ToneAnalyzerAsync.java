@@ -38,7 +38,6 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
     private ColumnChartView emotionToneView;
     private ColumnChartView languageToneView;
     private ColumnChartView socialToneView;
-//    private LinearLayout graphsView;
 
     boolean useAPI = false;
 
@@ -51,7 +50,6 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
         ToneAnalyzer service = (ToneAnalyzer) input[0];
         String text = (String) input[1];
 
-//        graphsView = (LinearLayout) input[2];
         emotionToneView = (ColumnChartView) input[2];
         languageToneView = (ColumnChartView) input[3];
         socialToneView = (ColumnChartView) input[4];
@@ -118,10 +116,6 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
         socialColumnChart.setAxisXBottom(new Axis(axisValues).setHasLines(true));
         socialColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
         view.setColumnChartData(socialColumnChart);
-    }
-
-    interface Tone {
-        void setChart(JSONObject result);
     }
 
     String output = "{\n" +

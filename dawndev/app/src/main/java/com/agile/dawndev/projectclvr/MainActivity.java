@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 
-// hello Elizabeth — testing
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
