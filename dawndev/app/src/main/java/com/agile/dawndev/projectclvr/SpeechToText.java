@@ -40,7 +40,7 @@ public class SpeechToText extends AppCompatActivity {
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
                 intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                         getString(R.string.speech_prompt));
-                intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, new Long(5000);
+                intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, new Long(5000));
                 intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
                 try {
                     startActivityForResult(intent, RESULT_SPEECH);
