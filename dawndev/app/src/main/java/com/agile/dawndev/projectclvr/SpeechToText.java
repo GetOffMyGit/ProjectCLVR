@@ -17,9 +17,10 @@ import java.util.ArrayList;
 
 public class SpeechToText extends AppCompatActivity {
 
-    protected static final int RESULT_SPEECH = 1;
+    protected static final int RESULT_SPEECH = 100;
     private ImageButton record;
     private TextView txtText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,10 @@ public class SpeechToText extends AppCompatActivity {
                         RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                        getString(R.string.speech_prompt));
+                intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, new Long(5000);
+                intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
                 try {
                     startActivityForResult(intent, RESULT_SPEECH);
                     txtText.setText("");
@@ -52,12 +56,6 @@ public class SpeechToText extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.activity_speech_to_text, menu);
-//        return true;
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -65,6 +63,7 @@ public class SpeechToText extends AppCompatActivity {
         switch (requestCode) {
             case RESULT_SPEECH: {
                 if (resultCode == RESULT_OK && null != data) {
+                    System.out.println(resultCode);
 
                     ArrayList<String> text = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);

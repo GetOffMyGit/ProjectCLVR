@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CLVR</string>
     <string name="speak">speak</string>
+    <string name="speech_prompt">Record your answer</string>
 </resources>
