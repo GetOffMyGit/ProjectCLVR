@@ -4,17 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.agile.dawndev.projectclvr.SpeechToText">
-
-    <ImageButton
-        android:id="@+id/btnSpeak"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/speak"
-        android:src="@android:drawable/ic_btn_speak_now" />
+    tools:context="com.agile.dawndev.projectclvr.SpeechToText"
+    android:weightSum="1">
 
     <TextView
         android:id="@+id/txtText"
@@ -25,6 +16,22 @@
         android:layout_marginTop="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:layout_width="291dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Record your answer..."
+        android:id="@+id/recTitle" />
+
+    <ImageButton
+        android:id="@+id/btnSpeak"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/speak"
+        android:src="@android:drawable/ic_btn_speak_now" />
 
 
 </LinearLayout>
