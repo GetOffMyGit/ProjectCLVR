@@ -28,7 +28,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
-        >
+        android:weightSum="1">
 
         <EditText
             android:layout_width="match_parent"
@@ -41,17 +41,6 @@
             android:text="Analyze the text"
             android:id="@+id/analyze_text_button"
             />
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars = "vertical"
-                android:id="@+id/outputTextView"/>
-
-        </ScrollView>
-
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
