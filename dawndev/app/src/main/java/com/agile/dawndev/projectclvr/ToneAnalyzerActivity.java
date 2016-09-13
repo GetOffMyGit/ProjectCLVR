@@ -1,5 +1,6 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,13 +14,9 @@ import org.json.JSONObject;
 
 import lecho.lib.hellocharts.view.ColumnChartView;
 
-public class ToneAnalyzerActivity extends AppCompatActivity{
+public class ToneAnalyzerActivity extends AppCompatActivity implements AsyncResponse{
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
-
-    private ColumnChartView emotionToneView;
-    private ColumnChartView languageToneView;
-    private ColumnChartView socialToneView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,20 +39,26 @@ public class ToneAnalyzerActivity extends AppCompatActivity{
                 + "Our clients are hungry for analytical tools to improve their "
                 + "business outcomes. Economy has nothing to do with it.");
 
-        emotionToneView = (ColumnChartView) findViewById(R.id.emotion_tone);
-        languageToneView = (ColumnChartView) findViewById(R.id.language_tone);
-        socialToneView = (ColumnChartView) findViewById(R.id.social_tone);
-
         Button analyzeTextButton = (Button) findViewById(R.id.analyze_text_button);
-
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = inputEditText.getText().toString();
-                new ToneAnalyzerAsync(ToneAnalyzerActivity.this).execute(toneAnalyzerService, text, emotionToneView, languageToneView, socialToneView);
+
+                ToneAnalyzerAsync toneAnalyser = new ToneAnalyzerAsync(ToneAnalyzerActivity.this);
+                toneAnalyser.delegate = ToneAnalyzerActivity.this;
+                toneAnalyser.execute(toneAnalyzerService, text);
             }
         });
 
+    }
+
+    @Override
+    public void processFinish(String result){
+        // Give text to Graph view
+        Intent intent = new Intent(ToneAnalyzerActivity.this, ToneAnalyserGraph.class);
+        intent.putExtra("toneResult", result);
+        startActivity(intent);
     }
 }

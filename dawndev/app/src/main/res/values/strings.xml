@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ProjectCLVR</string>
     <string name="title_activity_tone_analyzer">ToneAnalyzerActivity</string>
+    <string name="title_activity_tone_analyser_graph">ToneAnalyserActivityGraph</string>
 </resources>
