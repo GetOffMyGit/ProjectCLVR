@@ -1,10 +1,52 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ToneAnalyser;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
+
+import static android.app.PendingIntent.getActivity;
 
 /**
- * Created by Elizabeth on 26/08/2016.
+ * Created by Zoe on 19/08/16.
  */
-public class Constants {
-    public static String ToneAnalyzerResult =  "{\n" +
+public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
+    private Context context;
+
+    public AsyncResponse delegate = null;
+
+    boolean useAPI = false;
+
+    public ToneAnalyzerAsync(Context context){
+        this.context = context;
+    }
+
+    @Override
+    protected String doInBackground(Object... input) {
+        ToneAnalyzer service = (ToneAnalyzer) input[0];
+        String text = (String) input[1];
+
+        if(this.useAPI){
+            ToneAnalysis tone = service.getTone(text, null).execute();
+            System.out.println(tone.getDocumentTone().toString());
+            return tone.getDocumentTone().toString();
+        } else{
+            Log.d("Zoe: ", "Just using saved output");
+            return this.output;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if (result != null) {
+            delegate.processFinish(result);
+        }
+    }
+
+    String output = "{\n" +
             "   \"tone_categories\": [\n" +
             "     {\n" +
             "       \"category_id\": \"emotion_tone\",\n" +
@@ -91,5 +133,4 @@ public class Constants {
             "     }\n" +
             "   ]\n" +
             " }\n";
-
 }

@@ -1,8 +1,10 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.agile.dawndev.projectclvr.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

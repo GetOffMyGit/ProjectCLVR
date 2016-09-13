@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.agile.dawndev.projectclvr.R;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
-
-import org.json.JSONObject;
-
-import lecho.lib.hellocharts.view.ColumnChartView;
 
 public class ToneAnalyzerActivity extends AppCompatActivity implements AsyncResponse{
     private ToneAnalyzer toneAnalyzerService;

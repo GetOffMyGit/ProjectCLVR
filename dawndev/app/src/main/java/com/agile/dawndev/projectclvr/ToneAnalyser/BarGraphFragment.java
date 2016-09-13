@@ -1,23 +1,15 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ToneAnalyser;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
+import com.agile.dawndev.projectclvr.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,48 +26,25 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ToneAnalyserBarFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ToneAnalyserBarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
+public class BarGraphFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    OnTextSelectedListener mCallback;
-
-
-    private ColumnChartView emotionToneView;
-    private ColumnChartView languageToneView;
-    private ColumnChartView socialToneView;
-
-
-
-
-
-    private ToneAnalyzer toneAnalyzerService;
-    private EditText inputEditText;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
-    public ToneAnalyserBarFragment() {
+    private ColumnChartView emotionToneView;
+    private ColumnChartView languageToneView;
+    private ColumnChartView socialToneView;
+
+    public BarGraphFragment() {
         // Required empty public constructor
     }
-
-    public interface OnTextSelectedListener {
-        public void onTextSelected(String text);
-    }
-
 
     /**
      * Use this factory method to create a new instance of
@@ -83,11 +52,11 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ToneAnalyserBarFragment.
+     * @return A new instance of fragment BarGraphFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ToneAnalyserBarFragment newInstance(String param1, String param2) {
-        ToneAnalyserBarFragment fragment = new ToneAnalyserBarFragment();
+    public static BarGraphFragment newInstance(String param1, String param2) {
+        BarGraphFragment fragment = new BarGraphFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -104,16 +73,16 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         }
     }
 
-    public void createGraphs() {
-        ViewGroup view = (ViewGroup) this.getView();
-        view.removeAllViews();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        View newInflatedView = getActivity().getLayoutInflater().inflate(R.layout.fragment_bar_graph, view, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_bar_graph, container, false);
 
-        emotionToneView = (ColumnChartView) newInflatedView.findViewById(R.id.emotion_tone);
-        languageToneView = (ColumnChartView) newInflatedView.findViewById(R.id.language_tone);
-        socialToneView = (ColumnChartView) newInflatedView.findViewById(R.id.social_tone);
-        view.addView(newInflatedView);
+
+        emotionToneView = (ColumnChartView) inflatedView.findViewById(R.id.emotion_tone);
+        languageToneView = (ColumnChartView) inflatedView.findViewById(R.id.language_tone);
+        socialToneView = (ColumnChartView) inflatedView.findViewById(R.id.social_tone);
 
 
         JSONObject reader = null;
@@ -123,7 +92,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
 
 
 //            if (activity.getBarGraphString() != null) {
-            result = activity.getBarGraphString();
+                    result = activity.getBarGraphString();
 //            } else {
 //                result = (String) savedInstanceState.getSerializable("toneResult");
 //            }
@@ -152,46 +121,10 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
             e.printStackTrace();
         }
 
-    }
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_tone_analyser_bar, container, false);
-        toneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        toneAnalyzerService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
-        inputEditText = (EditText) inflatedView.findViewById(R.id.inputText_et);
-        inputEditText.setText("I know the times are difficult! Our sales have been "
-                + "disappointing for the past three quarters for our data analytics "
-                + "product suite. We have a competitive data analytics product "
-                + "suite in the industry. But we need to do our job selling it! "
-                + "We need to acknowledge and fix our sales challenges. "
-                + "We can’t blame the economy for our lack of execution! "
-                + "We are missing critical sales opportunities. "
-                + "Our product is in no way inferior to the competitor products. "
-                + "Our clients are hungry for analytical tools to improve their "
-                + "business outcomes. Economy has nothing to do with it.");
-
-
-        Button analyzeTextButton = (Button) inflatedView.findViewById(R.id.analyze_text_button);
-
-        analyzeTextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = inputEditText.getText().toString();
-
-                ToneAnalyzerAsync toneAnalyser = new ToneAnalyzerAsync(getActivity().getBaseContext());
-                toneAnalyser.delegate = ToneAnalyserBarFragment.this;
-                toneAnalyser.execute(toneAnalyzerService, text);
-
-                Log.d("TESTINGCJ", text);
-            }
-        });
-
-
         return inflatedView;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -200,6 +133,22 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
             mListener.onFragmentInteraction(uri);
         }
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity a;
+        if (context instanceof Activity) {
+            a=(Activity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
 
 
     private void addColumns(ColumnChartView view, JSONArray dataArray, String[] dataLabels){
@@ -221,32 +170,6 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         socialColumnChart.setAxisXBottom(new Axis(axisValues).setHasLines(true));
         socialColumnChart.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(4));
         view.setColumnChartData(socialColumnChart);
-    }
-
-
-    @Override
-    public void processFinish(String result){
-        mCallback.onTextSelected(result);
-        Log.d("TESTINGCJ", result);
-        createGraphs();
-
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mCallback = (OnTextSelectedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     /**

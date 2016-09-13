@@ -1,14 +1,14 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+
+import com.agile.dawndev.projectclvr.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +17,6 @@ import java.util.List;
 public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
     private String barGraphString;
-
-    private int mContainerId;
-    private FragmentTransaction fragmentTransaction;
-    private FragmentManager fragmentManager;
-    private final static String TAG = "DashBoardActivity";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +79,5 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         barGraphString = text;
     }
 
-    public void replaceFragment(Fragment fragment) {
-        Fragment newFragment = new BarGraphFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.fragment_container, newFragment);
-        transaction.addToBackStack(null);
-
-    }
 
 }
