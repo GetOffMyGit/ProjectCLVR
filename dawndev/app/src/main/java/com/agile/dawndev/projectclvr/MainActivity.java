@@ -10,7 +10,8 @@ import android.widget.TextView;
 
 // hello Elizabeth — testing
 
-import com.agile.dawndev.projectclvr.Models.Question;
+import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
+import com.agile.dawndev.projectclvr.ToneAnalyser.ToneAnalyzerActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
     }
 
     public void moveToTone(View view){
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void moveToToneResult(View view){
-        Intent intent = new Intent(MainActivity.this, SpeechToTextActivity.class);
+        Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
         startActivity(intent);
     }
 }

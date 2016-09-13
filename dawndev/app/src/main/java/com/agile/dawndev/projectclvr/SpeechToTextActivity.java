@@ -1,12 +1,12 @@
 /**
  * © Copyright IBM Corporation 2015
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,11 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.text.SpannableString;
@@ -45,9 +48,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 // IBM Watson SDK
 
@@ -100,7 +112,7 @@ public class SpeechToTextActivity extends Activity {
 
             displayStatus("please, press the button to start speaking");
 
-            Button buttonRecord = (Button)mView.findViewById(R.id.buttonRecord);
+            Button buttonRecord = (Button) mView.findViewById(R.id.buttonRecord);
             buttonRecord.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -109,15 +121,15 @@ public class SpeechToTextActivity extends Activity {
                     if (mState == ConnectionState.IDLE) {
                         mState = ConnectionState.CONNECTING;
                         Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
-                        Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerModels);
+                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
                         spinner.setEnabled(false);
                         mRecognitionResults = "";
                         displayResult(mRecognitionResults);
-                        ItemModel item = (ItemModel)spinner.getSelectedItem();
+                        ItemModel item = (ItemModel) spinner.getSelectedItem();
                         SpeechToText.sharedInstance().setModel(item.getModelName());
                         displayStatus("connecting to the STT service...");
                         // start recognition
-                        new AsyncTask<Void, Void, Void>(){
+                        new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... none) {
                                 SpeechToText.sharedInstance().recognize();
@@ -126,11 +138,10 @@ public class SpeechToTextActivity extends Activity {
                         }.execute();
                         setButtonLabel(R.id.buttonRecord, "Connecting...");
                         setButtonState(true);
-                    }
-                    else if (mState == ConnectionState.CONNECTED) {
+                    } else if (mState == ConnectionState.CONNECTED) {
                         mState = ConnectionState.IDLE;
                         Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-                        Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerModels);
+                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
                         spinner.setEnabled(true);
                         SpeechToText.sharedInstance().stopRecognition();
                         setButtonState(false);
@@ -143,12 +154,12 @@ public class SpeechToTextActivity extends Activity {
 
         private String getModelSelected() {
 
-            Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerModels);
-            ItemModel item = (ItemModel)spinner.getSelectedItem();
+            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+            ItemModel item = (ItemModel) spinner.getSelectedItem();
             return item.getModelName();
         }
 
-        public URI getHost(String url){
+        public URI getHost(String url) {
             try {
                 return new URI(url);
             } catch (URISyntaxException e) {
@@ -213,7 +224,7 @@ public class SpeechToTextActivity extends Activity {
             //Typeface notosans = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/NotoSans-Regular.ttf");
 
             // title
-            TextView viewTitle = (TextView)mView.findViewById(R.id.title);
+            TextView viewTitle = (TextView) mView.findViewById(R.id.title);
             String strTitle = getString(R.string.sttTitle);
             SpannableStringBuilder spannable = new SpannableStringBuilder(strTitle);
             spannable.setSpan(new AbsoluteSizeSpan(47), 0, strTitle.length(), 0);
@@ -222,11 +233,11 @@ public class SpeechToTextActivity extends Activity {
             viewTitle.setTextColor(0xFF325C80);
 
             // instructions
-            TextView viewInstructions = (TextView)mView.findViewById(R.id.instructions);
+            TextView viewInstructions = (TextView) mView.findViewById(R.id.instructions);
             String strInstructions = getString(R.string.sttInstructions);
             SpannableString spannable2 = new SpannableString(strInstructions);
             spannable2.setSpan(new AbsoluteSizeSpan(20), 0, strInstructions.length(), 0);
-           // spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
+            // spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
             viewInstructions.setText(spannable2);
             viewInstructions.setTextColor(0xFF121212);
         }
@@ -260,11 +271,11 @@ public class SpeechToTextActivity extends Activity {
 
         protected void addItemsOnSpinnerModels() {
 
-            Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerModels);
+            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
             int iIndexDefault = 0;
 
             JSONObject obj = jsonModels;
-            ItemModel [] items = null;
+            ItemModel[] items = null;
             try {
                 JSONArray models = obj.getJSONArray("models");
 
@@ -277,7 +288,7 @@ public class SpeechToTextActivity extends Activity {
                 }
                 items = new ItemModel[v.size()];
                 int iItems = 0;
-                for (int i = 0; i < v.size() ; ++i) {
+                for (int i = 0; i < v.size(); ++i) {
                     items[iItems] = new ItemModel(models.getJSONObject(v.elementAt(i)));
                     if (models.getJSONObject(v.elementAt(i)).getString("name").equals(getString(R.string.modelDefault))) {
                         iIndexDefault = iItems;
@@ -296,16 +307,16 @@ public class SpeechToTextActivity extends Activity {
         }
 
         public void displayResult(final String result) {
-            final Runnable runnableUi = new Runnable(){
+            final Runnable runnableUi = new Runnable() {
                 @Override
                 public void run() {
-                    TextView textResult = (TextView)mView.findViewById(R.id.textResult);
+                    TextView textResult = (TextView) mView.findViewById(R.id.textResult);
                     textResult.setText(result);
                 }
             };
 
-            new Thread(){
-                public void run(){
+            new Thread() {
+                public void run() {
                     mHandler.post(runnableUi);
                 }
             }.start();
@@ -330,15 +341,15 @@ public class SpeechToTextActivity extends Activity {
          * Change the button's label
          */
         public void setButtonLabel(final int buttonId, final String label) {
-            final Runnable runnableUi = new Runnable(){
+            final Runnable runnableUi = new Runnable() {
                 @Override
                 public void run() {
-                    Button button = (Button)mView.findViewById(buttonId);
+                    Button button = (Button) mView.findViewById(buttonId);
                     button.setText(label);
                 }
             };
-            new Thread(){
-                public void run(){
+            new Thread() {
+                public void run() {
                     mHandler.post(runnableUi);
                 }
             }.start();
@@ -349,16 +360,16 @@ public class SpeechToTextActivity extends Activity {
          */
         public void setButtonState(final boolean bRecording) {
 
-            final Runnable runnableUi = new Runnable(){
+            final Runnable runnableUi = new Runnable() {
                 @Override
                 public void run() {
                     int iDrawable = bRecording ? R.drawable.button_record_stop : R.drawable.button_record_start;
-                    Button btnRecord = (Button)mView.findViewById(R.id.buttonRecord);
+                    Button btnRecord = (Button) mView.findViewById(R.id.buttonRecord);
                     btnRecord.setBackground(getResources().getDrawable(iDrawable));
                 }
             };
-            new Thread(){
-                public void run(){
+            new Thread() {
+                public void run() {
                     mHandler.post(runnableUi);
                 }
             }.start();
@@ -393,7 +404,7 @@ public class SpeechToTextActivity extends Activity {
             try {
                 JSONObject jObj = new JSONObject(message);
                 // state message
-                if(jObj.has("state")) {
+                if (jObj.has("state")) {
                     Log.d(TAG, "Status message: " + jObj.getString("state"));
                 }
                 // results message
@@ -401,19 +412,19 @@ public class SpeechToTextActivity extends Activity {
                     //if has result
                     Log.d(TAG, "Results message: ");
                     JSONArray jArr = jObj.getJSONArray("results");
-                    for (int i=0; i < jArr.length(); i++) {
+                    for (int i = 0; i < jArr.length(); i++) {
                         JSONObject obj = jArr.getJSONObject(i);
                         JSONArray jArr1 = obj.getJSONArray("alternatives");
                         String str = jArr1.getJSONObject(0).getString("transcript");
                         // remove whitespaces if the language requires it
                         String model = this.getModelSelected();
                         if (model.startsWith("ja-JP") || model.startsWith("zh-CN")) {
-                            str = str.replaceAll("\\s+","");
+                            str = str.replaceAll("\\s+", "");
                         }
                         String strFormatted = Character.toUpperCase(str.charAt(0)) + str.substring(1);
                         if (obj.getString("final").equals("true")) {
                             String stopMarker = (model.startsWith("ja-JP") || model.startsWith("zh-CN")) ? "。" : ". ";
-                            mRecognitionResults += strFormatted.substring(0,strFormatted.length()-1) + stopMarker;
+                            mRecognitionResults += strFormatted.substring(0, strFormatted.length() - 1) + stopMarker;
 
                             displayResult(mRecognitionResults);
                         } else {
@@ -437,10 +448,6 @@ public class SpeechToTextActivity extends Activity {
     }
 
 
-
-
-
-
     public static class STTCommands extends AsyncTask<Void, Void, JSONObject> {
 
         protected JSONObject doInBackground(Void... none) {
@@ -448,7 +455,6 @@ public class SpeechToTextActivity extends Activity {
             return SpeechToText.sharedInstance().getModels();
         }
     }
-
 
 
     @Override
@@ -478,8 +484,8 @@ public class SpeechToTextActivity extends Activity {
 //        actionBar.addTab(tabTTS);
 
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#B5C0D0")));
-    }
 
+    }
 
 
     @Override
@@ -487,6 +493,9 @@ public class SpeechToTextActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
+
 
 
 }
