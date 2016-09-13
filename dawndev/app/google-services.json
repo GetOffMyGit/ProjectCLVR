@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "533228685460",
+    "firebase_url": "https://projectclvr.firebaseio.com",
+    "project_id": "projectclvr",
+    "storage_bucket": "projectclvr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533228685460:android:1b617f039d5c2a73",
+        "android_client_info": {
+          "package_name": "com.agile.dawndev.projectclvr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "533228685460-m2uu411pqvp3u14futeeid4n1ltioula.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjPxrjj1p9lhBAtWS3N0vHCRD7K2-591E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
