@@ -26,11 +26,10 @@
     <!-- STT default credentials -->
 
     <string name="STTdefaultUsername">cb93d862-473f-42dc-a9b9-e8acf0a3eda8</string>
-    
-<string name="STTdefaultPassword">Ne6WKA0ByvQJ</string>
-    
-<string name="STTdefaultTokenFactory">https://stream.watsonplatform.net/speech-to-text/api</string>
 
+    <string name="STTdefaultPassword">Ne6WKA0ByvQJ</string>
+
+    <string name="STTdefaultTokenFactory">https://stream.watsonplatform.net/speech-to-text/api</string>
 
 
     <!-- TTS default credentials -->
@@ -55,4 +54,7 @@
 
     <string name="web_client_id">913319935028-k4r8mrh3poon7p03lcicog178q1bgm31.apps.googleusercontent.com</string>
     <string name="common_signin_button_text_long">Sign In</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

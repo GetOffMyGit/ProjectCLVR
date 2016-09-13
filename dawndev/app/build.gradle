@@ -22,15 +22,23 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    compile project(':speech-android-wrapper')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.ibm.watson.developer_cloud:java-sdk:3.0.1'
     compile 'com.android.support:design:23.4.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
-    compile project(':speech-android-wrapper')
     compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
-    compile 'com.google.firebase:firebase-database:9.4.0'}
+    compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.android.support:support-v4:23.4.0'
+}
 
 apply plugin: 'com.google.gms.google-services'
+
+
+
+
+
+
 

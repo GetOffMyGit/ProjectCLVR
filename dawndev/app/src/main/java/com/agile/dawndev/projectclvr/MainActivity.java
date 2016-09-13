@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void moveToToneResult(View view){
-        Intent intent = new Intent(MainActivity.this, SpeechToTextActivity.class);
+        Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
         startActivity(intent);
     }
 }
