@@ -19,6 +19,7 @@ package com.agile.dawndev.projectclvr;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -38,6 +39,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -66,12 +68,17 @@ import java.util.Vector;
 // IBM Watson SDK
 
 public class SpeechToTextActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.content_activity_speech_to_text);
+
+    }
 
     private static final String TAG = "MainActivity";
     TextView textTTS;
 
     ActionBar.Tab tabSTT, tabTTS;
-    FragmentTabSTT fragmentTabSTT = new FragmentTabSTT();
 
     public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
@@ -102,7 +109,7 @@ public class SpeechToTextActivity extends Activity {
             }
 
             if (jsonModels == null) {
-                jsonModels = new STTCommands().doInBackground();
+                 new STTCommands().execute();
                 if (jsonModels == null) {
                     displayResult("Please, check internet connection.");
                     return mView;
@@ -359,6 +366,9 @@ public class SpeechToTextActivity extends Activity {
             protected JSONObject doInBackground(Void... none) {
 
                 return SpeechToText.sharedInstance().getModels();
+            }
+            protected void onPostExecute(JSONObject json) {
+//return json object
             }
         }
         public void onMessage(String message) {
