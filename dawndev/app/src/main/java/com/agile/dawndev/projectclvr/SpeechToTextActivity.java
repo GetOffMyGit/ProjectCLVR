@@ -69,12 +69,6 @@ public class SpeechToTextActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
-    TextView textTTS;
-
-    ActionBar.Tab tabSTT, tabTTS;
-    FragmentTabSTT fragmentTabSTT = new FragmentTabSTT();
-    FragmentTabTTS fragmentTabTTS = new FragmentTabTTS();
-
     public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
         // session recognition results
@@ -155,12 +149,6 @@ public class SpeechToTextActivity extends Activity {
             return mView;
         }
 
-        private String getModelSelected() {
-
-            Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerModels);
-            ItemModel item = (ItemModel)spinner.getSelectedItem();
-            return item.getModelName();
-        }
 
         public URI getHost(String url){
             try {
@@ -171,45 +159,11 @@ public class SpeechToTextActivity extends Activity {
             return null;
         }
 
-        // initialize the connection to the Watson STT service
-//        private boolean initSTT() {
-//
-//            // DISCLAIMER: please enter your credentials or token factory in the lines below
-//            String username = getString(R.string.STTUsername);
-//            String password = getString(R.string.STTPassword);
-//
-//            String tokenFactoryURL = getString(R.string.defaultTokenFactory);
-//            String serviceURL = "wss://stream.watsonplatform.net/speech-to-text/api";
-//
-//            SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_OGGOPUS);
-//            //SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_DEFAULT);
-//            sConfig.learningOptOut = false; // Change to true to opt-out
-//
-//            SpeechToText.sharedInstance().initWithContext(this.getHost(serviceURL), getActivity().getApplicationContext(), sConfig);
-//
-//            // token factory is the preferred authentication method (service credentials are not distributed in the client app)
-//            if (tokenFactoryURL.equals(getString(R.string.defaultTokenFactory)) == false) {
-//                SpeechToText.sharedInstance().setTokenProvider(new MyTokenProvider(tokenFactoryURL));
-//            }
-//            // Basic Authentication
-//            else if (username.equals(getString(R.string.defaultUsername)) == false) {
-//                SpeechToText.sharedInstance().setCredentials(username, password);
-//            } else {
-//                // no authentication method available
-//                return false;
-//            }
-//
-//            SpeechToText.sharedInstance().setModel(getString(R.string.modelDefault));
-//            SpeechToText.sharedInstance().setDelegate(this);
-//
-//            return true;
-//        }
 
         private boolean initSTT() {
             // initialize the connection to the Watson STT service
             String username = getString(R.string.STTdefaultUsername);
             String password = getString(R.string.STTdefaultPassword);
-            String tokenFactoryURL = getString(R.string.STTdefaultTokenFactory);
             String serviceURL = "wss://stream.watsonplatform.net/speech-to-text/api";
             SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_OGGOPUS);
             SpeechToText.sharedInstance().initWithContext(this.getHost(serviceURL), getActivity().getApplicationContext(), sConfig);
@@ -223,15 +177,13 @@ public class SpeechToTextActivity extends Activity {
 
         protected void setText() {
 
-            Typeface roboto = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/Roboto-Bold.ttf");
-            Typeface notosans = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/NotoSans-Regular.ttf");
 
             // title
             TextView viewTitle = (TextView)mView.findViewById(R.id.title);
             String strTitle = getString(R.string.sttTitle);
             SpannableStringBuilder spannable = new SpannableStringBuilder(strTitle);
             spannable.setSpan(new AbsoluteSizeSpan(47), 0, strTitle.length(), 0);
-            spannable.setSpan(new CustomTypefaceSpan("", roboto), 0, strTitle.length(), 0);
+            //spannable.setSpan(new CustomTypefaceSpan("", roboto), 0, strTitle.length(), 0);
             viewTitle.setText(spannable);
             viewTitle.setTextColor(0xFF325C80);
 
@@ -240,7 +192,7 @@ public class SpeechToTextActivity extends Activity {
             String strInstructions = getString(R.string.sttInstructions);
             SpannableString spannable2 = new SpannableString(strInstructions);
             spannable2.setSpan(new AbsoluteSizeSpan(20), 0, strInstructions.length(), 0);
-            spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
+           // spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
             viewInstructions.setText(spannable2);
             viewInstructions.setTextColor(0xFF121212);
         }
@@ -378,8 +330,6 @@ public class SpeechToTextActivity extends Activity {
             }.start();
         }
 
-        // delegages ----------------------------------------------
-
         public void onOpen() {
             Log.d(TAG, "onOpen");
             displayStatus("successfully connected to the STT service");
@@ -400,7 +350,13 @@ public class SpeechToTextActivity extends Activity {
             setButtonLabel(R.id.buttonRecord, "Record");
             mState = ConnectionState.IDLE;
         }
+        public static class STTCommands extends AsyncTask<Void, Void, JSONObject> {
 
+            protected JSONObject doInBackground(Void... none) {
+
+                return SpeechToText.sharedInstance().getModels();
+            }
+        }
         public void onMessage(String message) {
 
             Log.d(TAG, "onMessage, message: " + message);
@@ -420,14 +376,9 @@ public class SpeechToTextActivity extends Activity {
                         JSONArray jArr1 = obj.getJSONArray("alternatives");
                         String str = jArr1.getJSONObject(0).getString("transcript");
                         // remove whitespaces if the language requires it
-                        String model = this.getModelSelected();
-                        if (model.startsWith("ja-JP") || model.startsWith("zh-CN")) {
-                            str = str.replaceAll("\\s+","");
-                        }
                         String strFormatted = Character.toUpperCase(str.charAt(0)) + str.substring(1);
                         if (obj.getString("final").equals("true")) {
-                            String stopMarker = (model.startsWith("ja-JP") || model.startsWith("zh-CN")) ? "。" : ". ";
-                            mRecognitionResults += strFormatted.substring(0,strFormatted.length()-1) + stopMarker;
+                            mRecognitionResults += strFormatted.substring(0,strFormatted.length()-1) ;
 
                             displayResult(mRecognitionResults);
                         } else {
@@ -445,339 +396,13 @@ public class SpeechToTextActivity extends Activity {
             }
         }
 
-        public void onAmplitude(double amplitude, double volume) {
-            //Logger.e(TAG, "amplitude=" + amplitude + ", volume=" + volume);
-        }
-    }
+        @Override
+        public void onAmplitude(double v, double v1) {
 
-    public static class FragmentTabTTS extends Fragment {
-
-        public View mView = null;
-        public Context mContext = null;
-        public JSONObject jsonVoices = null;
-        private Handler mHandler = null;
-
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            Log.d(TAG, "onCreateTTS");
-            mView = inflater.inflate(R.layout.tab_tts, container, false);
-            mContext = getActivity().getApplicationContext();
-
-            setText();
-            if (initTTS() == false) {
-                TextView viewPrompt = (TextView) mView.findViewById(R.id.prompt);
-                viewPrompt.setText("Error: no authentication credentials or token available, please enter your authentication information");
-                return mView;
-            }
-
-            if (jsonVoices == null) {
-                jsonVoices = new TTSCommands().doInBackground();
-                if (jsonVoices == null) {
-                    return mView;
-                }
-            }
-            addItemsOnSpinnerVoices();
-            updatePrompt(getString(R.string.voiceDefault));
-
-            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerVoices);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
-                    Log.d(TAG, "setOnItemSelectedListener");
-                    final Runnable runnableUi = new Runnable() {
-                        @Override
-                        public void run() {
-                            FragmentTabTTS.this.updatePrompt(FragmentTabTTS.this.getSelectedVoice());
-                        }
-                    };
-                    new Thread() {
-                        public void run() {
-                            mHandler.post(runnableUi);
-                        }
-                    }.start();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parentView) {
-                    // your code here
-                }
-            });
-
-            mHandler = new Handler();
-            return mView;
         }
 
-        public URI getHost(String url){
-            try {
-                return new URI(url);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        //        private boolean initTTS() {
-//
-//            // DISCLAIMER: please enter your credentials or token factory in the lines below
-//
-//            String username = getString(R.string.TTSUsername);
-//            String password = getString(R.string.TTSPassword);
-//            String tokenFactoryURL = getString(R.string.defaultTokenFactory);
-//            String serviceURL = "https://stream.watsonplatform.net/text-to-speech/api";
-//
-//            TextToSpeech.sharedInstance().initWithContext(this.getHost(serviceURL));
-//
-//            // token factory is the preferred authentication method (service credentials are not distributed in the client app)
-//            if (tokenFactoryURL.equals(getString(R.string.defaultTokenFactory)) == false) {
-//                TextToSpeech.sharedInstance().setTokenProvider(new MyTokenProvider(tokenFactoryURL));
-//            }
-//            // Basic Authentication
-//            else if (username.equals(getString(R.string.defaultUsername)) == false) {
-//                TextToSpeech.sharedInstance().setCredentials(username, password);
-//            } else {
-//                // no authentication method available
-//                return false;
-//            }
-//            TextToSpeech.sharedInstance().setLearningOptOut(false); // Change to true to opt-out
-//
-//            TextToSpeech.sharedInstance().setVoice(getString(R.string.voiceDefault));
-//
-//            return true;
-//        }
-        private boolean initTTS() {
-            String username = getString(R.string.TTSdefaultUsername);
-            String password = getString(R.string.TTSdefaultPassword);
-            String tokenFactoryURL = getString(R.string.TTSdefaultTokenFactory);
-            String serviceURL = "https://stream.watsonplatform.net/text-to-speech/api";
-            TextToSpeech.sharedInstance().initWithContext(this.getHost(serviceURL));
-            TextToSpeech.sharedInstance().setCredentials(username, password);
-            TextToSpeech.sharedInstance().setVoice(getString(R.string.voiceDefault));
-            return true;
-        }
-
-        protected void setText() {
-
-            Typeface roboto = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/Roboto-Bold.ttf");
-            Typeface notosans = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/NotoSans-Regular.ttf");
-
-            TextView viewTitle = (TextView)mView.findViewById(R.id.title);
-            String strTitle = getString(R.string.ttsTitle);
-            SpannableString spannable = new SpannableString(strTitle);
-            spannable.setSpan(new AbsoluteSizeSpan(47), 0, strTitle.length(), 0);
-            spannable.setSpan(new CustomTypefaceSpan("", roboto), 0, strTitle.length(), 0);
-            viewTitle.setText(spannable);
-            viewTitle.setTextColor(0xFF325C80);
-
-            TextView viewInstructions = (TextView)mView.findViewById(R.id.instructions);
-            String strInstructions = getString(R.string.ttsInstructions);
-            SpannableString spannable2 = new SpannableString(strInstructions);
-            spannable2.setSpan(new AbsoluteSizeSpan(20), 0, strInstructions.length(), 0);
-            spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
-            viewInstructions.setText(spannable2);
-            viewInstructions.setTextColor(0xFF121212);
-        }
-
-        public class ItemVoice {
-
-            public JSONObject mObject = null;
-
-            public ItemVoice(JSONObject object) {
-                mObject = object;
-            }
-
-            public String toString() {
-                try {
-                    return mObject.getString("name");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-        }
-
-        public void addItemsOnSpinnerVoices() {
-
-            Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerVoices);
-            int iIndexDefault = 0;
-
-            JSONObject obj = jsonVoices;
-            ItemVoice [] items = null;
-            try {
-                JSONArray voices = obj.getJSONArray("voices");
-                items = new ItemVoice[voices.length()];
-                for (int i = 0; i < voices.length(); ++i) {
-                    items[i] = new ItemVoice(voices.getJSONObject(i));
-                    if (voices.getJSONObject(i).getString("name").equals(getString(R.string.voiceDefault))) {
-                        iIndexDefault = i;
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (items != null) {
-                ArrayAdapter<ItemVoice> spinnerArrayAdapter = new ArrayAdapter<ItemVoice>(getActivity(), android.R.layout.simple_spinner_item, items);
-                spinner.setAdapter(spinnerArrayAdapter);
-                spinner.setSelection(iIndexDefault);
-            }
-        }
-
-        // return the selected voice
-        public String getSelectedVoice() {
-
-            // return the selected voice
-            Spinner spinner = (Spinner)mView.findViewById(R.id.spinnerVoices);
-            ItemVoice item = (ItemVoice)spinner.getSelectedItem();
-            String strVoice = null;
-            try {
-                strVoice = item.mObject.getString("name");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return strVoice;
-        }
-
-        // update the prompt for the selected voice
-        public void updatePrompt(final String strVoice) {
-
-            TextView viewPrompt = (TextView)mView.findViewById(R.id.prompt);
-            if (strVoice.startsWith("en-US") || strVoice.startsWith("en-GB")) {
-                viewPrompt.setText(getString(R.string.ttsEnglishPrompt));
-            } else if (strVoice.startsWith("es-ES")) {
-                viewPrompt.setText(getString(R.string.ttsSpanishPrompt));
-            } else if (strVoice.startsWith("fr-FR")) {
-                viewPrompt.setText(getString(R.string.ttsFrenchPrompt));
-            } else if (strVoice.startsWith("it-IT")) {
-                viewPrompt.setText(getString(R.string.ttsItalianPrompt));
-            } else if (strVoice.startsWith("de-DE")) {
-                viewPrompt.setText(getString(R.string.ttsGermanPrompt));
-            } else if (strVoice.startsWith("ja-JP")) {
-                viewPrompt.setText(getString(R.string.ttsJapanesePrompt));
-            }
-        }
-    }
-
-    public class MyTabListener implements ActionBar.TabListener {
-
-        Fragment fragment;
-        public MyTabListener(Fragment fragment) {
-            this.fragment = fragment;
-        }
-
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.replace(R.id.fragment_container, fragment);
-        }
-
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.remove(fragment);
-        }
-
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            // nothing done here
-        }
     }
 
 
-    public static class STTCommands extends AsyncTask<Void, Void, JSONObject> {
 
-        protected JSONObject doInBackground(Void... none) {
-
-            return SpeechToText.sharedInstance().getModels();
-        }
-    }
-
-    public static class TTSCommands extends AsyncTask<Void, Void, JSONObject> {
-
-        protected JSONObject doInBackground(Void... none) {
-
-            return TextToSpeech.sharedInstance().getVoices();
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Strictmode needed to run the http/wss request for devices > Gingerbread
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                    .permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
-        //setContentView(R.layout.activity_main);
-        setContentView(R.layout.activity_tab_text);
-
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        tabSTT = actionBar.newTab().setText("Speech to Text");
-        tabTTS = actionBar.newTab().setText("Text to Speech");
-
-        tabSTT.setTabListener(new MyTabListener(fragmentTabSTT));
-        tabTTS.setTabListener(new MyTabListener(fragmentTabTTS));
-
-        actionBar.addTab(tabSTT);
-        actionBar.addTab(tabTTS);
-
-        //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#B5C0D0")));
-    }
-//
-//    static class MyTokenProvider implements TokenProvider {
-//
-//        String m_strTokenFactoryURL = null;
-//
-//        public MyTokenProvider(String strTokenFactoryURL) {
-//            m_strTokenFactoryURL = strTokenFactoryURL;
-//        }
-//
-//        public String getToken() {
-//
-//            Log.d(TAG, "attempting to get a token from: " + m_strTokenFactoryURL);
-//            try {
-//                // DISCLAIMER: the application developer should implement an authentication mechanism from the mobile app to the
-//                // server side app so the token factory in the server only provides tokens to authenticated clients
-//                HttpClient httpClient = new DefaultHttpClient();
-//                HttpGet httpGet = new HttpGet(m_strTokenFactoryURL);
-//                HttpResponse executed = httpClient.execute(httpGet);
-//                InputStream is = executed.getEntity().getContent();
-//                StringWriter writer = new StringWriter();
-//                IOUtils.copy(is, writer, "UTF-8");
-//                String strToken = writer.toString();
-//                Log.d(TAG, strToken);
-//                return strToken;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    /**
-     * Play TTS Audio data
-     *
-     * @param view
-     */
-    public void playTTS(View view) throws JSONException {
-
-        TextToSpeech.sharedInstance().setVoice(fragmentTabTTS.getSelectedVoice());
-        Log.d(TAG, fragmentTabTTS.getSelectedVoice());
-
-        //Get text from text box
-        textTTS = (TextView)fragmentTabTTS.mView.findViewById(R.id.prompt);
-        String ttsText=textTTS.getText().toString();
-        Log.d(TAG, ttsText);
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(textTTS.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-
-        //Call the sdk function
-        TextToSpeech.sharedInstance().synthesize(ttsText);
-    }
 }
