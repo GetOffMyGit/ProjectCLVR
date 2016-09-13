@@ -22,8 +22,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
 /**
- * Generates the Radar graph for displaying the result of Tone Analyser API
- * Created by Elizabeth on 13/09/16.
+ * Generates the Bar graph for displaying the result of Tone Analyser API
  */
 public class ToneAnalyserGraph  extends AppCompatActivity {
     private ColumnChartView emotionToneView;
@@ -35,7 +34,6 @@ public class ToneAnalyserGraph  extends AppCompatActivity {
         setContentView(R.layout.activity_tone_analyser_graph);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         emotionToneView = (ColumnChartView) findViewById(R.id.emotion_tone);
         languageToneView = (ColumnChartView) findViewById(R.id.language_tone);
         socialToneView = (ColumnChartView) findViewById(R.id.social_tone);
