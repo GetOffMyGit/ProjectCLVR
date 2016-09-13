@@ -412,7 +412,7 @@ public class SpeechToTextActivity extends Activity {
 
         public void makePDF(View rootView){
             // image naming and path  to include sd card  appending name you choose for file
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + ACCUWX.IMAGE_APPEND;
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + "hi";
             // create bitmap screen capture
             Bitmap bitmap;
 
@@ -435,10 +435,6 @@ public class SpeechToTextActivity extends Activity {
                 e.printStackTrace();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
