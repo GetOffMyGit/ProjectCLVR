@@ -4,6 +4,7 @@ package com.agile.dawndev.projectclvr.ToneAnalyser;
  * Created by Elizabeth on 26/08/2016.
  */
 public class Constants {
+    //storing the output so we don't have to waste API calls for testing
     public static String ToneAnalyzerResult =  "{\n" +
             "   \"tone_categories\": [\n" +
             "     {\n" +

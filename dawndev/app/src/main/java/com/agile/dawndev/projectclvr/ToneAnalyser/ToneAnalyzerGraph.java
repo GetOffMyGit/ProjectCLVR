@@ -31,6 +31,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Old radar graph activity, generates a radar graph based on the value stored under Constants
+ */
 public class ToneAnalyzerGraph extends AppCompatActivity {
     private RadarChart emotionChart;
     private RadarChart languageChart;

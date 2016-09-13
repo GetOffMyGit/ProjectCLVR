@@ -66,6 +66,7 @@ public class RadarFragment extends Fragment {
         return fragment;
     }
 
+    //called when the fragment is created
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +78,7 @@ public class RadarFragment extends Fragment {
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
 
+        //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.languageGraph);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.socialToneGraph);
@@ -88,6 +90,7 @@ public class RadarFragment extends Fragment {
 
 
         try {
+            //parse the result from the JSON result
             JSONObject reader = new JSONObject(Constants.ToneAnalyzerResult);
 
             // Emotion Tone Graph
@@ -136,17 +139,9 @@ public class RadarFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *Mandatory interface
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 

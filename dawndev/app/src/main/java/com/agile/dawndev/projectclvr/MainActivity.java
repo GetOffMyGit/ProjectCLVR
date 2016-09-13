@@ -20,7 +20,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+/*
+Launch activity, initilizes the database and authenticates the user
+ */
 public class MainActivity extends AppCompatActivity {
 
     private TextView mQuestion;
