@@ -19,51 +19,39 @@ package com.agile.dawndev.projectclvr;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.ibm.watson.developer_cloud.android.speech_common.v1.TokenProvider;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
-import com.ibm.watson.developer_cloud.android.text_to_speech.v1.TextToSpeech;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Vector;
 
 //import org.apache.commons.io.IOUtils;
 //import org.apache.http.HttpResponse;
 //import org.apache.http.client.HttpClient;
 //import org.apache.http.client.methods.HttpGet;
 //import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Vector;
 
 // IBM Watson SDK
 
@@ -108,6 +96,13 @@ public class SpeechToTextActivity extends Activity {
                 return mView;
             }
 
+//            if (jsonModels == null) {
+//                jsonModels = new STTCommands().doInBackground();
+//                if (jsonModels == null) {
+//                    displayResult("Please, check internet connection.");
+//                    return mView;
+//                }
+//            }
             if (jsonModels == null) {
                  new STTCommands().execute();
                 if (jsonModels == null) {
@@ -368,9 +363,18 @@ public class SpeechToTextActivity extends Activity {
                 return SpeechToText.sharedInstance().getModels();
             }
             protected void onPostExecute(JSONObject json) {
-//return json object
+            //return json object
+               // return SpeechToText.sharedInstance().getModels();
             }
         }
+//
+//        public static class STTCommands extends AsyncTask<Void, Void, JSONObject> {
+//
+//            protected JSONObject doInBackground(Void... none) {
+//
+//                return SpeechToText.sharedInstance().getModels();
+//            }
+//        }
         public void onMessage(String message) {
 
             Log.d(TAG, "onMessage, message: " + message);
