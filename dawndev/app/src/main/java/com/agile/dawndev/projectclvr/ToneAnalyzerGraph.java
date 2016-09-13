@@ -1,8 +1,13 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.github.mikephil.charting.charts.RadarChart;
 
@@ -18,6 +23,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,11 +70,14 @@ public class ToneAnalyzerGraph extends AppCompatActivity {
             e.printStackTrace();
         }
 
-setUpGraph(emotionChart,emotionTones,emotionLabels);
+        setUpGraph(emotionChart,emotionTones,emotionLabels);
         setUpGraph(languageChart,languageTones,languageToneLabels);
         setUpGraph(socialChart,socialTones,socialToneLabels);
 
+        makePDF(getWindow().getDecorView().getRootView());
+
     }
+
     public void setUpGraph(RadarChart chart, JSONArray array,String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
 
@@ -114,5 +127,45 @@ setUpGraph(emotionChart,emotionTones,emotionLabels);
         chart.setDescription("");
         chart.invalidate();
     }
+
+    public void makePDF(View rootView){
+        // image naming and path  to include sd card  appending name you choose for file
+        String mPath = Environment.getExternalStorageDirectory().toString() + "/" + "hi";
+        // create bitmap screen capture
+        Bitmap bitmap;
+
+        rootView.setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
+        rootView.setDrawingCacheEnabled(false);
+
+        OutputStream fout = null;
+        File imageFile = new File(mPath);
+
+        try {
+            fout = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+            fout.flush();
+            fout.close();
+
+            openScreenshot(imageFile);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
+    }
+
+
 }
 
