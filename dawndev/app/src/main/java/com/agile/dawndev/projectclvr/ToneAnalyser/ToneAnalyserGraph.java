@@ -22,7 +22,8 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
 /**
- * Created by Zoe on 13/09/16.
+ * Generates the Radar graph for displaying the result of Tone Analyser API
+ * Created by Elizabeth on 13/09/16.
  */
 public class ToneAnalyserGraph  extends AppCompatActivity {
     private ColumnChartView emotionToneView;
