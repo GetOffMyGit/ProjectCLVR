@@ -1,7 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,11 +70,14 @@ public class ToneAnalyzerGraph extends AppCompatActivity {
             e.printStackTrace();
         }
 
-setUpGraph(emotionChart,emotionTones,emotionLabels);
+        setUpGraph(emotionChart,emotionTones,emotionLabels);
         setUpGraph(languageChart,languageTones,languageToneLabels);
         setUpGraph(socialChart,socialTones,socialToneLabels);
 
+        makePDF(getWindow().getDecorView().getRootView());
+
     }
+
     public void setUpGraph(RadarChart chart, JSONArray array,String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
 
@@ -142,6 +147,8 @@ setUpGraph(emotionChart,emotionTones,emotionLabels);
             fout.flush();
             fout.close();
 
+            openScreenshot(imageFile);
+
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -149,6 +156,14 @@ setUpGraph(emotionChart,emotionTones,emotionLabels);
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
 
