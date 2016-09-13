@@ -10,6 +10,7 @@
     tools:context="com.agile.dawndev.projectclvr.MainActivity">
 
 
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,30 +23,11 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
-        android:text="Hello World!"
-        android:id="@+id/hello"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="paul smells"
-        android:id="@+id/question_name"
-        android:layout_below="@id/hello"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="paul smells"
-        android:id="@+id/question_name2"
-        android:layout_below="@id/question_name"/>
-
-=======
         android:text="Go to graph"
         android:id="@+id/button2"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:onClick="moveToToneResult"
         />
->>>>>>> MPAndroidChartTest
+
 </RelativeLayout>

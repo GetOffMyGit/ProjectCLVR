@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-        mQuestion = (TextView) findViewById(R.id.question_name);
-        mQuestion2 = (TextView) findViewById(R.id.question_name2);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mTests = new ArrayList<Integer>();
 
