@@ -21,7 +21,11 @@
             android:name=".ToneAnalyzerActivity"
             android:label="@string/title_activity_tone_analyzer"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ToneAnalyzerGraph"></activity>
+        <activity android:name=".ToneAnalyzerGraph" />
+        <activity
+            android:name=".SpeechToTextActivity"
+            android:label="@string/title_activity_activity_speech_to_text"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
