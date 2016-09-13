@@ -40,6 +40,10 @@
             android:name=".SpeechToTextActivity"
             android:label="@string/title_activity_activity_speech_to_text"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ToneAnalyserGraph"
+            android:label="@string/title_activity_tone_analyser_graph"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@
     <string name="app_name">ProjectCLVR</string>
     <string name="title_activity_tone_analyzer">ToneAnalyzerActivity</string>
     <string name="title_activity_activity_speech_to_text">ActivitySpeechToText</string>
+    <string name="title_activity_tone_analyser_graph">ActivityToneAnalyserGraph</string>
     <string name="action_settings">Settings</string>
     <string name="buttonRecord">start recording</string>
 

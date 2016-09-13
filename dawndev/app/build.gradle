@@ -26,6 +26,7 @@ dependencies {
     compile 'com.ibm.watson.developer_cloud:java-sdk:3.0.1'
     compile 'com.android.support:design:23.4.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
     compile project(':speech-android-wrapper')
     compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
