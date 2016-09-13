@@ -68,6 +68,10 @@ import java.util.Vector;
 public class SpeechToTextActivity extends Activity {
 
     private static final String TAG = "MainActivity";
+    TextView textTTS;
+
+    ActionBar.Tab tabSTT, tabTTS;
+    FragmentTabSTT fragmentTabSTT = new FragmentTabSTT();
 
     public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
@@ -87,7 +91,7 @@ public class SpeechToTextActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            mView = inflater.inflate(R.id.sttLayout, container, false);
+            mView = inflater.inflate(R.layout.tab_stt, container, false);
             mContext = getActivity().getApplicationContext();
             mHandler = new Handler();
 
