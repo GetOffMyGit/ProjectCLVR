@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ProjectCLVR</string>
     <string name="web_client_id">913319935028-k4r8mrh3poon7p03lcicog178q1bgm31.apps.googleusercontent.com</string>
+    <string name="common_signin_button_text_long">Sign In</string>
 </resources>
