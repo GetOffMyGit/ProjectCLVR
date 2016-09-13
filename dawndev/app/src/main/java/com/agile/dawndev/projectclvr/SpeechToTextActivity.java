@@ -19,27 +19,21 @@ package com.agile.dawndev.projectclvr;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Typeface;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -49,21 +43,22 @@ import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
 import com.ibm.watson.developer_cloud.android.text_to_speech.v1.TextToSpeech;
 
-//import org.apache.commons.io.IOUtils;
-//import org.apache.http.HttpResponse;
-//import org.apache.http.client.HttpClient;
-//import org.apache.http.client.methods.HttpGet;
-//import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 // IBM Watson SDK
 
@@ -413,6 +408,39 @@ public class SpeechToTextActivity extends Activity {
         @Override
         public void onAmplitude(double v, double v1) {
 
+        }
+
+        public void makePDF(View rootView){
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + ACCUWX.IMAGE_APPEND;
+            // create bitmap screen capture
+            Bitmap bitmap;
+
+             // take the view from your webview
+            rootView.setDrawingCacheEnabled(true);
+            bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
+            rootView.setDrawingCacheEnabled(false);
+
+            OutputStream fout = null;
+            File imageFile = new File(mPath);
+
+            try {
+                fout = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+                fout.flush();
+                fout.close();
+
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
