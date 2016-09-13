@@ -74,7 +74,8 @@ public class ToneAnalyzerGraph extends AppCompatActivity {
         setUpGraph(languageChart,languageTones,languageToneLabels);
         setUpGraph(socialChart,socialTones,socialToneLabels);
 
-        makePDF(getWindow().getDecorView().getRootView());
+//
+//makePDF(findLay(R.layout.activity_tone_analyzer_graph));
 
     }
 
