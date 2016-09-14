@@ -42,4 +42,6 @@ All Sprint related documentation (user stories, acceptance tests, velocity, meet
 [[Sprint #2]]<br />
 [[Sprint #3]]
 
+To view the project management tool, visit [[Project Management Tool Details]] wiki page.
+
 To view the team mapping and details, visit the [[Team]] wiki page. 
