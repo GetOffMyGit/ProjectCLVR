@@ -1,17 +1,5 @@
 /**
- * © Copyright IBM Corporation 2015
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+    Deals with Speech to Text Functionality
  **/
 
 package com.agile.dawndev.projectclvr;
@@ -20,11 +8,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.text.SpannableString;
@@ -48,18 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 /*
     Activity that converts a recording to text and displays it. Uses the IBM Watson SDK.
@@ -72,7 +48,7 @@ public class SpeechToTextActivity extends Activity {
 
     ActionBar.Tab tabSTT, tabTTS;
     FragmentTabSTT fragmentTabSTT = new FragmentTabSTT();
-    //FragmentTabTTS fragmentTabTTS = new FragmentTabTTS();
+
 
     public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
@@ -92,27 +68,39 @@ public class SpeechToTextActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
+
+            //Set the views
             mView = inflater.inflate(R.layout.tab_stt, container, false);
             mContext = getActivity().getApplicationContext();
             mHandler = new Handler();
 
+            //Set the empty text
             setText();
+
+            //Check for connection with IBM Watson API
             if (initSTT() == false) {
                 displayResult("Error: no authentication credentials/token available, please enter your authentication information");
                 return mView;
             }
 
+
             if (jsonModels == null) {
+                //Retrieve the json response
                 jsonModels = new STTCommands().doInBackground();
                 if (jsonModels == null) {
+
+                    //Display Results
                     displayResult("Please, check internet connection.");
                     return mView;
                 }
             }
+
+
             addItemsOnSpinnerModels();
 
             displayStatus("please, press the button to start speaking");
 
+            //Start and Stop Record Button
             Button buttonRecord = (Button) mView.findViewById(R.id.buttonRecord);
             buttonRecord.setOnClickListener(new View.OnClickListener() {
 
@@ -122,8 +110,12 @@ public class SpeechToTextActivity extends Activity {
                     if (mState == ConnectionState.IDLE) {
                         mState = ConnectionState.CONNECTING;
                         Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
+
+                        //Spinner to select language
                         Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
                         spinner.setEnabled(false);
+
+                        //Display results
                         mRecognitionResults = "";
                         displayResult(mRecognitionResults);
                         ItemModel item = (ItemModel) spinner.getSelectedItem();
@@ -140,6 +132,8 @@ public class SpeechToTextActivity extends Activity {
                         setButtonLabel(R.id.buttonRecord, "Connecting...");
                         setButtonState(true);
                     } else if (mState == ConnectionState.CONNECTED) {
+
+                        //Initiate Spinner
                         mState = ConnectionState.IDLE;
                         Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
                         Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
@@ -155,6 +149,8 @@ public class SpeechToTextActivity extends Activity {
 
         private String getModelSelected() {
 
+            //Get the language selected
+
             Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
             ItemModel item = (ItemModel) spinner.getSelectedItem();
             return item.getModelName();
@@ -168,40 +164,6 @@ public class SpeechToTextActivity extends Activity {
             }
             return null;
         }
-
-        // initialize the connection to the Watson STT service
-//        private boolean initSTT() {
-//
-//            // DISCLAIMER: please enter your credentials or token factory in the lines below
-//            String username = getString(R.string.STTUsername);
-//            String password = getString(R.string.STTPassword);
-//
-//            String tokenFactoryURL = getString(R.string.defaultTokenFactory);
-//            String serviceURL = "wss://stream.watsonplatform.net/speech-to-text/api";
-//
-//            SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_OGGOPUS);
-//            //SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_DEFAULT);
-//            sConfig.learningOptOut = false; // Change to true to opt-out
-//
-//            SpeechToText.sharedInstance().initWithContext(this.getHost(serviceURL), getActivity().getApplicationContext(), sConfig);
-//
-//            // token factory is the preferred authentication method (service credentials are not distributed in the client app)
-//            if (tokenFactoryURL.equals(getString(R.string.defaultTokenFactory)) == false) {
-//                SpeechToText.sharedInstance().setTokenProvider(new MyTokenProvider(tokenFactoryURL));
-//            }
-//            // Basic Authentication
-//            else if (username.equals(getString(R.string.defaultUsername)) == false) {
-//                SpeechToText.sharedInstance().setCredentials(username, password);
-//            } else {
-//                // no authentication method available
-//                return false;
-//            }
-//
-//            SpeechToText.sharedInstance().setModel(getString(R.string.modelDefault));
-//            SpeechToText.sharedInstance().setDelegate(this);
-//
-//            return true;
-//        }
 
         private boolean initSTT() {
             // initialize the connection to the Watson STT service
@@ -221,8 +183,6 @@ public class SpeechToTextActivity extends Activity {
 
         protected void setText() {
 
-            //Typeface roboto = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/Roboto-Bold.ttf");
-            //Typeface notosans = Typeface.createFromAsset(getActivity().getApplicationContext().getAssets(), "font/NotoSans-Regular.ttf");
 
             // title
             TextView viewTitle = (TextView) mView.findViewById(R.id.title);
@@ -251,6 +211,7 @@ public class SpeechToTextActivity extends Activity {
                 mObject = object;
             }
 
+            //get the description
             public String toString() {
                 try {
                     return mObject.getString("description");
@@ -259,7 +220,7 @@ public class SpeechToTextActivity extends Activity {
                     return null;
                 }
             }
-
+            //get the model name
             public String getModelName() {
                 try {
                     return mObject.getString("name");
@@ -306,7 +267,9 @@ public class SpeechToTextActivity extends Activity {
                 spinner.setSelection(iIndexDefault);
             }
         }
-
+        /**
+         * Change the display's result
+         */
         public void displayResult(final String result) {
             final Runnable runnableUi = new Runnable() {
                 @Override
@@ -449,6 +412,8 @@ public class SpeechToTextActivity extends Activity {
     }
 
 
+
+    //Async Class that handles the Speech To Text Command
     public static class STTCommands extends AsyncTask<Void, Void, JSONObject> {
 
         protected JSONObject doInBackground(Void... none) {
@@ -469,22 +434,9 @@ public class SpeechToTextActivity extends Activity {
             StrictMode.setThreadPolicy(policy);
         }
 
-        //setContentView(R.layout.activity_main);
+        //set the content view
         setContentView(R.layout.content_activity_speech_to_text);
 
-//        ActionBar actionBar = getActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-//        tabSTT = actionBar.newTab().setText("Speech to Text");
-//        tabTTS = actionBar.newTab().setText("Text to Speech");
-
-//        tabSTT.setTabListener(new MyTabListener(fragmentTabSTT));
-//        tabTTS.setTabListener(new MyTabListener(fragmentTabTTS));
-
-//        actionBar.addTab(tabSTT);
-//        actionBar.addTab(tabTTS);
-
-        //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#B5C0D0")));
 
     }
 
