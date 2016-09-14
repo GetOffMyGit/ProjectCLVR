@@ -20,7 +20,7 @@ HOW TO GET STARTED
 
 7) Run the application by clicking 'Run' > 'Run App'
  
-To view the prototype feature descriptions and results, visit [[Prototype Description and Features]] wiki page.
+To view the prototype feature descriptions and results, visit [Prototype Description and Features](https://github.com/unit02/Project-CLVR/wiki/Prototype-Description-and-Features) wiki page.
 
 ---- 
 
