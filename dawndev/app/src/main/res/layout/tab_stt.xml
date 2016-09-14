@@ -47,7 +47,7 @@
         android:layout_below="@+id/spinnerModels"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_record_start"
-        android:text="Record"
+        android:text="Record Answer"
         android:textColor="#FFFFFF"
         android:textSize="14dp"/>
 
