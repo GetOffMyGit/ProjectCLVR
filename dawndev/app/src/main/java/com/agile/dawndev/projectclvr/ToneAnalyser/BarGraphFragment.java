@@ -26,6 +26,9 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
+/* This fragment renders three bar graphs for each of the tone analyser outputs:
+    emotion, language, and social
+ */
 public class BarGraphFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -73,6 +76,9 @@ public class BarGraphFragment extends Fragment {
         }
     }
 
+    /*
+    Initialises the graphs and adds the tone analyser JSON results to the graphs
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -90,12 +96,7 @@ public class BarGraphFragment extends Fragment {
             String result;
             AnalyserTabActivity activity = (AnalyserTabActivity) getActivity();
 
-
-//            if (activity.getBarGraphString() != null) {
-                    result = activity.getBarGraphString();
-//            } else {
-//                result = (String) savedInstanceState.getSerializable("toneResult");
-//            }
+            result = activity.getBarGraphString();
 
             reader = new JSONObject(result);
 
@@ -120,7 +121,6 @@ public class BarGraphFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         // Inflate the layout for this fragment
         return inflatedView;
@@ -149,8 +149,9 @@ public class BarGraphFragment extends Fragment {
         mListener = null;
     }
 
-
-
+    /*
+        Adds scores as bars to the bar graph
+     */
     private void addColumns(ColumnChartView view, JSONArray dataArray, String[] dataLabels){
         List<Column> columns = new ArrayList<Column>();
         List<AxisValue> axisValues = new ArrayList<AxisValue>();

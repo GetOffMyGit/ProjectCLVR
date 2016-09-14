@@ -25,7 +25,7 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Radar"));
-        tabLayout.addTab(tabLayout.newTab().setText("My Coupons"));
+        tabLayout.addTab(tabLayout.newTab().setText("Bar"));
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
