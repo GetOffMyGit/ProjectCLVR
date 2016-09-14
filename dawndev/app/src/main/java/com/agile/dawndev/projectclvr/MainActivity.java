@@ -24,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
         mBodyText = (EditText) findViewById(R.id.bodyEditText);
         mSendButton = (Button) findViewById(R.id.sendButton);
 
+        //Send email on button click.
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Create SendGridSendEmail object. Send context and email content.
                 SendGridSendEmail task = new SendGridSendEmail(MainActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                //Execute async task.
                 task.execute();
             }
         });
