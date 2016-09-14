@@ -4,31 +4,24 @@
 
 package com.agile.dawndev.projectclvr;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
@@ -74,7 +67,7 @@ public class SpeechToTextActivity extends Activity {
 
 
             //Set the views
-            mView = inflater.inflate(R.layout.tab_stt, container, false);
+            mView = inflater.inflate(R.layout.activity_speech_to_text, container, false);
             mContext = getActivity().getApplicationContext();
             mHandler = new Handler();
             mButton = (Button) mView.findViewById(R.id.continue_button);
@@ -212,7 +205,6 @@ public class SpeechToTextActivity extends Activity {
             // initialize the connection to the Watson STT service
             String username = getString(R.string.STTdefaultUsername);
             String password = getString(R.string.STTdefaultPassword);
-            String tokenFactoryURL = getString(R.string.STTdefaultTokenFactory);
             String serviceURL = "wss://stream.watsonplatform.net/speech-to-text/api";
             SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_OGGOPUS);
             SpeechToText.sharedInstance().initWithContext(this.getHost(serviceURL), getActivity().getApplicationContext(), sConfig);
@@ -225,8 +217,6 @@ public class SpeechToTextActivity extends Activity {
 
 
         protected void setText() {
-
-
             // title
             TextView viewTitle = (TextView) mView.findViewById(R.id.title);
             viewTitle.setText(R.string.sttTitle);

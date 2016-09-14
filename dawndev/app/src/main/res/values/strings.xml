@@ -10,7 +10,7 @@
     <string name="buttonRecord">start recording</string>
 
     <string name="sttTitle">Q1.</string>
-    <string name="sttInstructions">What are some challenges you have faced while working in a team? To answer your question choose the language you will be speaking. Then press Record to transcribe audio.</string>
+    <string name="sttInstructions">What are some challenges you have faced while working in a team? To answer your question press Record to transcribe audio.</string>
     <string name="ttsTitle">IBM Text to Speech</string>
     <string name="ttsInstructions">To get started choose a voice that matches the language of the text you will enter below. Enter text and press Speak to hear the results.</string>
 

@@ -17,8 +17,6 @@ import org.w3c.dom.Text;
 
 public class PersonalityActivity extends AppCompatActivity implements PersonalityAsyncTask.Personality {
 
-
-    private TextView mTextView;
     private TextView mOutputTextView;
     private String text;
 
@@ -27,21 +25,17 @@ public class PersonalityActivity extends AppCompatActivity implements Personalit
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personality);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-
-
-        mTextView = (TextView) findViewById(R.id.input_text);
         mOutputTextView = (TextView)findViewById(R.id.output_text);
 
         findViewById(R.id.submitButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String input = mTextView.getText().toString();
 
                 try {
                     PersonalityAsyncTask task = new PersonalityAsyncTask(PersonalityActivity.this);
+
+                    //Execute async task.
                     task.execute(text);
 
                 } catch (Exception e) {

@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:textSize="22sp"
             android:padding="16dp"
-            android:background="#e0e0e0"
+            android:background="@color/grey400"
             android:layout_below="@+id/title"
             android:text="@string/sttInstructions"
 
