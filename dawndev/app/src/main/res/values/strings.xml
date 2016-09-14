@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ProjectCLVR</string>
+    <string name="sendGrid_username">dawndev</string>
+    <string name="sendGrid_password">samesame123</string>
+    <string name="sendGrid_apiKey">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</string>
     <string name="title_activity_tone_analyzer">ToneAnalyzerActivity</string>
     <string name="title_activity_activity_speech_to_text">ActivitySpeechToText</string>
     <string name="title_activity_tone_analyser_graph">ActivityToneAnalyserGraph</string>

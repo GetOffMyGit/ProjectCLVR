@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 Launch activity, initialises the database and authenticates the user
  */
 public class MainActivity extends AppCompatActivity {
+
 
     private TextView mQuestion;
     private TextView mQuestion2;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mTests = new ArrayList<Integer>();
 
 
+
 //        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("tests").addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot snapshot) {
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.e("testNumber", postSnapshot.getKey());
 //                        mTest = Integer.parseInt(postSnapshot.getKey());
 //                        Log.e("mTest", Integer.toString(mTest));
+
 //
 //                    }
 ////                    Question question = postSnapshot.getValue(Question.class);
@@ -75,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void moveToPersonality(View view){
         Intent intent = new Intent(MainActivity.this, PersonalityActivity.class);
+        startActivity(intent);
+    }
+
+    public void moveToEmail(View view){
+        Intent intent = new Intent(MainActivity.this, SendEmailActivity.class);
         startActivity(intent);
     }
 }
