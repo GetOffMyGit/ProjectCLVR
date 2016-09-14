@@ -3,10 +3,9 @@ package com.agile.dawndev.projectclvr.Models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
- *  Class for creating test questions
+ * Created by cjpark and Nikhil on 26/08/16.
  */
 @IgnoreExtraProperties
-
 public class Question {
     private String id;
     private String questionText;

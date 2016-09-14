@@ -32,7 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /*
-    Class for managing login and authentication
+    Activity that contains the authentication for Firebase. Authentication is done through Google Accounts.
  */
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
-
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -86,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    // If there is a user, go to the MainActivity
                     goToMain();
                 } else {
                     // User is signed out
@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
+    // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
@@ -142,10 +142,9 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    // On authentication, push a new user to the database
     private void writeNewUser() {
-
         FirebaseUser fbUser = mAuth.getCurrentUser();
-
         DatabaseReference mUser = mDatabase.child("users").child(fbUser.getUid());
         if (mUser == null) {
             Log.d("login", "check2");

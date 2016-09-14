@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-    Activity screen for showing the graphs. Two graphs are current showing:
-    a bar graph, and a radar graph
+    Activity that contains the tablayout for the graphs
  */
 public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
+    // String to pass into ToneAnalyserBarFragment
     private String barGraphString;
 
     @Override
