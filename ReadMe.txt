@@ -1,7 +1,10 @@
-#Application Overview 
+APPLICATION OVERVIEW 
+
 An Android application that allows interviews measuring a candidate’s emotional quotient to be automated and analysed in order to improve the recruitment process for a business.
 
-#How To Get Started
+-----
+
+HOW TO GET STARTED
 
 1) Clone the repository using https://github.com/unit02/Project-CLVR.git
 
@@ -19,6 +22,8 @@ An Android application that allows interviews measuring a candidate’s emotiona
  
 To view the prototype feature descriptions and results, visit [[Prototype Description and Features]] wiki page.
 
+---- 
+
 Since our project combines many different libraries, importing the project might require following the instructions in the console to install the required libraries  
 
 Ensure that in Tools> Android > SDK Manager > SDK Platforms that: 
@@ -29,6 +34,8 @@ Ensure that in Tools> Android > SDK Manager > SDK Tools that the following tools
 * Android Support Repository
 * Google Play Services
 * Google Repository  
+
+----
 
 All Sprint related documentation (user stories, acceptance tests, velocity, meeting notes, sprint planning, sprint review, sprint retrospective, individual contribution) are in the following wiki pages:  
 [[Sprint #1]]<br />
