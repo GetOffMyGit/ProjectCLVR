@@ -61,8 +61,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-// IBM Watson SDK
-
+/*
+    Activity that converts a recording to text and displays it. Uses the IBM Watson SDK.
+ */
 public class SpeechToTextActivity extends Activity {
 
     private static final String TAG = "MainActivity";

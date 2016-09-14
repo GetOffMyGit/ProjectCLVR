@@ -14,11 +14,11 @@ import android.graphics.Color;
 import android.os.Environment;
 
 import com.agile.dawndev.projectclvr.R;
-import com.github.mikephil.charting.charts.RadarChart;
 
+
+import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
-
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
@@ -35,25 +35,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RadarFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RadarFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Creates the fragment that contains the radar graph which displays the results from the
+ * tone analyzer activity
  */
 public class RadarFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private RadarChart emotionChart;
     private RadarChart languageChart;
@@ -70,56 +56,46 @@ public class RadarFragment extends Fragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RadarFragment.
+     * Creates the radar fragment
      */
-    // TODO: Rename and change types and number of parameters
-    public static RadarFragment newInstance(String param1, String param2) {
+    public static RadarFragment newInstance() {
         RadarFragment fragment = new RadarFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
+    //called when the fragment is created
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
 
-
+        //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.languageGraph);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.socialToneGraph);
-        String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
 
+        //define the labels for the graph
+        String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
         String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
         String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
 
 
         try {
+            //parse the result from the JSON result
             JSONObject reader = new JSONObject(Constants.ToneAnalyzerResult);
 
             // Emotion Tone Graph
             JSONArray emotionToneCategories  = reader.getJSONArray("tone_categories");
             emotionTones = emotionToneCategories.getJSONObject(0).getJSONArray("tones");
-            // Emotion Tone Graph
+            // language Tone Graph
             JSONArray languageToneCategories  = reader.getJSONArray("tone_categories");
             languageTones = languageToneCategories.getJSONObject(1).getJSONArray("tones");
             // Social Tone Graph
@@ -130,18 +106,13 @@ public class RadarFragment extends Fragment {
             e.printStackTrace();
         }
 
-
         setUpGraph(emotionChart,emotionTones,emotionLabels);
         setUpGraph(languageChart,languageTones,languageToneLabels);
         setUpGraph(socialChart,socialTones,socialToneLabels);
 
-
         return inflatedView;
-
-
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -164,26 +135,18 @@ public class RadarFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *  Mandatory interface
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-
-    public void setUpGraph(RadarChart chart, JSONArray array,String[] labels){
+    /*
+        Generates the graph using the given inputs
+     */
+    public void setUpGraph(RadarChart chart, JSONArray array, final String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
-
-//entries.add(new RadarEntry(emotionTones.get(0)))
-
+        //retrieve the entry values
         for ( int i = 0; i<array.length();i++){
             try {
                 entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()) ,array.getJSONObject(0).get("tone_name")));
@@ -192,9 +155,10 @@ public class RadarFragment extends Fragment {
             }
         }
 
+        // add entries to dataset
+        RadarDataSet dataSet = new RadarDataSet(entries, "Tone Analyzer");
 
-        RadarDataSet dataSet = new RadarDataSet(entries, "Tone Analyzer"); // add entries to dataset
-
+        //set how the graph looks
         dataSet.setColor(Color.rgb(103, 110, 129));
         dataSet.setFillColor(Color.rgb(103, 110, 129));
         dataSet.setDrawFilled(true);
@@ -204,18 +168,15 @@ public class RadarFragment extends Fragment {
         dataSet.setDrawHighlightIndicators(false);
 
         RadarData radarData = new RadarData(dataSet);
-
         XAxis xAxis = chart.getXAxis();
         xAxis.setTextSize(9f);
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
         xAxis.setValueFormatter(new AxisValueFormatter() {
-
-            private String[] mActivities = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-
+            //set the labels
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return mActivities[(int) value % mActivities.length];
+                return labels[(int) value % labels.length];
             }
 
             @Override
@@ -251,14 +212,13 @@ public class RadarFragment extends Fragment {
             openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
+    // Display the screenshot made
     private void openScreenshot(File imageFile) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);

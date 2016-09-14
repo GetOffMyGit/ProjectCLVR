@@ -13,9 +13,12 @@ import com.agile.dawndev.projectclvr.R;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+    Activity that contains the tablayout for the graphs
+ */
 public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
+    // String to pass into ToneAnalyserBarFragment
     private String barGraphString;
 
     @Override
@@ -25,12 +28,10 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Radar"));
-        tabLayout.addTab(tabLayout.newTab().setText("My Coupons"));
+        tabLayout.addTab(tabLayout.newTab().setText("Bar"));
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
-
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -39,7 +40,6 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         adapter.addFragment(new ToneAnalyserBarFragment(), "Bar");
         viewPager.setAdapter(adapter);
     }
-
 
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -78,6 +78,4 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
     public void onTextSelected(String text) {
         barGraphString = text;
     }
-
-
 }
