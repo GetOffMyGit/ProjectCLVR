@@ -398,13 +398,16 @@ public class SpeechToTextActivity extends Activity {
             Log.e(TAG, error);
             displayResult(error);
             mState = ConnectionState.IDLE;
+            Log.d("CHRISTINA", "error happened");
         }
 
         public void onClose(int code, String reason, boolean remote) {
             Log.d(TAG, "onClose, code: " + code + " reason: " + reason);
             displayStatus("connection closed");
             setButtonLabel(R.id.buttonRecord, "Record");
-            mState = ConnectionState.IDLE;
+            Log.d("CHRISTINA", "close happened");
+
+//            mState = ConnectionState.IDLE;
         }
 
         public void onMessage(String message) {

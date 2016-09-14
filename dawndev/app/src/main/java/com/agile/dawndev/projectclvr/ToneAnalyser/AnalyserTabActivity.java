@@ -35,8 +35,8 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
 
-        recordedSpeech = savedInstanceState.getString("message");
-        Log.d("CHRISTINA", recordedSpeech);
+//        recordedSpeech = savedInstanceState.getString("message");
+//        Log.d("CHRISTINA", recordedSpeech);
     }
 
     private void setupViewPager(ViewPager viewPager) {

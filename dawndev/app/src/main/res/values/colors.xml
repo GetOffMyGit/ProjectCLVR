@@ -6,5 +6,6 @@
     <color name="titleH1Color">#325C80</color>
     <color name="titleTextColor">#121212</color>
     <color name="clvrGrey">#73aab4</color>
+    <color name="white">#FFFFFF</color>
 
 </resources>
