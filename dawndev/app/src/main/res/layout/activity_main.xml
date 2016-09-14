@@ -13,27 +13,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/clvr_logo"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Go to Tone Analyser"
             android:id="@+id/button1"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
             android:onClick="moveToToneResult"
             android:layout_gravity="center"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
             />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Go to Speech Analyser"
             android:id="@+id/button2"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
             android:onClick="moveToSpeech"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+
 
             />
         <Button
@@ -41,29 +49,31 @@
             android:layout_height="wrap_content"
             android:text="Go to Personality Analyser"
             android:id="@+id/button3"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
             android:onClick="moveToPersonality"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+
 
             />
 
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go to Email"
+            android:id="@+id/button4"
+            android:onClick="moveToEmail"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
 
+
+            />
 
     </LinearLayout>
 
-
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Go to tone"-->
-        <!--android:id="@+id/button"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:onClick="moveToTone"-->
-        <!--/>-->
 
 </RelativeLayout>

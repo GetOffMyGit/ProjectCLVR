@@ -7,7 +7,7 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="16" />
-    >
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
@@ -31,14 +31,12 @@
         <activity android:name=".MainActivity" />
         <activity
             android:name=".SpeechToTextActivity"
-            android:label="@string/title_activity_activity_speech_to_text"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ToneAnalyser.AnalyserTabActivity"></activity>
+            android:label="@string/title_activity_activity_speech_to_text" />
+        <activity android:name=".ToneAnalyser.AnalyserTabActivity" />
         <activity
             android:name=".PersonalityActivity"
-            android:label="@string/title_activity_personality"
-            android:theme="@style/AppTheme.NoActionBar">
-		</activity>
+            android:label="@string/title_activity_personality"></activity>
+        <activity android:name=".SendEmailActivity"></activity>
     </application>
 
 </manifest>

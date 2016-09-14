@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.util.Log;
 
 import com.agile.dawndev.projectclvr.R;
 
@@ -20,6 +21,7 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
 
     // String to pass into ToneAnalyserBarFragment
     private String barGraphString;
+    private String recordedSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,9 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
+
+//        recordedSpeech = savedInstanceState.getString("message");
+//        Log.d("CHRISTINA", recordedSpeech);
     }
 
     private void setupViewPager(ViewPager viewPager) {

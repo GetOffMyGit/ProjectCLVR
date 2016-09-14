@@ -9,7 +9,7 @@ import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
 /**
- * Created by Obvio on 19/08/2016.
+ * Makes an Async call to the Watson Tone Personality Insights API and returns the result
  */
 public class PersonalityAsyncTask extends AsyncTask<String,Void,String> {
 
@@ -35,11 +35,15 @@ public class PersonalityAsyncTask extends AsyncTask<String,Void,String> {
         @Override
         protected String doInBackground(String... params) {
 
+            // create personality insight service
             mService = new PersonalityInsights();
-            mService.setUsernameAndPassword(mContext.getString(R.string.personality_username), mContext.getString(R.string.personality_password));
 
+            // sets credientials to use personality insight
+            mService.setUsernameAndPassword(mContext.getString(R.string.personality_username),
+                    mContext.getString(R.string.personality_password));
+
+            // returns json string value of result of personality
             return mService.getProfile(params[0]).execute().toString();
-
         }
 
     interface Personality {
