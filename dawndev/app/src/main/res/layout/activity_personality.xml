@@ -8,29 +8,16 @@
     android:orientation="vertical"
     tools:context="com.agile.dawndev.projectclvr.PersonalityActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
-
+        android:padding="16sp"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Personality Response"
+        android:layout_marginTop="20dp"
+        />
 
     <EditText
         android:layout_width="wrap_content"
@@ -41,27 +28,36 @@
         android:layout_marginTop="30dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="32dp" />
+        android:layout_marginStart="32dp"
+        android:visibility="gone"/>
 
+    <ScrollView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@color/grey400"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+
+
+        >
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
+        android:text="HELLO"
         android:id="@+id/output_text"
-        android:layout_below="@+id/input_text"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
+        android:padding="16dp"
         android:layout_marginTop="140dp" />
-
+    </ScrollView>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="Get Personality Result"
         android:id="@+id/submitButton"
         android:layout_below="@+id/output_text"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         />
 
