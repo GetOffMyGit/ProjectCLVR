@@ -20,7 +20,7 @@ HOW TO GET STARTED
 
 7) Run the application by clicking 'Run' > 'Run App'
  
-To view the prototype feature descriptions and results, visit [[Prototype Description and Features]] wiki page.
+To view the prototype feature descriptions and results, visit [Prototype Description and Features](https://github.com/unit02/Project-CLVR/wiki/Prototype-Description-and-Features) wiki page.
 
 ---- 
 
@@ -38,10 +38,11 @@ Ensure that in Tools> Android > SDK Manager > SDK Tools that the following tools
 ----
 
 All Sprint related documentation (user stories, acceptance tests, velocity, meeting notes, sprint planning, sprint review, sprint retrospective, individual contribution) are in the following wiki pages:  
-[[Sprint #1]]<br />
-[[Sprint #2]]<br />
-[[Sprint #3]]
+[Sprint #1](https://github.com/unit02/Project-CLVR/wiki/Sprint-%231)<br>
+[Sprint #2](https://github.com/unit02/Project-CLVR/wiki/Sprint-%232)<br>
+[Sprint #3](https://github.com/unit02/Project-CLVR/wiki/Sprint-%233)<br>
 
-To view the project management tool, visit [[Project Management Tool Details]] wiki page.
+To view the project management tool, visit [Project Management Tool Details](https://github.com/unit02/Project-CLVR/wiki/Project-Management-Tool-Details)<br>
+ wiki page.
 
-To view the team mapping and details, visit the [[Team]] wiki page. 
+To view the team mapping and details, visit the [Team](https://github.com/unit02/Project-CLVR/wiki/Team) wiki page. 
