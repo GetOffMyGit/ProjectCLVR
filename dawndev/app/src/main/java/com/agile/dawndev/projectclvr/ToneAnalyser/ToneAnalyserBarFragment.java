@@ -246,7 +246,8 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     public void makePDF(View rootView){
         Log.d("screenshot", rootView.toString());
 
-//Create a directory for your PDF
+        //Create a directory for your PDF
+        //make a new clvr directory if it doesnt already exist
         File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
 
         if (!pdfDir.exists()){
@@ -258,21 +259,25 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         Bitmap screen;
         View v1 = rootView.getRootView();
         Log.d("screenshot", v1.toString());
+        //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
         screen = Bitmap.createBitmap(v1.getDrawingCache());
         Log.d("screenshot", screen.toString() );
         v1.setDrawingCacheEnabled(false);
 
         //Now create the name of your PDF file that you will generate
+        //pdf file that is supposed to load the image on
         File pdfFile = new File(pdfDir, "myPdfFile.pdf");
         Log.d("screenshot", pdfFile.toString());
 
+        //the file that contains the screenshot image
         OutputStream fout = null;
         File imageFile = new File(pdfDir.getPath() + File.separator
                 + "hi"  + ".jpg");
 
         try {
             Log.d("screenshot", "inside try agian" );
+            //writing to hi.jpg
             fout = new FileOutputStream(imageFile);
             Log.d("screenshot", fout.toString() );
             screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
@@ -289,6 +294,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        //TODO add the image file hi.jpg to pdfFile
 //
 //        try {
 //            DocumentsContract.Document document = new DocumentsContract.Document();
@@ -309,6 +315,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
 
     }
 
+    //function opens the screenshot in a new intent
     private void openScreenshot(File imageFile) {
         Intent intent = new Intent();
         Log.d("screenshot", "inside open screenshot");
