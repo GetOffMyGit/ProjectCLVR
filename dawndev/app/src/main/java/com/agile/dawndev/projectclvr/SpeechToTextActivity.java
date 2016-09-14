@@ -56,7 +56,7 @@ public class SpeechToTextActivity extends Activity {
 
         // session recognition results
         private static String mRecognitionResults = "";
-
+        private ItemModel mDefaultLanguageItem;
         private enum ConnectionState {
             IDLE, CONNECTING, CONNECTED
         }
@@ -121,13 +121,13 @@ public class SpeechToTextActivity extends Activity {
                         Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
 
                         //Spinner to select language
-                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
-                        spinner.setEnabled(false);
+//                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+//                        spinner.setEnabled(false);
 
                         //Display results
                         mRecognitionResults = "";
                         displayResult(mRecognitionResults);
-                        ItemModel item = (ItemModel) spinner.getSelectedItem();
+                        ItemModel item = (ItemModel) mDefaultLanguageItem;
                         SpeechToText.sharedInstance().setModel(item.getModelName());
                         displayStatus("connecting to the STT service...");
                         // start recognition
@@ -147,8 +147,8 @@ public class SpeechToTextActivity extends Activity {
                         //Initiate Spinner
                         mState = ConnectionState.IDLE;
                         Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
-                        spinner.setEnabled(true);
+//                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+//                        spinner.setEnabled(true);
                         SpeechToText.sharedInstance().stopRecognition();
                         setButtonState(false);
                         Log.d("CHRISTINA", mRecognitionResults);
@@ -194,9 +194,9 @@ public class SpeechToTextActivity extends Activity {
 
             //Get the language selected
 
-            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
-            ItemModel item = (ItemModel) spinner.getSelectedItem();
-            return item.getModelName();
+//            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+//            ItemModel item = (ItemModel) spinner.getSelectedItem();
+            return mDefaultLanguageItem.getModelName();
         }
 
         public URI getHost(String url) {
@@ -229,21 +229,11 @@ public class SpeechToTextActivity extends Activity {
 
             // title
             TextView viewTitle = (TextView) mView.findViewById(R.id.title);
-            String strTitle = getString(R.string.sttTitle);
-            SpannableStringBuilder spannable = new SpannableStringBuilder(strTitle);
-            spannable.setSpan(new AbsoluteSizeSpan(47), 0, strTitle.length(), 0);
-            //spannable.setSpan(new CustomTypefaceSpan("", roboto), 0, strTitle.length(), 0);
-            viewTitle.setText(spannable);
-            viewTitle.setTextColor(0xFF325C80);
+            viewTitle.setText(R.string.sttTitle);
 
             // instructions
             TextView viewInstructions = (TextView) mView.findViewById(R.id.instructions);
-            String strInstructions = getString(R.string.sttInstructions);
-            SpannableString spannable2 = new SpannableString(strInstructions);
-            spannable2.setSpan(new AbsoluteSizeSpan(20), 0, strInstructions.length(), 0);
-            // spannable2.setSpan(new CustomTypefaceSpan("", notosans), 0, strInstructions.length(), 0);
-            viewInstructions.setText(spannable2);
-            viewInstructions.setTextColor(0xFF121212);
+            viewInstructions.setText(R.string.sttInstructions);
         }
 
 
@@ -278,7 +268,7 @@ public class SpeechToTextActivity extends Activity {
 
         protected void addItemsOnSpinnerModels() {
 
-            Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+            //Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
             int iIndexDefault = 0;
 
             JSONObject obj = jsonModels;
@@ -306,11 +296,13 @@ public class SpeechToTextActivity extends Activity {
                 e.printStackTrace();
             }
 
-            if (items != null) {
-                ArrayAdapter<ItemModel> spinnerArrayAdapter = new ArrayAdapter<ItemModel>(getActivity(), android.R.layout.simple_spinner_item, items);
-                spinner.setAdapter(spinnerArrayAdapter);
-                spinner.setSelection(iIndexDefault);
-            }
+            mDefaultLanguageItem = items[iIndexDefault];
+
+//            if (items != null) {
+//                ArrayAdapter<ItemModel> spinnerArrayAdapter = new ArrayAdapter<ItemModel>(getActivity(), android.R.layout.simple_spinner_item, items);
+//                spinner.setAdapter(spinnerArrayAdapter);
+//                spinner.setSelection(iIndexDefault);
+//            }
         }
         /**
          * Change the display's result
