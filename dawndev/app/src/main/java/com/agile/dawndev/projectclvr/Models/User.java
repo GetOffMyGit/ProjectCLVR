@@ -2,7 +2,7 @@ package com.agile.dawndev.projectclvr.Models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 
- // [START blog_user_class]
+ // Class used for creating candidate users
  @IgnoreExtraProperties
 public class User {
     private String id;

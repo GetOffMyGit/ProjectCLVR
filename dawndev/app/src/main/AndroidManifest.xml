@@ -31,17 +31,8 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity
-            android:name=".ToneAnalyser.ToneAnalyzerActivity"
-            android:label="@string/title_activity_tone_analyzer"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ToneAnalyser.ToneAnalyzerGraph" />
-        <activity
             android:name=".SpeechToTextActivity"
             android:label="@string/title_activity_activity_speech_to_text"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ToneAnalyser.ToneAnalyserGraph"
-            android:label="@string/title_activity_tone_analyser_graph"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ToneAnalyser.AnalyserTabActivity"></activity>
     </application>

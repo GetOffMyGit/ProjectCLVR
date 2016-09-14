@@ -10,7 +10,7 @@ import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 import static android.app.PendingIntent.getActivity;
 
 /**
- * Created by Zoe on 19/08/16.
+ * Makes an Async call to the Watson Tone Analyser API and returns the result
  */
 public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
     private Context context;
@@ -23,6 +23,7 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
         this.context = context;
     }
 
+    //retrieves the input text and sends it to the API to be analyzed
     @Override
     protected String doInBackground(Object... input) {
         ToneAnalyzer service = (ToneAnalyzer) input[0];
@@ -30,10 +31,9 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
 
         if(this.useAPI){
             ToneAnalysis tone = service.getTone(text, null).execute();
-            System.out.println(tone.getDocumentTone().toString());
             return tone.getDocumentTone().toString();
         } else{
-            Log.d("Zoe: ", "Just using saved output");
+            Log.d("ToneAnalyser: ", "Just using saved output");
             return this.output;
         }
     }
@@ -46,6 +46,8 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
         }
     }
 
+    //Storing the tone analyser output so we don't have to waste API calls for testing
+    // This is for the bar graph
     String output = "{\n" +
             "   \"tone_categories\": [\n" +
             "     {\n" +

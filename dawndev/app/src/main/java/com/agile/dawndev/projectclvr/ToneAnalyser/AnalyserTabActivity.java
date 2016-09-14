@@ -28,12 +28,10 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Radar"));
-        tabLayout.addTab(tabLayout.newTab().setText("My Coupons"));
+        tabLayout.addTab(tabLayout.newTab().setText("Bar"));
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
-
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -42,7 +40,6 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         adapter.addFragment(new ToneAnalyserBarFragment(), "Bar");
         viewPager.setAdapter(adapter);
     }
-
 
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -81,6 +78,4 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
     public void onTextSelected(String text) {
         barGraphString = text;
     }
-
-
 }

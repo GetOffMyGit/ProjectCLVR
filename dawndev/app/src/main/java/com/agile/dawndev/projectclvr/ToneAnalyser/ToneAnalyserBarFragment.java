@@ -137,6 +137,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     }
 
 
+    /*
+        Sets up the tone analyser API retrieval and sets the default text for tone analysis
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -156,7 +159,6 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
                 + "Our clients are hungry for analytical tools to improve their "
                 + "business outcomes. Economy has nothing to do with it.");
 
-
         Button analyzeTextButton = (Button) inflatedView.findViewById(R.id.analyze_text_button);
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
@@ -167,11 +169,8 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
                 ToneAnalyzerAsync toneAnalyser = new ToneAnalyzerAsync(getActivity().getBaseContext());
                 toneAnalyser.delegate = ToneAnalyserBarFragment.this;
                 toneAnalyser.execute(toneAnalyzerService, text);
-
-                Log.d("TESTINGCJ", text);
             }
         });
-
 
         return inflatedView;
     }
@@ -183,7 +182,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         }
     }
 
-
+    /*
+        Adds tone scores as bars to the bar graph
+     */
     private void addColumns(ColumnChartView view, JSONArray dataArray, String[] dataLabels){
         List<Column> columns = new ArrayList<Column>();
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
@@ -205,13 +206,10 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         view.setColumnChartData(socialColumnChart);
     }
 
-
     @Override
     public void processFinish(String result){
         mCallback.onTextSelected(result);
-        Log.d("TESTINGCJ", result);
         createGraphs();
-
     }
 
     @Override

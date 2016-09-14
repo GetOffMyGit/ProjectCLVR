@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
@@ -68,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Gets instance of Firebase Authentication
