@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
@@ -35,6 +34,11 @@
             android:label="@string/title_activity_activity_speech_to_text"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ToneAnalyser.AnalyserTabActivity"></activity>
+        <activity
+            android:name=".PersonalityActivity"
+            android:label="@string/title_activity_personality"
+            android:theme="@style/AppTheme.NoActionBar">
+		</activity>
     </application>
 
 </manifest>
