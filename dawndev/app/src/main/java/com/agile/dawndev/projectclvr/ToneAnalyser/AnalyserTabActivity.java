@@ -13,7 +13,10 @@ import com.agile.dawndev.projectclvr.R;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+    Activity screen for showing the graphs. Two graphs are current showing:
+    a bar graph, and a radar graph
+ */
 public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
     private String barGraphString;
@@ -29,8 +32,6 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
-
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -39,7 +40,6 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
         adapter.addFragment(new ToneAnalyserBarFragment(), "Bar");
         viewPager.setAdapter(adapter);
     }
-
 
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -78,6 +78,4 @@ public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalys
     public void onTextSelected(String text) {
         barGraphString = text;
     }
-
-
 }

@@ -1,7 +1,7 @@
 package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 /**
- * Created by Elizabeth on 26/08/2016.
+ * Stores a default json tone analyser output to prevent too many API calls
  */
 public class Constants {
     //storing the output so we don't have to waste API calls for testing

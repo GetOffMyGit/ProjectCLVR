@@ -46,7 +46,8 @@ public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
         }
     }
 
-    //storing the output so we don't have to waste API calls for testing
+    //Storing the tone analyser output so we don't have to waste API calls for testing
+    // This is for the bar graph
     String output = "{\n" +
             "   \"tone_categories\": [\n" +
             "     {\n" +

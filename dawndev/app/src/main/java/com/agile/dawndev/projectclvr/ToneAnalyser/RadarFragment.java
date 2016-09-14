@@ -35,10 +35,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
- * Creates the fragment that contains the radar graph which displays the results from the tone analyzer activity
+ * Creates the fragment that contains the radar graph which displays the results from the
+ * tone analyzer activity
  */
 public class RadarFragment extends Fragment {
 
@@ -107,16 +106,13 @@ public class RadarFragment extends Fragment {
             e.printStackTrace();
         }
 
-
         setUpGraph(emotionChart,emotionTones,emotionLabels);
         setUpGraph(languageChart,languageTones,languageToneLabels);
         setUpGraph(socialChart,socialTones,socialToneLabels);
 
-
         return inflatedView;
-
-
     }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -139,18 +135,18 @@ public class RadarFragment extends Fragment {
     }
 
     /**
-     *Mandatory interface
+     *  Mandatory interface
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 
-/*
-Generates the graph using the given inputs
- */
+    /*
+        Generates the graph using the given inputs
+     */
     public void setUpGraph(RadarChart chart, JSONArray array, final String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
-        //aretrieve the entry values
+        //retrieve the entry values
         for ( int i = 0; i<array.length();i++){
             try {
                 entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()) ,array.getJSONObject(0).get("tone_name")));
@@ -158,7 +154,8 @@ Generates the graph using the given inputs
                 e.printStackTrace();
             }
         }
-// add entries to dataset
+
+        // add entries to dataset
         RadarDataSet dataSet = new RadarDataSet(entries, "Tone Analyzer");
 
         //set how the graph looks
@@ -176,7 +173,6 @@ Generates the graph using the given inputs
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
         xAxis.setValueFormatter(new AxisValueFormatter() {
-
             //set the labels
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -222,7 +218,7 @@ Generates the graph using the given inputs
         }
     }
 
-    //display the screenshot made
+    // Display the screenshot made
     private void openScreenshot(File imageFile) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);

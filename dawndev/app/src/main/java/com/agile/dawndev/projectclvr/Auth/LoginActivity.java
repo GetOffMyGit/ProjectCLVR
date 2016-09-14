@@ -31,7 +31,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
+/*
+    Class for managing login and authentication
+ */
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -51,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
@@ -68,7 +69,6 @@ public class LoginActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Gets instance of Firebase Authentication
@@ -78,8 +78,6 @@ public class LoginActivity extends AppCompatActivity implements
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
-
-
 
         // Listener for the current state of Firebase Auth (Checks if somebody is logged in or not)
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -231,7 +229,6 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);

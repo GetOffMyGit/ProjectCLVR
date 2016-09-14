@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 /*
-Launch activity, initilizes the database and authenticates the user
+Launch activity, initialises the database and authenticates the user
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
+    // Once output from tone analyser is received, move to the tone analyser graph activity
     public void moveToToneResult(View view){
         Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
         startActivity(intent);

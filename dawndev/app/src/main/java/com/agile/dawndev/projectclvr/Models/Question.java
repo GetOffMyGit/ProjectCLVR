@@ -3,7 +3,7 @@ package com.agile.dawndev.projectclvr.Models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
- * Created by cjpark and NILHIL!!!!! on 26/08/16.
+ *  Class for creating test questions
  */
 @IgnoreExtraProperties
 
