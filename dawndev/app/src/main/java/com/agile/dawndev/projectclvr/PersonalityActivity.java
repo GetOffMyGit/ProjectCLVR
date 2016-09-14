@@ -54,6 +54,8 @@ public class PersonalityActivity extends AppCompatActivity implements Personalit
         + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
                         "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
                         "had frozen up.";
+
+        mOutputTextView.setText(text);
     }
 
     @Override
