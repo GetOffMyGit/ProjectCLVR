@@ -15,7 +15,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-// hello Elizabeth — testing
 /*
 Launch activity, initialises the database and authenticates the user
  */
