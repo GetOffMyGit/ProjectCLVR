@@ -1,8 +1,11 @@
 package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +46,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
 
     OnTextSelectedListener mCallback;
 
-
     private ColumnChartView emotionToneView;
     private ColumnChartView languageToneView;
     private ColumnChartView socialToneView;
-
-
-
-
 
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
@@ -94,7 +97,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     public void createGraphs() {
         ViewGroup view = (ViewGroup) this.getView();
         view.removeAllViews();
-
+        Log.d("screenshot", "inside create view");
         View newInflatedView = getActivity().getLayoutInflater().inflate(R.layout.fragment_bar_graph, view, false);
 
         emotionToneView = (ColumnChartView) newInflatedView.findViewById(R.id.emotion_tone);
@@ -102,12 +105,10 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         socialToneView = (ColumnChartView) newInflatedView.findViewById(R.id.social_tone);
         view.addView(newInflatedView);
 
-
         JSONObject reader = null;
         try {
             String result;
             AnalyserTabActivity activity = (AnalyserTabActivity) getActivity();
-
 
             // NOT USING BUNDLES NOW
 //            if (activity.getBarGraphString() != null) {
@@ -136,6 +137,8 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
             JSONArray socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
             addColumns(socialToneView, socialTones, socialToneLabels);
 
+            makePDF(view);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -143,6 +146,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     }
 
 
+    /*
+        Sets up the tone analyser API retrieval and sets the default text for tone analysis
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -162,7 +168,6 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
                 + "Our clients are hungry for analytical tools to improve their "
                 + "business outcomes. Economy has nothing to do with it.");
 
-
         Button analyzeTextButton = (Button) inflatedView.findViewById(R.id.analyze_text_button);
 
         analyzeTextButton.setOnClickListener(new View.OnClickListener() {
@@ -173,11 +178,8 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
                 ToneAnalyzerAsync toneAnalyser = new ToneAnalyzerAsync(getActivity().getBaseContext());
                 toneAnalyser.delegate = ToneAnalyserBarFragment.this;
                 toneAnalyser.execute(toneAnalyzerService, text);
-
-                Log.d("TESTINGCJ", text);
             }
         });
-
 
         return inflatedView;
     }
@@ -189,7 +191,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         }
     }
 
-
+    /*
+        Adds tone scores as bars to the bar graph
+     */
     private void addColumns(ColumnChartView view, JSONArray dataArray, String[] dataLabels){
         List<Column> columns = new ArrayList<Column>();
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
@@ -211,13 +215,10 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         view.setColumnChartData(socialColumnChart);
     }
 
-
     @Override
     public void processFinish(String result){
         mCallback.onTextSelected(result);
-        Log.d("TESTINGCJ", result);
         createGraphs();
-
     }
 
     @Override
@@ -240,5 +241,89 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void makePDF(View rootView){
+        Log.d("screenshot", rootView.toString());
+
+        //Create a directory for your PDF
+        //make a new clvr directory if it doesnt already exist
+        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
+
+        if (!pdfDir.exists()){
+            pdfDir.mkdir();
+        }
+
+        //Then take the screen shot
+        Log.d("screenshot", rootView.toString() );
+        Bitmap screen;
+        View v1 = rootView.getRootView();
+        Log.d("screenshot", v1.toString());
+        //converting the current root view to a bitmap (image)
+        v1.setDrawingCacheEnabled(true);
+        screen = Bitmap.createBitmap(v1.getDrawingCache());
+        Log.d("screenshot", screen.toString() );
+        v1.setDrawingCacheEnabled(false);
+
+        //Now create the name of your PDF file that you will generate
+        //pdf file that is supposed to load the image on
+        File pdfFile = new File(pdfDir, "myPdfFile.pdf");
+        Log.d("screenshot", pdfFile.toString());
+
+        //the file that contains the screenshot image
+        OutputStream fout = null;
+        File imageFile = new File(pdfDir.getPath() + File.separator
+                + "hi"  + ".jpg");
+
+        try {
+            Log.d("screenshot", "inside try agian" );
+            //writing to hi.jpg
+            fout = new FileOutputStream(imageFile);
+            Log.d("screenshot", fout.toString() );
+            screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+            fout.flush();
+            fout.close();
+
+            Log.d("screenshot", "before open screenshot");
+            //openScreenshot(imageFile);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //TODO add the image file hi.jpg to pdfFile
+//
+//        try {
+//            DocumentsContract.Document document = new DocumentsContract.Document();
+//
+//            PdfWriter.getInstance(document, new FileOutputStream(file));
+//            document.open();
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            screen.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//            byte[] byteArray = stream.toByteArray();
+//            //addImage(document,byteArray);
+//            document.close();
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    }
+
+    //function opens the screenshot in a new intent
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        Log.d("screenshot", "inside open screenshot");
+
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        Log.d("screenshot", uri.toString());
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 }

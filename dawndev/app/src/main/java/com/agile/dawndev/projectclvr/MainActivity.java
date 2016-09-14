@@ -11,7 +11,6 @@ import android.widget.TextView;
 // hello Elizabeth — testing
 
 import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
-import com.agile.dawndev.projectclvr.ToneAnalyser.ToneAnalyzerActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +19,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+/*
+Launch activity, initialises the database and authenticates the user
+ */
 public class MainActivity extends AppCompatActivity {
 
     private TextView mQuestion;
@@ -41,41 +42,44 @@ public class MainActivity extends AppCompatActivity {
         mTests = new ArrayList<Integer>();
 
 
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("tests").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Log.e("Count " ,""+snapshot.getChildrenCount());
-                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-                    Log.e("Get Data", postSnapshot.toString());
-                    Boolean exists = (Boolean) postSnapshot.getValue();
-                    if (exists ==  true ) {
-                        mTests.add(Integer.parseInt(postSnapshot.getKey()));
-                        Log.e("testNumber", postSnapshot.getKey());
-                        mTest = Integer.parseInt(postSnapshot.getKey());
-                        Log.e("mTest", Integer.toString(mTest));
-
-                    }
-//                    Question question = postSnapshot.getValue(Question.class);
-//                    Log.d("nikhil", question.getQuestionText());
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("The read failed: " ,firebaseError.getMessage());
-            }
-        });
-
-
-
-
+//        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("tests").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                Log.e("Count " ,""+snapshot.getChildrenCount());
+//                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+//                    Log.e("Get Data", postSnapshot.toString());
+//                    Boolean exists = (Boolean) postSnapshot.getValue();
+//                    if (exists ==  true ) {
+//                        mTests.add(Integer.parseInt(postSnapshot.getKey()));
+//                        Log.e("testNumber", postSnapshot.getKey());
+//                        mTest = Integer.parseInt(postSnapshot.getKey());
+//                        Log.e("mTest", Integer.toString(mTest));
+//
+//                    }
+////                    Question question = postSnapshot.getValue(Question.class);
+////                    Log.d("nikhil", question.getQuestionText());
+//                }
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError firebaseError) {
+//                Log.e("The read failed: " ,firebaseError.getMessage());
+//            }
+//        });
     }
 
-    public void moveToTone(View view){
-        Intent intent = new Intent(MainActivity.this, ToneAnalyzerActivity.class);
-        startActivity(intent);
-    }
+    // Once output from tone analyser is received, move to the tone analyser graph activity
     public void moveToToneResult(View view){
         Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
+        startActivity(intent);
+    }
+
+    public void moveToSpeech(View view){
+        Intent intent = new Intent(MainActivity.this, SpeechToTextActivity.class);
+        startActivity(intent);
+    }
+
+    public void moveToPersonality(View view){
+        Intent intent = new Intent(MainActivity.this, PersonalityActivity.class);
         startActivity(intent);
     }
 }

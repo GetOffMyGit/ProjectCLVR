@@ -21,12 +21,15 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
@@ -61,8 +64,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-// IBM Watson SDK
-
+/*
+    Activity that converts a recording to text and displays it. Uses the IBM Watson SDK.
+ */
 public class SpeechToTextActivity extends Activity {
 
     private static final String TAG = "MainActivity";
@@ -148,6 +152,35 @@ public class SpeechToTextActivity extends Activity {
                     }
                 }
             });
+
+
+
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        android.Manifest.permission.RECORD_AUDIO)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{android.Manifest.permission.RECORD_AUDIO},1
+                    );
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            }
 
             return mView;
         }
@@ -241,6 +274,8 @@ public class SpeechToTextActivity extends Activity {
             viewInstructions.setText(spannable2);
             viewInstructions.setTextColor(0xFF121212);
         }
+
+
 
         public class ItemModel {
 
@@ -485,6 +520,8 @@ public class SpeechToTextActivity extends Activity {
 
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#B5C0D0")));
 
+
+
     }
 
 
@@ -492,6 +529,35 @@ public class SpeechToTextActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public void checkMicPermissions() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(SpeechToTextActivity.this,
+                android.Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(SpeechToTextActivity.this,
+                    android.Manifest.permission.RECORD_AUDIO)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(SpeechToTextActivity.this,
+                        new String[]{android.Manifest.permission.RECORD_AUDIO},1
+                        );
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
     }
 
 
