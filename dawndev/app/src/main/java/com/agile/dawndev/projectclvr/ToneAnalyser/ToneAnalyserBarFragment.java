@@ -1,8 +1,11 @@
 package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,7 +97,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     public void createGraphs() {
         ViewGroup view = (ViewGroup) this.getView();
         view.removeAllViews();
-
+        Log.d("screenshot", "inside create view");
         View newInflatedView = getActivity().getLayoutInflater().inflate(R.layout.fragment_bar_graph, view, false);
 
         emotionToneView = (ColumnChartView) newInflatedView.findViewById(R.id.emotion_tone);
@@ -97,12 +105,10 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         socialToneView = (ColumnChartView) newInflatedView.findViewById(R.id.social_tone);
         view.addView(newInflatedView);
 
-
         JSONObject reader = null;
         try {
             String result;
             AnalyserTabActivity activity = (AnalyserTabActivity) getActivity();
-
 
             // NOT USING BUNDLES NOW
 //            if (activity.getBarGraphString() != null) {
@@ -130,6 +136,8 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
             JSONArray socialToneCategories  = reader.getJSONArray("tone_categories");
             JSONArray socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
             addColumns(socialToneView, socialTones, socialToneLabels);
+
+            makePDF(view);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -233,5 +241,82 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void makePDF(View rootView){
+        Log.d("screenshot", rootView.toString());
+
+//Create a directory for your PDF
+        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
+
+        if (!pdfDir.exists()){
+            pdfDir.mkdir();
+        }
+
+        //Then take the screen shot
+        Log.d("screenshot", rootView.toString() );
+        Bitmap screen;
+        View v1 = rootView.getRootView();
+        Log.d("screenshot", v1.toString());
+        v1.setDrawingCacheEnabled(true);
+        screen = Bitmap.createBitmap(v1.getDrawingCache());
+        Log.d("screenshot", screen.toString() );
+        v1.setDrawingCacheEnabled(false);
+
+        //Now create the name of your PDF file that you will generate
+        File pdfFile = new File(pdfDir, "myPdfFile.pdf");
+        Log.d("screenshot", pdfFile.toString());
+
+        OutputStream fout = null;
+        File imageFile = new File(pdfDir.getPath() + File.separator
+                + "hi"  + ".jpg");
+
+        try {
+            Log.d("screenshot", "inside try agian" );
+            fout = new FileOutputStream(imageFile);
+            Log.d("screenshot", fout.toString() );
+            screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+            fout.flush();
+            fout.close();
+
+            Log.d("screenshot", "before open screenshot");
+            //openScreenshot(imageFile);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//
+//        try {
+//            DocumentsContract.Document document = new DocumentsContract.Document();
+//
+//            PdfWriter.getInstance(document, new FileOutputStream(file));
+//            document.open();
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            screen.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//            byte[] byteArray = stream.toByteArray();
+//            //addImage(document,byteArray);
+//            document.close();
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        Log.d("screenshot", "inside open screenshot");
+
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        Log.d("screenshot", uri.toString());
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 }

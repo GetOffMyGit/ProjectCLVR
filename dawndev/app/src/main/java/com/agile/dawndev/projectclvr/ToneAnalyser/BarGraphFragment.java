@@ -95,6 +95,7 @@ public class BarGraphFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_bar_graph, container, false);
 
 
+
         emotionToneView = (ColumnChartView) inflatedView.findViewById(R.id.emotion_tone);
         languageToneView = (ColumnChartView) inflatedView.findViewById(R.id.language_tone);
         socialToneView = (ColumnChartView) inflatedView.findViewById(R.id.social_tone);
@@ -126,6 +127,7 @@ public class BarGraphFragment extends Fragment {
             JSONArray socialToneCategories  = reader.getJSONArray("tone_categories");
             JSONArray socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
             addColumns(socialToneView, socialTones, socialToneLabels);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -196,80 +198,5 @@ public class BarGraphFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    public void makePDF(View rootView){
-        Log.d("screenshot", rootView.toString());
 
-//Create a directory for your PDF
-        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
-
-        if (!pdfDir.exists()){
-            pdfDir.mkdir();
-        }
-
-        //Then take the screen shot
-        Log.d("screenshot", rootView.toString() );
-        Bitmap screen;
-        View v1 = rootView.getRootView();
-        Log.d("screenshot", v1.toString());
-        v1.setDrawingCacheEnabled(true);
-        screen = Bitmap.createBitmap(v1.getDrawingCache());
-        Log.d("screenshot", screen.toString() );
-        v1.setDrawingCacheEnabled(false);
-
-        //Now create the name of your PDF file that you will generate
-        File pdfFile = new File(pdfDir, "myPdfFile.pdf");
-        Log.d("screenshot", pdfFile.toString());
-
-        OutputStream fout = null;
-        File imageFile = new File(pdfDir.getPath() + File.separator
-                + "hi"  + ".jpg");
-
-        try {
-            Log.d("screenshot", "inside try agian" );
-            fout = new FileOutputStream(imageFile);
-            Log.d("screenshot", fout.toString() );
-            screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
-            fout.flush();
-            fout.close();
-
-            Log.d("screenshot", "before open screenshot");
-            //openScreenshot(imageFile);
-
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-//
-//        try {
-//            DocumentsContract.Document document = new DocumentsContract.Document();
-//
-//            PdfWriter.getInstance(document, new FileOutputStream(file));
-//            document.open();
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            screen.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//            byte[] byteArray = stream.toByteArray();
-//            //addImage(document,byteArray);
-//            document.close();
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-
-
-    }
-
-    private void openScreenshot(File imageFile) {
-        Intent intent = new Intent();
-        Log.d("screenshot", "inside open screenshot");
-
-        intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(imageFile);
-        Log.d("screenshot", uri.toString());
-        intent.setDataAndType(uri, "image/*");
-        startActivity(intent);
-    }
 }
