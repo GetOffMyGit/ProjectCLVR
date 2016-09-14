@@ -38,9 +38,9 @@ Ensure that in Tools> Android > SDK Manager > SDK Tools that the following tools
 ----
 
 All Sprint related documentation (user stories, acceptance tests, velocity, meeting notes, sprint planning, sprint review, sprint retrospective, individual contribution) are in the following wiki pages:  
-[[Sprint #1]]<br />
-[[Sprint #2]]<br />
-[[Sprint #3]]
+[Sprint #1](https://github.com/unit02/Project-CLVR/wiki/Sprint-%231)<br>
+[Sprint #2](https://github.com/unit02/Project-CLVR/wiki/Sprint-%232)<br>
+[Sprint #3](https://github.com/unit02/Project-CLVR/wiki/Sprint-%233)<br>
 
 To view the project management tool, visit [[Project Management Tool Details]] wiki page.
 
