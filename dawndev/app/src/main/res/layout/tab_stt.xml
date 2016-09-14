@@ -76,4 +76,28 @@
         android:textSize="32dp"
         android:text=""/>
 
+    <TextView
+        android:id="@+id/isThisRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is this correct?"
+        android:layout_below="@+id/sttStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yes! Continue!"
+        android:id="@+id/continue_button"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="toneResults"
+        android:layout_gravity="center"
+        android:layout_below="@+id/isThisRight"
+        android:visibility="gone"
+        />
+
 </RelativeLayout>

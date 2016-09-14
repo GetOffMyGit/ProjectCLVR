@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -30,6 +31,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
@@ -47,8 +49,8 @@ import java.util.Vector;
  */
 public class SpeechToTextActivity extends Activity {
 
-    private static final String TAG = "MainActivity";
-
+    private static final String TAG = "SpeechToTextActivity";
+    private static String message;
 
     public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
@@ -64,6 +66,8 @@ public class SpeechToTextActivity extends Activity {
         public Context mContext = null;
         public JSONObject jsonModels = null;
         private Handler mHandler = null;
+        private Button mButton;
+        private TextView mText;
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -73,6 +77,9 @@ public class SpeechToTextActivity extends Activity {
             mView = inflater.inflate(R.layout.tab_stt, container, false);
             mContext = getActivity().getApplicationContext();
             mHandler = new Handler();
+            mButton = (Button) mView.findViewById(R.id.continue_button);
+            mText = (TextView) mView.findViewById(R.id.isThisRight);
+
 
             //Set the empty text
             setText();
@@ -108,6 +115,8 @@ public class SpeechToTextActivity extends Activity {
                 public void onClick(View arg0) {
 
                     if (mState == ConnectionState.IDLE) {
+                        mButton.setVisibility(View.GONE);
+                        mText.setVisibility(View.GONE);
                         mState = ConnectionState.CONNECTING;
                         Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
 
@@ -132,6 +141,8 @@ public class SpeechToTextActivity extends Activity {
                         setButtonLabel(R.id.buttonRecord, "Connecting...");
                         setButtonState(true);
                     } else if (mState == ConnectionState.CONNECTED) {
+                        mButton.setVisibility(View.VISIBLE);
+                        mText.setVisibility(View.VISIBLE);
 
                         //Initiate Spinner
                         mState = ConnectionState.IDLE;
@@ -140,6 +151,9 @@ public class SpeechToTextActivity extends Activity {
                         spinner.setEnabled(true);
                         SpeechToText.sharedInstance().stopRecognition();
                         setButtonState(false);
+                        Log.d("CHRISTINA", mRecognitionResults);
+                        displayResult(mRecognitionResults);
+                        message = mRecognitionResults;
                     }
                 }
             });
@@ -394,6 +408,8 @@ public class SpeechToTextActivity extends Activity {
         }
 
         public void onMessage(String message) {
+            Log.d("CHRUSTY", mRecognitionResults);
+
 
             Log.d(TAG, "onMessage, message: " + message);
             try {
@@ -442,6 +458,12 @@ public class SpeechToTextActivity extends Activity {
         }
     }
 
+    public void toneResults(View view){
+        Intent intent = new Intent(SpeechToTextActivity.this, AnalyserTabActivity.class);
+        intent.putExtra("message", message);
+        startActivity(intent);
+    }
+
 
 
     //Async Class that handles the Speech To Text Command
@@ -476,6 +498,7 @@ public class SpeechToTextActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
 
 
 }
