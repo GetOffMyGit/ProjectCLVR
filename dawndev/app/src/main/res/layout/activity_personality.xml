@@ -51,6 +51,7 @@
         android:id="@+id/output_text"
         android:layout_below="@+id/input_text"
         android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="140dp" />
 
     <Button
@@ -61,6 +62,7 @@
         android:layout_below="@+id/output_text"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="60dp"
+        android:layout_gravity="center_horizontal"
         />
 
 </LinearLayout>

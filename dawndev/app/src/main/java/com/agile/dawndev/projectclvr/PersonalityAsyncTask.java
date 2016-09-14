@@ -38,7 +38,7 @@ public class PersonalityAsyncTask extends AsyncTask<String,Void,String> {
             mService = new PersonalityInsights();
             mService.setUsernameAndPassword(mContext.getString(R.string.personality_username), mContext.getString(R.string.personality_password));
 
-            return mService.getProfile(params[0]).toString();
+            return mService.getProfile(params[0]).execute().toString();
 
         }
 
