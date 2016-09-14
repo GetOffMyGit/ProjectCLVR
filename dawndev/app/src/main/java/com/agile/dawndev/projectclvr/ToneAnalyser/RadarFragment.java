@@ -14,11 +14,11 @@ import android.graphics.Color;
 import android.os.Environment;
 
 import com.agile.dawndev.projectclvr.R;
-import com.github.mikephil.charting.charts.RadarChart;
 
+
+import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
-
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
@@ -108,7 +108,6 @@ public class RadarFragment extends Fragment {
         languageChart = (RadarChart) inflatedView.findViewById(R.id.languageGraph);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.socialToneGraph);
         String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-
         String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
         String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
 

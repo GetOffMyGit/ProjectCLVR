@@ -78,4 +78,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
         startActivity(intent);
     }
+    public void moveToSpeech(View view){
+        Intent intent = new Intent(MainActivity.this, SpeechToTextActivity.class);
+        startActivity(intent);
+    }
 }

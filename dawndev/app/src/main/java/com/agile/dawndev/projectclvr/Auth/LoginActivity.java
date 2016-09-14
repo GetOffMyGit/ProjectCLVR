@@ -31,7 +31,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
+/*
+    Activity that contains the authentication for Firebase. Authentication is done through Google Accounts.
+ */
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -43,7 +45,6 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
-
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -67,8 +68,6 @@ public class LoginActivity extends AppCompatActivity implements
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Gets instance of Firebase Authentication
@@ -79,8 +78,6 @@ public class LoginActivity extends AppCompatActivity implements
             finish();
         }
 
-
-
         // Listener for the current state of Firebase Auth (Checks if somebody is logged in or not)
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -88,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    // If there is a user, go to the MainActivity
                     goToMain();
                 } else {
                     // User is signed out
@@ -117,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
+    // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
@@ -144,10 +142,9 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    // On authentication, push a new user to the database
     private void writeNewUser() {
-
         FirebaseUser fbUser = mAuth.getCurrentUser();
-
         DatabaseReference mUser = mDatabase.child("users").child(fbUser.getUid());
         if (mUser == null) {
             Log.d("login", "check2");
@@ -231,7 +228,6 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);

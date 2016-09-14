@@ -38,14 +38,9 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
 
     OnTextSelectedListener mCallback;
 
-
     private ColumnChartView emotionToneView;
     private ColumnChartView languageToneView;
     private ColumnChartView socialToneView;
-
-
-
-
 
     private ToneAnalyzer toneAnalyzerService;
     private EditText inputEditText;
@@ -107,7 +102,6 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         try {
             String result;
             AnalyserTabActivity activity = (AnalyserTabActivity) getActivity();
-
 
             // NOT USING BUNDLES NOW
 //            if (activity.getBarGraphString() != null) {

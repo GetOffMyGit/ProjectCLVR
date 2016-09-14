@@ -28,6 +28,4 @@ public class User {
          return this.email;
      }
 
-
-
 }

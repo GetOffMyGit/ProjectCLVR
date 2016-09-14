@@ -13,9 +13,12 @@ import com.agile.dawndev.projectclvr.R;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+    Activity that contains the tablayout for the graphs
+ */
 public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
+    // String to pass into ToneAnalyserBarFragment
     private String barGraphString;
 
     @Override
