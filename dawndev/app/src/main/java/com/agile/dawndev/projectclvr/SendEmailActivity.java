@@ -1,11 +1,17 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+
+/*
+    Activity that contains sending email functionality. Currently has mock data for prototype
+ */
 public class SendEmailActivity extends AppCompatActivity {
     private EditText mToText;
     private EditText mFromText;
@@ -32,6 +38,15 @@ public class SendEmailActivity extends AppCompatActivity {
                 SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task.execute();
+
+                Context context = getApplicationContext();
+                CharSequence text = "Email Sent!";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+
             }
         });
 

@@ -21,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fromEditText"
+        android:text="cpar831@aucklanduni.ac.nz"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
@@ -31,6 +32,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/toEditText"
         android:hint="To"
+        android:text="eorc065@aucklanduni.ac.nz"
         android:layout_below="@+id/fromEditText"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true" />
@@ -40,6 +42,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/subjectEditText"
         android:hint="Subject"
+        android:text="This is a test for Demo!"
         android:layout_below="@+id/toEditText"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true" />
@@ -49,6 +52,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/bodyEditText"
         android:hint="Body"
+        android:text="This isn't the greatest demo in the world. This is just a tribute."
         android:layout_below="@+id/subjectEditText"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
