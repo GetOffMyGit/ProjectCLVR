@@ -37,7 +37,6 @@
             android:name=".PersonalityActivity"
             android:label="@string/title_activity_personality" />
         <activity android:name=".SendEmailActivity" />
-        <activity android:name=".SpeechTranscribeActivity"></activity>
     </application>
 
 </manifest>
