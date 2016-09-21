@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.Models.User;
 import com.agile.dawndev.projectclvr.R;
+import com.agile.dawndev.projectclvr.SpeechToTextActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,8 +29,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /*
     Activity that contains the authentication for Firebase. Authentication is done through Google Accounts.
@@ -75,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (mAuth.getCurrentUser() != null) {
             writeNewUser();
             startActivity(new Intent(this, MainActivity.class));
+            Log.d("NIKHIL", "one two three");
             finish();
         }
 
@@ -86,7 +91,29 @@ public class LoginActivity extends AppCompatActivity implements
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     // If there is a user, go to the MainActivity
-                    goToMain();
+                    mDatabase.child("users").child(user.getUid()).child("type").addValueEventListener(
+                            new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    // Get user value
+                                    String type = (String) dataSnapshot.getValue();
+                                    if (type.equals("company")) {
+                                        Log.d("NIKHIL", "one");
+                                        goToCompanyMain();
+                                    }
+                                    else if (type.equals("company") != true){
+                                        Log.d("NIKHIL", "two");
+                                        goToMain();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                                    // ...
+                                }
+                            });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -117,7 +144,14 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
+        Log.d("CHAHAT", "JACKED!!!!");
         startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    public void goToCompanyMain() {
+        Log.d("CHAHAT", "WHAT!!!");
+        startActivity(new Intent(this, SpeechToTextActivity.class));
         finish();
     }
 

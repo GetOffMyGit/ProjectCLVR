@@ -5,9 +5,11 @@ import com.google.firebase.database.IgnoreExtraProperties;
  // Class used for creating candidate users
  @IgnoreExtraProperties
 public class User {
-    private String id;
-    private String name;
-    private String email;
+     private String id;
+     private String name;
+     private String email;
+     private String type;
+
 
     public User(String name, String email) {
         this.name = name;
@@ -26,6 +28,10 @@ public class User {
 
      public String getEmail() {
          return this.email;
+     }
+
+     public String getType() {
+         return this.type;
      }
 
 }
