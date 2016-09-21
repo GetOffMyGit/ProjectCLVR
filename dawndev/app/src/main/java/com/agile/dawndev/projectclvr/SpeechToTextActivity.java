@@ -9,9 +9,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
@@ -33,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
@@ -65,6 +68,9 @@ public class SpeechToTextActivity extends Activity {
         private CountDownTimer countdowntimer;
         private TextView textviewtimer;
         private long timerLimit = 120000;
+        private MediaRecorder myAudioRecorder = new MediaRecorder();
+        private static String outputFile = null;
+
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -77,6 +83,16 @@ public class SpeechToTextActivity extends Activity {
             mButton = (Button) mView.findViewById(R.id.continue_button);
             mText = (TextView) mView.findViewById(R.id.isThisRight);
             textviewtimer = (TextView)mView.findViewById(R.id.textViewtimer);
+
+            outputFile = Environment.getExternalStorageDirectory().getAbsolutePath();
+            outputFile += "/clvr.3gp";
+
+            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+           // myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+           // myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.MPEG_4);
+            myAudioRecorder.setOutputFile(outputFile);
 
             //Set the empty text
             setText();
@@ -113,6 +129,13 @@ public class SpeechToTextActivity extends Activity {
 
                     if (mState == ConnectionState.IDLE) {
 
+                        try {
+                            myAudioRecorder.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        myAudioRecorder.start();
+
                         countdowntimer = new CountDownTimerClass(timerLimit, 1000);
 
                         countdowntimer.start();
@@ -144,6 +167,11 @@ public class SpeechToTextActivity extends Activity {
                         setButtonLabel(R.id.buttonRecord, "Connecting...");
                         setButtonState(true);
                     } else if (mState == ConnectionState.CONNECTED) {
+
+                        myAudioRecorder.stop();
+                        myAudioRecorder.release();
+                        myAudioRecorder  = null;
+
                         mButton.setVisibility(View.VISIBLE);
                         mText.setVisibility(View.VISIBLE);
 
