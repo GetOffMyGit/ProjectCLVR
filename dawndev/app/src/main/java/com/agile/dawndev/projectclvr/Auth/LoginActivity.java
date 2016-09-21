@@ -90,27 +90,30 @@ public class LoginActivity extends AppCompatActivity implements
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     // If there is a user, go to the MainActivity
-                    mDatabase.child("users").child(user.getUid()).child("type").addValueEventListener(
-                            new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    mDatabase.child("users").child(user.getUid()).child("type").addValueEventListener(
+//                            new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(DataSnapshot dataSnapshot) {
                                     // Get user value
-                                    String type = (String) dataSnapshot.getValue();
-                                    if (type.equals("company")) {
-                                        goToCompanyMain();
-                                    }
-                                    else if (type.equals("company") != true){
-                                        goToMain();
-                                    }
+//                                    String type = (String) dataSnapshot.getValue();
+//                                    if (type.equals("company")) {
+//                                        writeNewUser();
+//                                        goToCompanyMain();
+//                                    }
+//                                    else if (type.equals("company") != true){
+                    Log.d("login", "hoodehoooo");
+                    writeNewUser();
+                    goToMain();
+//                                    }
 
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                                    // ...
-                                }
-                            });
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(DatabaseError databaseError) {
+//                                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+//                                    // ...
+//                                }
+//                            });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -162,7 +165,6 @@ public class LoginActivity extends AppCompatActivity implements
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-                Log.d("login", "check");
 
             } else {
                 // Google Sign In failed, update UI appropriately
@@ -173,13 +175,30 @@ public class LoginActivity extends AppCompatActivity implements
 
     // On authentication, push a new user to the database
     private void writeNewUser() {
-        FirebaseUser fbUser = mAuth.getCurrentUser();
-        DatabaseReference mUser = mDatabase.child("users").child(fbUser.getUid());
-        if (mUser == null) {
-            Log.d("login", "check2");
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists() != true) {
+                            FirebaseUser fbUser = mAuth.getCurrentUser();
+                            User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
+                            mDatabase.child("users").child(fbUser.getUid()).setValue(user);
+                            Log.d("login", "WOOOOOOO");
+                        }
+                    }
 
-            User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
-            mDatabase.child("users").child(fbUser.getUid()).setValue(user);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
+    }
+
+    private void writeNewUser(String userId, String name, String email) {
+        User user = new User(name, email);
+        if (mDatabase.child("users").child(userId) == null) {
+            mDatabase.child("users").child(userId).setValue(user);
         }
     }
 
