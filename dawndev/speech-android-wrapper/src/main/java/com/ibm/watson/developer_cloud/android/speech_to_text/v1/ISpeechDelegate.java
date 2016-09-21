@@ -23,6 +23,8 @@ public interface ISpeechDelegate {
      */
     void onOpen();
 
+    void onBegin();
+
     /**
      * called if there is an error using the STT service
      */

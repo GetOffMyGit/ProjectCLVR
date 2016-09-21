@@ -29,13 +29,14 @@ import android.widget.TextView;
 import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.FileCaptureThread;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
@@ -70,6 +71,7 @@ public class SpeechToTextActivity extends Activity {
         private long timerLimit = 120000;
         private MediaRecorder myAudioRecorder = new MediaRecorder();
         private static String outputFile = null;
+        private FileCaptureThread mFileCaptureThread = null;
 
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,66 +129,83 @@ public class SpeechToTextActivity extends Activity {
                 @Override
                 public void onClick(View arg0) {
 
-                    if (mState == ConnectionState.IDLE) {
-
-                        try {
-                            myAudioRecorder.prepare();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        myAudioRecorder.start();
-
-                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
-
-                        countdowntimer.start();
+                    speechRecognition();
 
 
-                        mButton.setVisibility(View.GONE);
-                        mText.setVisibility(View.GONE);
-                        mState = ConnectionState.CONNECTING;
-                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
-
-                        //Spinner to select language
-//                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
-//                        spinner.setEnabled(false);
-
-                        //Display results
-                        mRecognitionResults = "";
-                        displayResult(mRecognitionResults);
-                        ItemModel item = (ItemModel) mDefaultLanguageItem;
-                        SpeechToText.sharedInstance().setModel(item.getModelName());
-                        displayStatus("connecting to the STT service...");
-                        // start recognition
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... none) {
-                                SpeechToText.sharedInstance().recognize();
-                                return null;
-                            }
-                        }.execute();
-                        setButtonLabel(R.id.buttonRecord, "Connecting...");
-                        setButtonState(true);
-                    } else if (mState == ConnectionState.CONNECTED) {
-
-                        myAudioRecorder.stop();
-                        myAudioRecorder.release();
-                        myAudioRecorder  = null;
-
-                        mButton.setVisibility(View.VISIBLE);
-                        mText.setVisibility(View.VISIBLE);
-
-                        //Initiate Spinner
-                        mState = ConnectionState.IDLE;
-                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-//                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
-//                        spinner.setEnabled(true);
-                        SpeechToText.sharedInstance().stopRecognition();
-                        setButtonState(false);
-
-                        countdowntimer.cancel();
-                        displayResult(mRecognitionResults);
-                        message = mRecognitionResults;
-                    }
+//                    if (mState == ConnectionState.IDLE) {
+//
+//
+//                        try {
+//                            myAudioRecorder.prepare();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        myAudioRecorder.start();
+//                        Log.d("RECORDING", "start");
+//
+//                        //Start the timer
+//                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
+//                        countdowntimer.start();
+//
+//
+//                        mButton.setVisibility(View.GONE);
+//                        mText.setVisibility(View.GONE);
+//                        mState = ConnectionState.CONNECTING;
+//                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
+//
+//
+//
+//
+//                        //Spinner to select language
+////                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+////                        spinner.setEnabled(false);
+//
+//                        //Display results
+////                        mRecognitionResults = "";
+////                        displayResult(mRecognitionResults);
+////                        ItemModel item = (ItemModel) mDefaultLanguageItem;
+////                        SpeechToText.sharedInstance().setModel(item.getModelName());
+////                        displayStatus("connecting to the STT service...");
+////                        // start recognition
+////                        new AsyncTask<Void, Void, Void>() {
+////                            @Override
+////                            protected Void doInBackground(Void... none) {
+////                                SpeechToText.sharedInstance().recognize();
+////                                return null;
+////                            }
+////                        }.execute();
+//
+//
+//                        setButtonLabel(R.id.buttonRecord, "Connecting...");
+//                        setButtonState(true);
+//                    } else if (mState == ConnectionState.CONNECTED) {
+//
+//
+//
+//                        mButton.setVisibility(View.VISIBLE);
+//                        mText.setVisibility(View.VISIBLE);
+//
+//                        //Initiate Spinner
+//                        mState = ConnectionState.IDLE;
+//                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
+////                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+////                        spinner.setEnabled(true);
+//                       // SpeechToText.sharedInstance().stopRecognition();
+//                        setButtonState(false);
+//
+//                        countdowntimer.cancel();
+//                       // displayResult(mRecognitionResults);
+//                       // message = mRecognitionResults;
+//
+//                        myAudioRecorder.stop();
+//                        myAudioRecorder.release();
+//                        myAudioRecorder  = null;
+//                        Log.d("RECORDING", "stop");
+//
+//                        speechRecognition();
+//
+//                    }
+//                }
                 }
             });
 
@@ -220,6 +239,15 @@ public class SpeechToTextActivity extends Activity {
             }
 
             return mView;
+        }
+
+        private void speechRecognition(){
+            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
+
+            File file = new File(fileName);
+            mFileCaptureThread = SpeechToText.sharedInstance().recognizeWithFile(file);
+            Log.d("RECORDING", fileName);
+
         }
 
         private String getModelSelected() {
@@ -414,6 +442,23 @@ public class SpeechToTextActivity extends Activity {
             mState = ConnectionState.CONNECTED;
         }
 
+        @Override
+        public void onBegin() {
+            if(mFileCaptureThread != null) {
+                Log.d("RECORDING", "begin");
+
+//                mFileCaptureThread.start();
+                new Thread(mFileCaptureThread).start();
+                Log.d("RECORDING", "finish");
+                Log.d("RECORDING",  "finish ;" + mRecognitionResults);
+
+
+                displayResult(mRecognitionResults);
+                message = mRecognitionResults;
+                //SpeechToText.sharedInstance().endTransmission();
+            }
+        }
+
         public void onError(String error) {
 
             Log.e(TAG, error);
@@ -428,6 +473,7 @@ public class SpeechToTextActivity extends Activity {
             mState = ConnectionState.IDLE;
         }
 
+        @Override
         public void onMessage(String message) {
 
             Log.d(TAG, "onMessage, message: " + message);
@@ -500,12 +546,12 @@ public class SpeechToTextActivity extends Activity {
                 Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
 //                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
 //                        spinner.setEnabled(true);
-                SpeechToText.sharedInstance().stopRecognition();
+                //SpeechToText.sharedInstance().stopRecognition();
                 setButtonState(false);
 
                 //countdowntimer.cancel();
-                displayResult(mRecognitionResults);
-                message = mRecognitionResults;
+                //displayResult(mRecognitionResults);
+                //message = mRecognitionResults;
                 textviewtimer.setText(" Count Down Finish ");
 
             }
@@ -555,8 +601,6 @@ public class SpeechToTextActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-
 
 
 

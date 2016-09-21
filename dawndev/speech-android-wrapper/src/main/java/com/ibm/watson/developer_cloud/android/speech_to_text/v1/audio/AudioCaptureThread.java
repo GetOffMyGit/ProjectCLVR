@@ -16,11 +16,10 @@
 
 package com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio;
 
-import java.lang.Thread;
-import android.util.Log;
+import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.*;
 import android.media.MediaRecorder.AudioSource;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,7 +29,7 @@ import java.nio.ByteOrder;
  * description: this thread captures audio from the phone's microphone, whenever the buffer
  *
  */
-public class AudioCaptureThread extends Thread {
+public class AudioCaptureThread implements Runnable {
 
     private static final String TAG = "AudioCaptureThread";
     private boolean mStop = false;

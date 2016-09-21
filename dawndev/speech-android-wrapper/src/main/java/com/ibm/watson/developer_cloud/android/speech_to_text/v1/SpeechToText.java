@@ -16,38 +16,38 @@
 
 package com.ibm.watson.developer_cloud.android.speech_to_text.v1;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-
-import org.java_websocket.util.Base64;
-
 import android.content.Context;
 import android.util.Log;
 
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.IAudioConsumer;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.AudioCaptureThread;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.WebSocketUploader;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.IChunkUploader;
 import com.ibm.watson.developer_cloud.android.speech_common.v1.TokenProvider;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.AudioCaptureThread;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.FileCaptureThread;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.IAudioConsumer;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.IChunkUploader;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.WebSocketUploader;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
 
-// HTTP library
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-
+import org.java_websocket.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+
+// HTTP library
 
 /**
  * Speech Recognition Class for SDK functions
@@ -133,7 +133,8 @@ public class SpeechToText {
         STTIAudioConsumer audioConsumer = new STTIAudioConsumer(uploader);
 
         audioCaptureThread = new AudioCaptureThread(SpeechConfiguration.SAMPLE_RATE, audioConsumer);
-        audioCaptureThread.start();
+        //audioCaptureThread.start();
+        new Thread(this.audioCaptureThread).start();
     }
 
     /**
@@ -310,6 +311,36 @@ public class SpeechToText {
      */
     public void setModel(String model) {
         this.model = model;
+    }
+
+    private FileCaptureThread startReadingFile(File file) {
+        this.uploader.prepare();
+        STTIAudioConsumer audioConsumer = new STTIAudioConsumer(uploader);
+        return new FileCaptureThread(audioConsumer, file);
+    }
+    public FileCaptureThread recognizeWithFile(File file){
+        Log.d(TAG, "recognize");
+        try {
+            HashMap<String, String> header = new HashMap<String, String>();
+            header.put("Content-Type", sConfig.audioFormat);
+            if (sConfig.isAuthNeeded) {
+                if (this.tokenProvider != null) {
+                    header.put("X-Watson-Authorization-Token", this.tokenProvider.getToken());
+                    Log.d(TAG, "ws connecting with token based authentication");
+                } else {
+                    String auth = "Basic " + Base64.encodeBytes((this.username + ":" + this.password).getBytes(Charset.forName("UTF-8")));
+                    header.put("Authorization", auth);
+                    Log.d(TAG, "ws connecting with Basic Authentication");
+                }
+            }
+            String wsURL = this.hostURL.toString().replace("https", "wss").replace("http", "ws") + "/v1/recognize" + (this.model != null ? ("?model=" + this.model) : "");
+            this.uploader = new WebSocketUploader(wsURL, header, sConfig);
+            this.uploader.setDelegate(this.delegate);
+            return this.startReadingFile(file);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

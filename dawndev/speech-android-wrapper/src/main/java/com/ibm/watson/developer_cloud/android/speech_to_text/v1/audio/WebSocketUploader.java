@@ -17,6 +17,17 @@
 
 package com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio;
 
+import android.util.Log;
+
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
+import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,17 +42,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.util.Log;
-
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 
 public class WebSocketUploader extends WebSocketClient implements IChunkUploader {
     // Use PROPRIETARY notice if class contains a main() method, otherwise use COPYRIGHT notice.
@@ -270,10 +270,16 @@ public class WebSocketUploader extends WebSocketClient implements IChunkUploader
     @Override
     public void onMessage(String message) {
 
+        if(this.delegate != null){
+            this.delegate.onBegin();
+        }
+
         Log.d(TAG + "onMessage", message);
         if (delegate != null){
             delegate.onMessage(message);
         }
+
+
     }
 
     @Override
