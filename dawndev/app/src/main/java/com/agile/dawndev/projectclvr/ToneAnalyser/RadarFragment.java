@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -189,40 +190,71 @@ public class RadarFragment extends Fragment {
         chart.setDescription("");
         chart.invalidate();
     }
-
     public void makePDF(View rootView){
-        // image naming and path  to include sd card  appending name you choose for file
-        String mPath = Environment.getExternalStorageDirectory().toString() + "/" + "hi";
-        // create bitmap screen capture
-        Bitmap bitmap;
+        Log.d("screenshot", rootView.toString());
+        boolean success =  false;
 
-        rootView.setDrawingCacheEnabled(true);
-        bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
-        rootView.setDrawingCacheEnabled(false);
+        //Create a directory for your PDF
+        //make a new clvr directory if it doesnt already exist
+        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
+
+        if (!pdfDir.exists()){
+            success = pdfDir.mkdirs();
+        }
+
+        if(!success){
+            Log.d("screesnhot", "folder not created");
+        }else{
+            Log.d("screenshot", "folder created");
+        }
+
+        // Log.d("screenshot", rootView.toString() );
+        Bitmap screen;
+        View v1 = rootView.getRootView();
+
+        //converting the current root view to a bitmap (image)
+        v1.setDrawingCacheEnabled(true);
+
+
+        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        v1.layout(0,0,v1.getMeasuredWidth(), v1.getMeasuredHeight());
+        v1.buildDrawingCache(true);
+
+
+        screen = Bitmap.createBitmap(v1.getDrawingCache());
+//        Log.d("screenshot", screen.toString() );
+        v1.setDrawingCacheEnabled(false);
+
 
         OutputStream fout = null;
-        File imageFile = new File(mPath);
-
-        try {
+        File imageFile =  new File(pdfDir+"/hi.jpg" );
+        try{
             fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+            screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
             fout.flush();
             fout.close();
 
             openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    // Display the screenshot made
+
+    //function opens the screenshot in a new intent
     private void openScreenshot(File imageFile) {
         Intent intent = new Intent();
+        Log.d("screenshot", "inside open screenshot");
+
         intent.setAction(Intent.ACTION_VIEW);
         Uri uri = Uri.fromFile(imageFile);
+        Log.d("screenshot", uri.toString());
         intent.setDataAndType(uri, "image/*");
         startActivity(intent);
     }
