@@ -2,6 +2,8 @@ package com.agile.dawndev.projectclvr.ToneAnalyser;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
+import android.widget.Button;
 
 import com.agile.dawndev.projectclvr.R;
 
@@ -49,6 +52,7 @@ public class RadarFragment extends Fragment {
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private  JSONArray socialTones;
+    private Button getResult;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,7 +80,7 @@ public class RadarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
 
         //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
@@ -107,10 +111,17 @@ public class RadarFragment extends Fragment {
             e.printStackTrace();
         }
 
-        setUpGraph(emotionChart,emotionTones,emotionLabels);
-        setUpGraph(languageChart,languageTones,languageToneLabels);
-        setUpGraph(socialChart,socialTones,socialToneLabels);
+        setUpGraph(emotionChart, emotionTones, emotionLabels);
+        setUpGraph(languageChart, languageTones, languageToneLabels);
+        setUpGraph(socialChart, socialTones, socialToneLabels);
 
+        getResult = (Button) inflatedView.findViewById(R.id.getResult);
+        getResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePDF(inflatedView);
+            }
+        });
         return inflatedView;
     }
 
@@ -133,6 +144,7 @@ public class RadarFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
     }
 
     /**
@@ -190,6 +202,7 @@ public class RadarFragment extends Fragment {
         chart.setDescription("");
         chart.invalidate();
     }
+
     public void makePDF(View rootView){
         Log.d("screenshot", rootView.toString());
         boolean success =  false;
@@ -218,12 +231,15 @@ public class RadarFragment extends Fragment {
 
         v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        v1.layout(0,0,v1.getMeasuredWidth(), v1.getMeasuredHeight());
+        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
+
         v1.buildDrawingCache(true);
 
 
         screen = Bitmap.createBitmap(v1.getDrawingCache());
-//        Log.d("screenshot", screen.toString() );
+
+        Log.d("screenshot", screen.toString() );
+
         v1.setDrawingCacheEnabled(false);
 
 

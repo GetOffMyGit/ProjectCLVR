@@ -3,6 +3,7 @@ package com.agile.dawndev.projectclvr.ToneAnalyser;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -262,12 +263,16 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         }
 
        // Log.d("screenshot", rootView.toString() );
-        Bitmap screen;
+
+        Bitmap screen ;
+                //=b;
         View v1 = rootView.getRootView();
         //Log.d("screenshot", v1.toString());
 
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
+
+
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 //        Log.d("screenshot", screen.toString() );
         v1.setDrawingCacheEnabled(false);
