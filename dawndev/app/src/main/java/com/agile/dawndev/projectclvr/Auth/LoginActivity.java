@@ -101,7 +101,6 @@ public class LoginActivity extends AppCompatActivity implements
 //                                        goToCompanyMain();
 //                                    }
 //                                    else if (type.equals("company") != true){
-                    Log.d("login", "hoodehoooo");
                     writeNewUser();
                     goToMain();
 //                                    }
@@ -183,7 +182,6 @@ public class LoginActivity extends AppCompatActivity implements
                             FirebaseUser fbUser = mAuth.getCurrentUser();
                             User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
                             mDatabase.child("users").child(fbUser.getUid()).setValue(user);
-                            Log.d("login", "WOOOOOOO");
                         }
                     }
 
@@ -193,13 +191,6 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 }
         );
-    }
-
-    private void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email);
-        if (mDatabase.child("users").child(userId) == null) {
-            mDatabase.child("users").child(userId).setValue(user);
-        }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
