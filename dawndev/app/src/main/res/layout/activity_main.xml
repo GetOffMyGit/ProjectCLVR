@@ -77,6 +77,20 @@
             android:paddingRight="15dp"
             />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go to Tests"
+            android:id="@+id/button5"
+            android:onClick="moveToShowTests"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            />
+
     </LinearLayout>
 
 

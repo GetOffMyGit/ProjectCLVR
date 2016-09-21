@@ -86,4 +86,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, SendEmailActivity.class);
         startActivity(intent);
     }
+
+    public void moveToShowTests(View view) {
+        Intent intent = new Intent(MainActivity.this, ShowTestsActivity.class);
+        startActivity(intent);
+    }
 }
