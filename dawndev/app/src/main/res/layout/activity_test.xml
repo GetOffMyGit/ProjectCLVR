@@ -10,7 +10,7 @@
     tools:context="com.agile.dawndev.projectclvr.TestActivity">
 
     <LinearLayout
-        android:id="@+id/showTestsLayout"
+        android:id="@+id/testLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

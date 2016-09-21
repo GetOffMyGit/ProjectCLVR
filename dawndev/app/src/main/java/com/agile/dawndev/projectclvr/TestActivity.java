@@ -3,6 +3,7 @@ package com.agile.dawndev.projectclvr;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,11 +14,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 public class TestActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private String mCompanyKey;
     private String mTestKey;
+    //private HashMap<String, String> mTestQuestions = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +38,24 @@ public class TestActivity extends AppCompatActivity {
             if(extras != null) {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
+                Log.v("EXTRAAAAAAAAAAAA", mCompanyKey);
+                Log.v("EXTRAAAAAAAAAAAA", mTestKey);
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
+            Log.v("ELSEEEEEEEEEEEEEEEEE", mCompanyKey);
+            Log.v("ELSEEEEEEEEEEEEEEEEE", mTestKey);
         }
 
-        mDatabase.child("users").child("1").child("companies").child(mCompanyKey).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("companies").child("1").child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot test = dataSnapshot.child(mTestKey);
+//                DataSnapshot test = dataSnapshot.child(mTestKey);
+                  Log.v("AYYYYYYYYYYYYYYYYYEEE", dataSnapshot.getKey());
+//                Log.v("AYYYYYYYYYYYYYYYYYEEE", dataSnapshot.getValue().toString());
 
-                for(DataSnapshot questionSnapshot : test.getChildren()) {
+                for(DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
                     TextView question = new TextView(TestActivity.this);
                     question.setText(questionSnapshot.getKey());
                     linearLayout.addView(question);
