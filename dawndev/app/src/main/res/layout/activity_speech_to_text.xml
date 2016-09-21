@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/tab_stt">
 
+
     <TextView
         android:id="@+id/title"
         android:layout_width="fill_parent"
@@ -104,5 +105,15 @@
         android:visibility="gone"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         />
+
+    <TextView
+        android:id="@+id/textViewtimer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/continue_button"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 
 </RelativeLayout>

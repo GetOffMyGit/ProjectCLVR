@@ -7,11 +7,11 @@ package com.agile.dawndev.projectclvr;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /*
     Activity that converts a recording to text and displays it. Uses the IBM Watson SDK.
@@ -61,6 +62,9 @@ public class SpeechToTextActivity extends Activity {
         private Handler mHandler = null;
         private Button mButton;
         private TextView mText;
+        private CountDownTimer countdowntimer;
+        private TextView textviewtimer;
+        private long timerLimit = 120000;
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -72,7 +76,7 @@ public class SpeechToTextActivity extends Activity {
             mHandler = new Handler();
             mButton = (Button) mView.findViewById(R.id.continue_button);
             mText = (TextView) mView.findViewById(R.id.isThisRight);
-
+            textviewtimer = (TextView)mView.findViewById(R.id.textViewtimer);
 
             //Set the empty text
             setText();
@@ -108,6 +112,12 @@ public class SpeechToTextActivity extends Activity {
                 public void onClick(View arg0) {
 
                     if (mState == ConnectionState.IDLE) {
+
+                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
+
+                        countdowntimer.start();
+
+
                         mButton.setVisibility(View.GONE);
                         mText.setVisibility(View.GONE);
                         mState = ConnectionState.CONNECTING;
@@ -144,7 +154,8 @@ public class SpeechToTextActivity extends Activity {
 //                        spinner.setEnabled(true);
                         SpeechToText.sharedInstance().stopRecognition();
                         setButtonState(false);
-                        Log.d("CHRISTINA", mRecognitionResults);
+
+                        countdowntimer.cancel();
                         displayResult(mRecognitionResults);
                         message = mRecognitionResults;
                     }
@@ -390,8 +401,6 @@ public class SpeechToTextActivity extends Activity {
         }
 
         public void onMessage(String message) {
-            Log.d("CHRUSTY", mRecognitionResults);
-
 
             Log.d(TAG, "onMessage, message: " + message);
             try {
@@ -438,6 +447,41 @@ public class SpeechToTextActivity extends Activity {
         public void onAmplitude(double amplitude, double volume) {
             //Logger.e(TAG, "amplitude=" + amplitude + ", volume=" + volume);
         }
+
+        public class CountDownTimerClass extends CountDownTimer {
+
+            public CountDownTimerClass(long millisInFuture, long countDownInterval) {
+
+                super(millisInFuture, countDownInterval);
+
+            }
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                long millis = millisUntilFinished; String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+                textviewtimer.setText(hms);
+            }
+
+            @Override
+            public void onFinish() {
+                mButton.setVisibility(View.VISIBLE);
+                mText.setVisibility(View.VISIBLE);
+
+                //Initiate Spinner
+                mState = ConnectionState.IDLE;
+                Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
+//                        Spinner spinner = (Spinner) mView.findViewById(R.id.spinnerModels);
+//                        spinner.setEnabled(true);
+                SpeechToText.sharedInstance().stopRecognition();
+                setButtonState(false);
+
+                //countdowntimer.cancel();
+                displayResult(mRecognitionResults);
+                message = mRecognitionResults;
+                textviewtimer.setText(" Count Down Finish ");
+
+            }
+        }
     }
 
     public void toneResults(View view){
@@ -456,6 +500,9 @@ public class SpeechToTextActivity extends Activity {
             return SpeechToText.sharedInstance().getModels();
         }
     }
+
+
+
 
 
     @Override
@@ -480,6 +527,9 @@ public class SpeechToTextActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
+
 
 
 
