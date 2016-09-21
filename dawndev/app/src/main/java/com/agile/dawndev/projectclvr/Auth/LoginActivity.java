@@ -79,7 +79,6 @@ public class LoginActivity extends AppCompatActivity implements
         if (mAuth.getCurrentUser() != null) {
             writeNewUser();
             startActivity(new Intent(this, MainActivity.class));
-            Log.d("NIKHIL", "one two three");
             finish();
         }
 
@@ -98,11 +97,9 @@ public class LoginActivity extends AppCompatActivity implements
                                     // Get user value
                                     String type = (String) dataSnapshot.getValue();
                                     if (type.equals("company")) {
-                                        Log.d("NIKHIL", "one");
                                         goToCompanyMain();
                                     }
                                     else if (type.equals("company") != true){
-                                        Log.d("NIKHIL", "two");
                                         goToMain();
                                     }
 
@@ -144,13 +141,11 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
-        Log.d("CHAHAT", "JACKED!!!!");
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
     public void goToCompanyMain() {
-        Log.d("CHAHAT", "WHAT!!!");
         startActivity(new Intent(this, SpeechToTextActivity.class));
         finish();
     }
