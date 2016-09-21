@@ -1,7 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,12 +36,26 @@ public class ShowTestsActivity extends AppCompatActivity {
                 //Loop through companies
                 for(DataSnapshot companySnapshot : companies.getChildren()) {
                     TextView companyName = new TextView(ShowTestsActivity.this);
-                    companyName.setText(companySnapshot.getKey().toString());
+                    companyName.setText(companySnapshot.getKey());
                     linearLayout.addView(companyName);
                     //Loop through that company for their tests.
                     for(DataSnapshot testSnapshot : companySnapshot.getChildren()) {
                         Button testButton = new Button(ShowTestsActivity.this);
                         testButton.setText(testSnapshot.getValue().toString());
+
+                        testButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ShowTestsActivity.this, TestActivity.class);
+                                intent.setAction(Intent.ACTION_SEND);
+                                intent.putExtra("companyKey", companySnapshot.getKey());
+                                intent.putExtra("testKey", testSnapshot.getKey());
+                                intent.setType("text/plain");
+                                startActivity(intent);
+                            }
+                        });
+
+
                         linearLayout.addView(testButton);
                     }
 
@@ -50,28 +66,6 @@ public class ShowTestsActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                Log.e("Count " ,""+snapshot.getChildrenCount());
-//                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-//                    Log.e("Get Data", postSnapshot.toString());
-//                    Boolean exists = (Boolean) postSnapshot.getValue();
-//                    if (exists ==  true ) {
-//                        mTests.add(Integer.parseInt(postSnapshot.getKey()));
-//                        Log.e("testNumber", postSnapshot.getKey());
-//                        mTest = Integer.parseInt(postSnapshot.getKey());
-//                        Log.e("mTest", Integer.toString(mTest));
-
-//
-//                    }
-////                    Question question = postSnapshot.getValue(Question.class);
-////                    Log.d("nikhil", question.getQuestionText());
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError firebaseError) {
-//                Log.e("The read failed: " ,firebaseError.getMessage());
-//            }
         });
     }
 }

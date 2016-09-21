@@ -37,7 +37,8 @@
             android:name=".PersonalityActivity"
             android:label="@string/title_activity_personality" />
         <activity android:name=".SendEmailActivity" />
-        <activity android:name=".ShowTestsActivity"></activity>
+        <activity android:name=".ShowTestsActivity" />
+        <activity android:name=".TestActivity"></activity>
     </application>
 
 </manifest>
