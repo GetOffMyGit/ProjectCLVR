@@ -15,9 +15,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ShowTestsActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class ShowTestsActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private String mCompanyKey;
+    private String mTestKey;
+    private final ArrayList<String> mCompanyKeyArray = new ArrayList<String>();
+    private final ArrayList<String> mTestKeyArray = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +38,7 @@ public class ShowTestsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DataSnapshot companies = dataSnapshot.child("companies");
-                LinearLayout linearLayout = (LinearLayout)findViewById(R.id.testsLayout);
+                LinearLayout linearLayout = (LinearLayout)findViewById(R.id.showTestsLayout);
                 //Loop through companies
                 for(DataSnapshot companySnapshot : companies.getChildren()) {
                     TextView companyName = new TextView(ShowTestsActivity.this);
@@ -42,18 +48,22 @@ public class ShowTestsActivity extends AppCompatActivity {
                     for(DataSnapshot testSnapshot : companySnapshot.getChildren()) {
                         Button testButton = new Button(ShowTestsActivity.this);
                         testButton.setText(testSnapshot.getValue().toString());
+                        mCompanyKey = companySnapshot.getKey();
+                        mTestKey = testSnapshot.getKey();
+                        testButton.setOnClickListener(ShowTestsActivity.this);
 
-                        testButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(ShowTestsActivity.this, TestActivity.class);
-                                intent.setAction(Intent.ACTION_SEND);
-                                intent.putExtra("companyKey", companySnapshot.getKey());
-                                intent.putExtra("testKey", testSnapshot.getKey());
-                                intent.setType("text/plain");
-                                startActivity(intent);
-                            }
-                        });
+
+//                        testButton.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Intent intent = new Intent(ShowTestsActivity.this, TestActivity.class);
+//                                intent.setAction(Intent.ACTION_SEND);
+//                                intent.putExtra("companyKey", companySnapshot.getKey());
+//                                intent.putExtra("testKey", testSnapshot.getKey());
+//                                intent.setType("text/plain");
+//                                startActivity(intent);
+//                            }
+//                        });
 
 
                         linearLayout.addView(testButton);
@@ -67,5 +77,15 @@ public class ShowTestsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(ShowTestsActivity.this, TestActivity.class);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra("companyKey", mCompanyKey);
+        intent.putExtra("testKey", mTestKey);
+        intent.setType("text/plain");
+        startActivity(intent);
     }
 }
