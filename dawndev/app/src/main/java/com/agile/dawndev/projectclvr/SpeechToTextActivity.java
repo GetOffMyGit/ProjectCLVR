@@ -10,12 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -23,10 +26,17 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.FileCaptureThread;
@@ -37,6 +47,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Vector;
@@ -50,8 +63,13 @@ public class SpeechToTextActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
     private static String message;
 
-    public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
 
+
+    public static class FragmentTabSTT extends Fragment implements ISpeechDelegate {
+        private String mCompanyName = "CrimsonJelly";
+        private String mTestNum = "test_1";
+        private String mUser = "Zelda";
+        private String mQuestionNum = "Q1";
         // session recognition results
         private static String mRecognitionResults = "";
         private ItemModel mDefaultLanguageItem;
@@ -130,6 +148,7 @@ public class SpeechToTextActivity extends Activity {
                 public void onClick(View arg0) {
 
                     speechRecognition();
+                    uploadRecording();
 
 
 //                    if (mState == ConnectionState.IDLE) {
@@ -247,7 +266,51 @@ public class SpeechToTextActivity extends Activity {
             File file = new File(fileName);
             mFileCaptureThread = SpeechToText.sharedInstance().recognizeWithFile(file);
             Log.d("RECORDING", fileName);
+        }
+        public void uploadRecording() {
+            Log.d(TAG, " start uploading");
+            FirebaseStorage storage = FirebaseStorage.getInstance();
 
+            // Create a storage reference from our app
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://projectclvr.appspot.com");
+
+            // Create a child reference
+            // imagesRef now points to "images"
+
+            StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestNum + "/" + mUser);
+
+            StorageReference recordingRef = companyRef.child("clvr" + ".3gp");
+
+            // Create file metadata including the content type
+//            StorageMetadata metadata = new StorageMetadata.Builder()
+//                    .setContentType("audio/3gp")
+//                    .build();
+
+            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
+
+            try {
+
+                InputStream stream = new FileInputStream(new File(fileName));
+
+                UploadTask uploadTask = recordingRef.putStream(stream);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.d(TAG, " fail to upload");
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Log.d(TAG, " HELLO ");
+
+                    }
+                });
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found; " + fileName);
+            }
         }
 
         private String getModelSelected() {
@@ -601,7 +664,6 @@ public class SpeechToTextActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
 
 
 
