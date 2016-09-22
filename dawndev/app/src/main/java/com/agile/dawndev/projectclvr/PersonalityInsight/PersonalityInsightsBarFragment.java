@@ -33,18 +33,21 @@ import lecho.lib.hellocharts.view.ColumnChartView;
  */
 public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragment implements AsyncResponse {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+//    private String mParam1;
+//    private String mParam2;
 
     private ColumnChartView personalityView;
     private ColumnChartView consumerView;
     private ColumnChartView valuesView;
+    private View _inflatedView;
 
-    private PersonalityInsights personalityInsightsService;
-    String text;
+    PersonalityTabActivity personalityTabActivity;
+
+//    private PersonalityInsights personalityInsightsService;
+//    String text;
 
     public PersonalityInsightsBarFragment(){
     }
@@ -52,8 +55,8 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
     public static PersonalityInsightsBarFragment newInstance(String param1, String param2) {
         PersonalityInsightsBarFragment fragment = new PersonalityInsightsBarFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,44 +64,33 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            this.text = this.getArguments().getString("text");
-        }
+//
+//        if (getArguments() != null) {
+//            this.text = this.getArguments().getString("text");
+//        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.activity_personality_tab, container, false);
+        _inflatedView = inflater.inflate(R.layout.fragment_bar_graph, container, false);
+        Log.d("ZOE", "hi");
+        personalityView = (ColumnChartView) _inflatedView.findViewById(R.id.firstGraph);
+        consumerView = (ColumnChartView) _inflatedView.findViewById(R.id.secondGraph);
+        valuesView = (ColumnChartView) _inflatedView.findViewById(R.id.thirdGraph);
 
-        return inflatedView;
+        return _inflatedView;
     }
 
 
-    public void createGraphs() {
-        ViewGroup view = (ViewGroup) this.getView();
-        view.removeAllViews();
-        Log.d("screenshot", "inside create view");
-        View newInflatedView = getActivity().getLayoutInflater().inflate(R.layout.fragment_bar_graph, view, false);
-
-        personalityView = (ColumnChartView) newInflatedView.findViewById(R.id.firstGraph);
-        consumerView = (ColumnChartView) newInflatedView.findViewById(R.id.secondGraph);
-        valuesView = (ColumnChartView) newInflatedView.findViewById(R.id.thirdGraph);
-
-        view.addView(newInflatedView);
-
+    public void createGraphs(PersonalityTabActivity activity) {
         JSONObject reader = null;
         try {
-            String result;
-            PersonalityTabActivity activity = (PersonalityTabActivity) getActivity();
+//            PersonalityTabActivity activity = (PersonalityTabActivity) getActivity();
+            this.personalityTabActivity = activity;
 
-            result = activity.getJsonResult();
-
-            reader = new JSONObject(result);
-
-            Log.d("zoe", result);
-
+            String jsonResult = activity.getJsonResult();
+            reader = new JSONObject(jsonResult);
             JSONArray results = reader.getJSONObject("tree").getJSONArray("children");
 
             // Personality Graph
@@ -126,8 +118,8 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
     }
 
     /*
-    Adds personality scores as bars to the bar graph
- */
+        Adds personality scores as bars to the bar graph
+    */
     private void addColumns(ColumnChartView view, JSONArray dataArray, String[] dataLabels){
         List<Column> columns = new ArrayList<Column>();
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
@@ -151,8 +143,7 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
 
     @Override
     public void processFinish(String result){
-//        mCallback.onTextSelected(result);
-        createGraphs();
+        createGraphs(personalityTabActivity);
     }
 
     @Override

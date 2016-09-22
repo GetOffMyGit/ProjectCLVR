@@ -17,19 +17,18 @@ import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsight
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonalityTabActivity extends AppCompatActivity implements AsyncResponse{
+public class PersonalityTabActivity extends AppCompatActivity implements AsyncResponse {
 
     // String to pass into ToneAnalyserBarFragment
     private String textInput;
+
     private String resultJson;
-    private String recordedSpeech;
 
     PersonalityInsightsBarFragment personalityInsightsBarFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         textInput = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
                 "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
@@ -57,10 +56,14 @@ public class PersonalityTabActivity extends AppCompatActivity implements AsyncRe
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    public String getJsonResult() {
+        return this.resultJson;
+    }
+
     @Override
     public void processFinish(String resultJson){
         this.resultJson = resultJson;
-        personalityInsightsBarFragment.createGraphs();
+        personalityInsightsBarFragment.createGraphs(PersonalityTabActivity.this);
         // personalityInsightsRadarFragment.createGraphs();
     }
 
@@ -103,7 +106,4 @@ public class PersonalityTabActivity extends AppCompatActivity implements AsyncRe
         }
     }
 
-    public String getJsonResult() {
-        return this.resultJson;
-    }
 }
