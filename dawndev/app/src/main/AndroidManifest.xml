@@ -32,9 +32,9 @@
         <activity
             android:name=".SpeechToTextActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
-        <activity android:name=".ToneAnalyser.AnalyserTabActivity" />
+        <activity android:name=".ToneAnalyser.ToneAnalyserTabActivity" />
         <activity
-            android:name=".PersonalityActivity"
+            android:name=".PersonalityInsight.PersonalityTabActivity"
             android:label="@string/title_activity_personality"></activity>
         <activity android:name=".SendEmailActivity"></activity>
     </application>

@@ -100,18 +100,18 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         Log.d("screenshot", "inside create view");
         View newInflatedView = getActivity().getLayoutInflater().inflate(R.layout.fragment_bar_graph, view, false);
 
-        emotionToneView = (ColumnChartView) newInflatedView.findViewById(R.id.emotion_tone);
-        languageToneView = (ColumnChartView) newInflatedView.findViewById(R.id.language_tone);
-        socialToneView = (ColumnChartView) newInflatedView.findViewById(R.id.social_tone);
+        emotionToneView = (ColumnChartView) newInflatedView.findViewById(R.id.firstGraph);
+        languageToneView = (ColumnChartView) newInflatedView.findViewById(R.id.secondGraph);
+        socialToneView = (ColumnChartView) newInflatedView.findViewById(R.id.thirdGraph);
         view.addView(newInflatedView);
 
         JSONObject reader = null;
         try {
             String result;
-            AnalyserTabActivity activity = (AnalyserTabActivity) getActivity();
+            ToneAnalyserTabActivity activity = (ToneAnalyserTabActivity) getActivity();
 
             // NOT USING BUNDLES NOW
-//            if (activity.getBarGraphString() != null) {
+//            if (activity.getTextInput() != null) {
             result = activity.getBarGraphString();
 //            } else {
 //                result = (String) savedInstanceState.getSerializable("toneResult");

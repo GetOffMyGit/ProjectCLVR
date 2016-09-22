@@ -17,7 +17,7 @@ import java.util.List;
 /*
     Activity that contains the tablayout for the graphs
  */
-public class AnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
+public class ToneAnalyserTabActivity extends AppCompatActivity implements ToneAnalyserBarFragment.OnTextSelectedListener{
 
     // String to pass into ToneAnalyserBarFragment
     private String barGraphString;
