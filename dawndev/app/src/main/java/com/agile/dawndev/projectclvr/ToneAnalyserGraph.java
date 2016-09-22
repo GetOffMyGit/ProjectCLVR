@@ -33,9 +33,9 @@ public class ToneAnalyserGraph  extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        emotionToneView = (ColumnChartView) findViewById(R.id.emotion_tone);
-        languageToneView = (ColumnChartView) findViewById(R.id.language_tone);
-        socialToneView = (ColumnChartView) findViewById(R.id.social_tone);
+        emotionToneView = (ColumnChartView) findViewById(R.id.firstGraph);
+        languageToneView = (ColumnChartView) findViewById(R.id.secondGraph);
+        socialToneView = (ColumnChartView) findViewById(R.id.thirdGraph);
 
         JSONObject reader = null;
         try {
