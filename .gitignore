@@ -1,13 +1,17 @@
 
 # Created by https://www.gitignore.io/api/macos,windows,android,java
 
+# Added by Zoe
+dawndev/.idea/
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
