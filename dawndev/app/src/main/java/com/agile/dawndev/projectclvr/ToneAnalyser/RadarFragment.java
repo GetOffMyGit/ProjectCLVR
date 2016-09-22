@@ -120,6 +120,7 @@ public class RadarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 makePDF(inflatedView);
+                getResult.setVisibility(View.VISIBLE);
             }
         });
         return inflatedView;
@@ -206,7 +207,7 @@ public class RadarFragment extends Fragment {
     public void makePDF(View rootView){
         Log.d("screenshot", rootView.toString());
         boolean success =  false;
-
+        getResult.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
         File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
@@ -223,7 +224,7 @@ public class RadarFragment extends Fragment {
 
         // Log.d("screenshot", rootView.toString() );
         Bitmap screen;
-        View v1 = rootView.getRootView();
+        View v1 = rootView;
 
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
