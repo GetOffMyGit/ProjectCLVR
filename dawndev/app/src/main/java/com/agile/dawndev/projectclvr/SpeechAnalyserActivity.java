@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -74,9 +75,16 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
     private static String outputFile = null;
     private FileCaptureThread mFileCaptureThread = null;
 
+    private static final int PERMISSION_ALL = 1;
+    private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    private String mFileName;
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
+
 
         // Strictmode needed to run the http/wss request for devices > Gingerbread
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
@@ -87,8 +95,6 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
 
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
-
-//        setContentView(R.layout.content_activity_speech_to_text);
 
         //Set the views
         mHandler = new Handler();
@@ -101,34 +107,24 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         outputFile += "/clvr.3gp";
 
         // Check appropriate permissions
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
+        if(!hasPermissions(this, PERMISSIONS)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[0]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[1]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[2])) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.RECORD_AUDIO)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
+                // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
             } else {
-
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.RECORD_AUDIO},1
-                );
+                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
             }
         }
-
-
 
         //Check for connection with IBM Watson API
         if (initSTT() == false) {
             displayResult("Error: no authentication credentials/token available, please enter your authentication information");
         }
-
 
         if (!isNetworkAvailable()) {
             displayResult("Please, check internet connection.");
@@ -193,9 +189,6 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
 
                         buttonRecord.setText("Connecting...");
                     } else if (mState == ConnectionState.CONNECTED) {
-
-
-//
                         mContinueButton.setVisibility(View.VISIBLE);
                         mText.setVisibility(View.VISIBLE);
 //
@@ -217,18 +210,25 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
 
                     }
                 }
-
         });
+    }
 
-
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void speechRecognition(){
-        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
 
-        File file = new File(fileName);
+        File file = new File(mFileName);
         mFileCaptureThread = SpeechToText.sharedInstance().recognizeWithFile(file);
-        Log.d("RECORDING", fileName);
+        Log.d("RECORDING", mFileName);
     }
 
     public void uploadRecording() {
@@ -244,10 +244,8 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("video/3gpp").build();
 
-        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
-
         try {
-            InputStream stream = new FileInputStream(new File(fileName));
+            InputStream stream = new FileInputStream(new File(mFileName));
 
             UploadTask uploadTask = recordingRef.putStream(stream, metadata);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -260,16 +258,14 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    Log.d(TAG, " HELLO " + downloadUrl);
+                    Log.d(TAG, " Recording download " + downloadUrl);
 
                 }
             });
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "File not found; " + fileName);
+            Log.d(TAG, "File not found; " + mFileName);
         }
     }
-
-
 
     private boolean initSTT() {
         // initialize the connection to the Watson STT service
