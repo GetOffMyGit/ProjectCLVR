@@ -654,7 +654,7 @@ public class SpeechToTextActivity extends Activity {
         }
 
         //set the content view
-        setContentView(R.layout.content_activity_speech_to_text);
+        setContentView(R.layout.activity_speech_to_text);
 
 
     }
