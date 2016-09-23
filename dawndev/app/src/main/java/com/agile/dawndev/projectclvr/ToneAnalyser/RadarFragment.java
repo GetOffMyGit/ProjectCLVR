@@ -1,12 +1,17 @@
 package com.agile.dawndev.projectclvr.ToneAnalyser;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,16 +34,21 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -246,13 +256,11 @@ public class RadarFragment extends Fragment {
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
 
-
         v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
 
         v1.buildDrawingCache(true);
-
 
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 
@@ -263,21 +271,21 @@ public class RadarFragment extends Fragment {
         OutputStream fout = null;
         File imageFile =  new File(pdfDir+"/graphScreenShot.jpg" );
         try{
-            fout = new FileOutputStream(imageFile);
-            screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
+            fout = new FileOutputStream(new File(pdfDir+  "/ok.pdf"));
+            //screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
             fout.flush();
-            fout.close();
 
             Document document = new Document();
-
             PdfWriter.getInstance(document, fout);
             document.open();
-
-           // addImage(document);
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            addImage(document,bitmap);
+         //  addContent(document);
             document.close();
 
+           fout.close();
 
-            openScreenshot(imageFile);
+           // openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -288,46 +296,83 @@ public class RadarFragment extends Fragment {
         }
 
     }
-/*
-    private static void addImage(Document document)
+    private Document  addContent(Document document) throws DocumentException {
+        Anchor anchor = new Anchor("First Chapter");
+        anchor.setName("First Chapter");
+
+        // Second parameter is the number of the chapter
+        Chapter catPart = new Chapter(new Paragraph(anchor), 1);
+
+        Paragraph subPara = new Paragraph("Subcategory 1");
+        Section subCatPart = catPart.addSection(subPara);
+        subCatPart.add(new Paragraph("Hello"));
+
+        subPara = new Paragraph("Subcategory 2");
+        subCatPart = catPart.addSection(subPara);
+        subCatPart.add(new Paragraph("Paragraph 1"));
+        subCatPart.add(new Paragraph("Paragraph 2"));
+        subCatPart.add(new Paragraph("Paragraph 3"));
+
+        // now add all this to the document
+        document.add(catPart);
+
+        // Next section
+        anchor = new Anchor("Second Chapter");
+        anchor.setName("Second Chapter");
+
+        // Second parameter is the number of the chapter
+        catPart = new Chapter(new Paragraph(anchor), 1);
+
+        subPara = new Paragraph("Subcategory");
+        subCatPart = catPart.addSection(subPara);
+        subCatPart.add(new Paragraph("This is a very important message"));
+
+        // now add all this to the document
+        document.add(catPart);
+return document;
+    }
+
+
+    private static void addImage(Document document,Bitmap bitmap)
     {
 
         try
         {
-            //Image image = Image.getInstance(bArray);  ///Here i set byte array..you can do bitmap to byte array and set in image...
+Log.d("Generating pdf...","Generating");
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            Image image = Image.getInstance(byteArray);
+            ///Here i set byte array..you can do bitmap to byte array and set in image...
             try
             {
                 document.add(image);
             } catch (DocumentException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
         catch (BadElementException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         catch (MalformedURLException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         // image.scaleAbsolute(150f, 150f);
-        try
-        {
-            document.add(image);
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try
+//        {
+//            document.add(image);
+//        } catch (DocumentException e) {
+//            e.printStackTrace();
+//        }
     }
-*/
+
 
     //function opens the screenshot in a new intent
     private void openScreenshot(File imageFile) {
@@ -339,6 +384,37 @@ public class RadarFragment extends Fragment {
         Log.d("screenshot", uri.toString());
         intent.setDataAndType(uri, "image/*");
         startActivity(intent);
+    }
+
+
+    private void checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            1);
+
+
+                }
+            }
+        }
     }
 
 }
