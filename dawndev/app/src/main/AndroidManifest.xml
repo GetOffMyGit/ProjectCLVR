@@ -41,6 +41,7 @@
         <activity android:name=".CompanyMainActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
+        <activity android:name=".TestListActivity"></activity>
     </application>
 
 </manifest>

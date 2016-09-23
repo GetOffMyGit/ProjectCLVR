@@ -33,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mTests = new ArrayList<Integer>();
@@ -67,13 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
     // Once output from tone analyser is received, move to the tone analyser graph activity
     public void moveToToneResult(View view){
-        Intent intent = new Intent(MainActivity.this, ShowTestsActivity.class);
+        Intent intent = new Intent(MainActivity.this, PersonalityTabActivity.class);
         startActivity(intent);
     }
-
     
-    public void moveToSpeech(View view){
-        Intent intent = new Intent(MainActivity.this, SpeechAnalyserActivity.class);
+    public void moveToTests(View view){
+        Intent intent = new Intent(MainActivity.this, ShowTestsActivity.class);
         startActivity(intent);
     }
 
