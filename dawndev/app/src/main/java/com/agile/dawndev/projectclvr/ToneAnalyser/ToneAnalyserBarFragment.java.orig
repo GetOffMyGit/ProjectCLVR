@@ -149,9 +149,15 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     }
 
     @Override
+<<<<<<< HEAD
     public void processFinish(String result) {
+        mCallback.onTextSelected(result);
+        createGraphs();
+=======
+    public void processFinish(String result){
 //        mCallback.onTextSelected(result);
         createGraphs(toneTabActivity);
+>>>>>>> master
     }
 
     @Override
