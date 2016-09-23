@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Once output from tone analyser is received, move to the tone analyser graph activity
     public void moveToToneResult(View view){
-        Intent intent = new Intent(MainActivity.this, ToneTabActivity.class);
+        Intent intent = new Intent(MainActivity.this, ShowTestsActivity.class);
         startActivity(intent);
     }
 
