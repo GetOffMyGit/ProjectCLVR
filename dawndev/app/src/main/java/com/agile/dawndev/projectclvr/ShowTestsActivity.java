@@ -56,7 +56,7 @@ public class ShowTestsActivity extends AppCompatActivity {
                         testButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(ShowTestsActivity.this, SpeechToTextActivity.class);
+                                Intent intent = new Intent(ShowTestsActivity.this, SpeechAnalyserActivity.class);
                                 intent.setAction(Intent.ACTION_SEND);
                                 intent.putExtra("companyKey", companySnapshot.getKey());
                                 intent.putExtra("testKey", testSnapshot.getKey());

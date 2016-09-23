@@ -24,6 +24,11 @@ import android.widget.TextView;
 import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -41,12 +46,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Christina on 22/09/2016.
+ * Created by CHRUSTINUAS on 22/09/2016.
  */
-public class SpeechAnalyserActivity extends Activity  {
+public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
     private static String message;
     private String mCompanyName = "CrimsonJelly";
@@ -55,6 +63,7 @@ public class SpeechAnalyserActivity extends Activity  {
     private String mQuestionNum = "Q1";
     // session recognition results
     private static String mRecognitionResults = "";
+
     private enum ConnectionState {
         IDLE, CONNECTING, CONNECTED
     }
@@ -67,36 +76,68 @@ public class SpeechAnalyserActivity extends Activity  {
     private TextView mText;
     private CountDownTimer countdowntimer;
     private TextView textviewtimer;
+    private TextView mTitle;
+    private TextView mInstruction;
+
     private long timerLimit = 120000;
     private MediaRecorder myAudioRecorder = new MediaRecorder();
     private WavAudioRecorder mRecorder;
     private Button buttonRecord = null;
+
+    private DatabaseReference mDatabase;
+    private String mCompanyKey;
+    private String mTestKey;
+    private HashMap<String, String> mInstructionAndAnswerMap = new HashMap<String, String>();
+    private int mInstructionCounter = 0;
+
 
     private static final int PERMISSION_ALL = 1;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private String mFileName;
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        //Get the key for the test in the database from the sent intent.
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                mCompanyKey = extras.getString("companyKey");
+                mTestKey = extras.getString("testKey");
+            }
+        } else {
+            mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
+            mTestKey = (String) savedInstanceState.getSerializable("testKey");
+        }
 
 
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.wav";
         Log.d(TAG, "File name to transcribe: " + mFileName);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //Set the views
         mHandler = new Handler();
         mContinueButton = (Button) findViewById(R.id.continue_button);
         mRecordButton = (Button) findViewById(R.id.buttonRecord);
         mText = (TextView) findViewById(R.id.isThisRight);
-        textviewtimer = (TextView)findViewById(R.id.textViewtimer);
-
+        textviewtimer = (TextView) findViewById(R.id.textViewtimer);
+        mTitle = (TextView) findViewById(R.id.title);
+        mInstruction = (TextView) findViewById(R.id.instructions);
 
         mRecorder = WavAudioRecorder.getInstanse();
         mRecorder.setOutputFile(mFileName);
+
+        Log.d("cj", mTestKey);
+        Log.d("cj", mCompanyKey);
+
+
+        populateMap();
+        //updateText();
 
 
         // Strictmode needed to run the http/wss request for devices > Gingerbread
@@ -107,10 +148,10 @@ public class SpeechAnalyserActivity extends Activity  {
         }
 
         // Check appropriate permissions
-        if(!hasPermissions(this, PERMISSIONS)) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[0]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[1]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this,PERMISSIONS[2])) {
+        if (!hasPermissions(this, PERMISSIONS)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[2])) {
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -131,7 +172,7 @@ public class SpeechAnalyserActivity extends Activity  {
         Log.d(TAG, "please, press the button to start speaking");
 
         //Start and Stop Record Button
-       buttonRecord = (Button) findViewById(R.id.buttonRecord);
+        buttonRecord = (Button) findViewById(R.id.buttonRecord);
         buttonRecord.setOnClickListener(new View.OnClickListener() {
 
 
@@ -143,10 +184,11 @@ public class SpeechAnalyserActivity extends Activity  {
                 recordAudio();
                 //uploadRecording();
 
-                }
+            }
         });
     }
-    public void recordAudio(){
+
+    public void recordAudio() {
 
         if (WavAudioRecorder.State.INITIALIZING == mRecorder.getState()) {
             mRecorder.prepare();
@@ -172,8 +214,8 @@ public class SpeechAnalyserActivity extends Activity  {
         }
 
 
-
     }
+
     public static boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
@@ -185,7 +227,7 @@ public class SpeechAnalyserActivity extends Activity  {
         return true;
     }
 
-    private void speechRecognition(){
+    private void speechRecognition() {
 
         Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
@@ -205,7 +247,7 @@ public class SpeechAnalyserActivity extends Activity  {
                 SpeechResults transcript = service.recognize(audio, options).execute();
 
                 return transcript;
-              }
+            }
 
             @Override
             protected void onPostExecute(SpeechResults result) {
@@ -214,7 +256,7 @@ public class SpeechAnalyserActivity extends Activity  {
 
                 Log.d(TAG, "DONE");
             }
-            }.execute();
+        }.execute();
 
 
     }
@@ -301,10 +343,12 @@ public class SpeechAnalyserActivity extends Activity  {
             super(millisInFuture, countDownInterval);
 
         }
+
         @Override
         public void onTick(long millisUntilFinished) {
 
-            long millis = millisUntilFinished; String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+            long millis = millisUntilFinished;
+            String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
             textviewtimer.setText(hms);
         }
 
@@ -325,8 +369,15 @@ public class SpeechAnalyserActivity extends Activity  {
         }
     }
 
+    public void updateText() {
+        String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
+        String instructionKey = instructionSet[mInstructionCounter];
+        mTitle.setText(instructionKey);
+        mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
+    }
 
-    public void toneResults(View view){
+
+    public void toneResults(View view) {
         Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
         intent.putExtra("message", message);
         startActivity(intent);
@@ -337,6 +388,61 @@ public class SpeechAnalyserActivity extends Activity  {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
+    public void populateMap() {
+        Log.d("cj", "testintttttT");
+        Log.d("cj", "testintttttT");
+        //DatabaseReference df = mDatabase;
+
+        Log.d("cj", mDatabase.toString());
+        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long count = dataSnapshot.getChildrenCount();
+                Log.d("cj", "Children count: " + count);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("cj", "uguug!!!!!");
+
+            }
+        });
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long count = dataSnapshot.getChildrenCount();
+                Log.d("cj", "Children count: " + count);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("cj", "uguug!!!!!");
+
+            }
+        });
+
+        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
+                    Log.d("cj", questionSnapshot.getValue().toString());
+                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
+                }
+
+                updateText();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+
+        });
     }
 
 }
