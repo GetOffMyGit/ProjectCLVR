@@ -41,7 +41,6 @@
         <activity android:name=".CompanyMainActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
-        <activity android:name=".NikhilActivity"></activity>
     </application>
 
 </manifest>

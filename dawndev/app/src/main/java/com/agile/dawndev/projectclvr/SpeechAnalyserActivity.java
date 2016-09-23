@@ -46,9 +46,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -87,7 +90,7 @@ public class SpeechAnalyserActivity extends Activity {
     private DatabaseReference mDatabase;
     private String mCompanyKey;
     private String mTestKey;
-    private HashMap<String, String> mInstructionAndAnswerMap = new HashMap<String, String>();
+    private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
 
 
@@ -392,47 +395,14 @@ public class SpeechAnalyserActivity extends Activity {
 
 
     public void populateMap() {
-        Log.d("cj", "testintttttT");
-        Log.d("cj", "testintttttT");
-        //DatabaseReference df = mDatabase;
 
-        Log.d("cj", mDatabase.toString());
-        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = dataSnapshot.getChildrenCount();
-                Log.d("cj", "Children count: " + count);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("cj", "uguug!!!!!");
-
-            }
-        });
-
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = dataSnapshot.getChildrenCount();
-                Log.d("cj", "Children count: " + count);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("cj", "uguug!!!!!");
-
-            }
-        });
 
         mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
-                    Log.d("cj", questionSnapshot.getValue().toString());
                     mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
                 }
-
                 updateText();
             }
 
