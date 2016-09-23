@@ -40,7 +40,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +69,7 @@ public class SpeechAnalyserActivity extends Activity  {
     private TextView textviewtimer;
     private long timerLimit = 120000;
     private MediaRecorder myAudioRecorder = new MediaRecorder();
+    private WavAudioRecorder mRecorder;
     private Button buttonRecord = null;
 
     private static final int PERMISSION_ALL = 1;
@@ -93,6 +93,11 @@ public class SpeechAnalyserActivity extends Activity  {
         mRecordButton = (Button) findViewById(R.id.buttonRecord);
         mText = (TextView) findViewById(R.id.isThisRight);
         textviewtimer = (TextView)findViewById(R.id.textViewtimer);
+
+
+        mRecorder = WavAudioRecorder.getInstanse();
+        mRecorder.setOutputFile(mFileName);
+
 
         // Strictmode needed to run the http/wss request for devices > Gingerbread
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
@@ -122,8 +127,6 @@ public class SpeechAnalyserActivity extends Activity  {
             return;
         }
 
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
         Log.d(TAG, "please, press the button to start speaking");
 
@@ -145,57 +148,29 @@ public class SpeechAnalyserActivity extends Activity  {
     }
     public void recordAudio(){
 
-        if (mState == ConnectionState.IDLE) {
-            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-//            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
-//            myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            myAudioRecorder.setOutputFile(mFileName);
-                        try {
-                            myAudioRecorder.prepare();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        myAudioRecorder.start();
-                        Log.d("RECORDING", "start");
+        if (WavAudioRecorder.State.INITIALIZING == mRecorder.getState()) {
+            mRecorder.prepare();
+            mRecorder.start();
+            buttonRecord.setText("Stop Recording");
 
-                        //Start the timer
-                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
-                        countdowntimer.start();
+            //Start the timer
+            countdowntimer = new CountDownTimerClass(timerLimit, 1000);
+            countdowntimer.start();
 
+        } else if (WavAudioRecorder.State.ERROR == mRecorder.getState()) {
+            mRecorder.release();
+            mRecorder = WavAudioRecorder.getInstanse();
+            mRecorder.setOutputFile(mFileName);
+            buttonRecord.setText("Start Recording");
+        } else {
+            countdowntimer.cancel();
+            mRecorder.stop();
+            mRecorder.reset();
+            buttonRecord.setText("Start Recording");
+            speechRecognition();
+            uploadRecording();
+        }
 
-                        mContinueButton.setVisibility(View.GONE);
-                        mText.setVisibility(View.GONE);
-                        mState = ConnectionState.CONNECTED;
-                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
-
-
-
-                        //Display results
-                        mRecognitionResults = "";
-
-
-                        buttonRecord.setText("Stop Recording");
-                    } else if (mState == ConnectionState.CONNECTED) {
-                        mContinueButton.setVisibility(View.VISIBLE);
-                        mText.setVisibility(View.VISIBLE);
-//
-                        mState = ConnectionState.IDLE;
-                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-                        buttonRecord.setText("Start Recording");
-
-                        countdowntimer.cancel();
-
-                        //speechRecognition();
-
-                        myAudioRecorder.stop();
-                        myAudioRecorder.release();
-                        myAudioRecorder  = null;
-                        Log.d("RECORDING", "stop");
-
-                        speechRecognition();
-                    }
 
 
     }
@@ -235,6 +210,8 @@ public class SpeechAnalyserActivity extends Activity  {
             @Override
             protected void onPostExecute(SpeechResults result) {
                 Log.d(TAG, "TRANSCRIPT " + result);
+                mText.setText(result.toString());
+
                 Log.d(TAG, "DONE");
             }
             }.execute();
@@ -250,10 +227,10 @@ public class SpeechAnalyserActivity extends Activity  {
         StorageReference storageRef = storage.getReferenceFromUrl("gs://projectclvr.appspot.com");
         StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestNum + "/" + mUser);
 
-        StorageReference recordingRef = companyRef.child("clvr" + ".3gp");
+        StorageReference recordingRef = companyRef.child("test1" + ".wav");
 
         // Create file metadata including the content type
-        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("video/3gpp").build();
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
         try {
             InputStream stream = new FileInputStream(new File(mFileName));
