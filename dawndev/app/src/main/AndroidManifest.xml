@@ -37,6 +37,7 @@
             android:name=".PersonalityInsight.PersonalityTabActivity"
             android:label="@string/title_activity_personality"></activity>
         <activity android:name=".SendEmailActivity"></activity>
+        <activity android:name=".CompanyMainActivity"></activity>
     </application>
 
 </manifest>
