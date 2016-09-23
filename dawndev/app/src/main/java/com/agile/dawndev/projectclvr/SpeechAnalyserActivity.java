@@ -8,7 +8,6 @@ import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,7 +15,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +27,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
@@ -41,8 +38,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,7 +76,10 @@ public class SpeechAnalyserActivity extends Activity  {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
+
+
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.mp3";
+        Log.d(TAG, "File name to transcribe: " + mFileName);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
 
@@ -120,34 +118,38 @@ public class SpeechAnalyserActivity extends Activity  {
             return;
         }
 
+        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+//        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        myAudioRecorder.setOutputFile(mFileName);
+
+
         Log.d(TAG, "please, press the button to start speaking");
 
         //Start and Stop Record Button
         final Button buttonRecord = (Button) findViewById(R.id.buttonRecord);
         buttonRecord.setOnClickListener(new View.OnClickListener() {
 
+
             @Override
             public void onClick(View arg0) {
 
                 speechRecognition();
+
+
                 //uploadRecording();
-
-
 //                    if (mState == ConnectionState.IDLE) {
 //
-////                        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-////                        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-////                        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-//                        // myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-//                        // myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.MPEG_4);
-//                        myAudioRecorder.setOutputFile(outputFile);
+//
 ////
-////                        try {
-////                            myAudioRecorder.prepare();
-////                        } catch (IOException e) {
-////                            e.printStackTrace();
-////                        }
-////                        myAudioRecorder.start();
+//                        try {
+//                            myAudioRecorder.prepare();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                        myAudioRecorder.start();
 //                        Log.d("RECORDING", "start");
 //
 //                        //Start the timer
@@ -157,7 +159,7 @@ public class SpeechAnalyserActivity extends Activity  {
 //
 //                        mContinueButton.setVisibility(View.GONE);
 //                        mText.setVisibility(View.GONE);
-//                        mState = ConnectionState.CONNECTING;
+//                        mState = ConnectionState.CONNECTED;
 //                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
 //
 //
@@ -166,24 +168,26 @@ public class SpeechAnalyserActivity extends Activity  {
 //                        mRecognitionResults = "";
 //
 //
-//                        buttonRecord.setText("Connecting...");
+//                        buttonRecord.setText("Stop Recording");
 //                    } else if (mState == ConnectionState.CONNECTED) {
 //                        mContinueButton.setVisibility(View.VISIBLE);
 //                        mText.setVisibility(View.VISIBLE);
 ////
 //                        mState = ConnectionState.IDLE;
 //                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
+//                        buttonRecord.setText("Start Recording");
 //
 //                        countdowntimer.cancel();
-//                       // displayResult(mRecognitionResults);
-//                       // message = mRecognitionResults;
 ////
-////                        myAudioRecorder.stop();
-////                        myAudioRecorder.release();
-////                        myAudioRecorder  = null;
-////                        Log.d("RECORDING", "stop");
+//
+//                        //speechRecognition();
+//
+//                        myAudioRecorder.stop();
+//                        myAudioRecorder.release();
+//                        myAudioRecorder  = null;
+//                        Log.d("RECORDING", "stop");
 ////
-////                        speechRecognition();
+////
 //
 //                    }
                 }
@@ -204,9 +208,9 @@ public class SpeechAnalyserActivity extends Activity  {
     private void speechRecognition(){
         SpeechToText service = new SpeechToText();
         service.setUsernameAndPassword(getString(R.string.STTdefaultUsername), getString(R.string.STTdefaultPassword));
-//
+
         File audio = new File(mFileName);
-//
+
 
         SpeechResults transcript = service.recognize(audio).execute();
 
