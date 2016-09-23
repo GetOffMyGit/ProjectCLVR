@@ -125,8 +125,8 @@ public class SpeechAnalyserActivity extends Activity  {
         myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 //        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 //        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         myAudioRecorder.setOutputFile(mFileName);
 
 
@@ -140,9 +140,9 @@ public class SpeechAnalyserActivity extends Activity  {
             @Override
             public void onClick(View arg0) {
 
-                speechRecognition();
+                //speechRecognition();
 
-                //recordAudio();
+                recordAudio();
                 //uploadRecording();
 
                 }
