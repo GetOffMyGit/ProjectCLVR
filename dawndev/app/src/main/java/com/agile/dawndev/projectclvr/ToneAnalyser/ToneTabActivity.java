@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 
+import com.agile.dawndev.projectclvr.AsyncResponse;
 import com.agile.dawndev.projectclvr.R;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 
@@ -17,7 +18,7 @@ import java.util.List;
 /*
     Activity that contains the tablayout for the graphs
  */
-public class ToneAnalyserTabActivity extends AppCompatActivity implements AsyncResponse{
+public class ToneTabActivity extends AppCompatActivity implements AsyncResponse {
 
     private String resultJson;
 
@@ -45,7 +46,7 @@ public class ToneAnalyserTabActivity extends AppCompatActivity implements AsyncR
         toneAnalyzerService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
 
         ToneAnalyzerAsync toneAnalyzerAsyncTask = new ToneAnalyzerAsync(this);
-        toneAnalyzerAsyncTask.delegate = ToneAnalyserTabActivity.this;
+        toneAnalyzerAsyncTask.delegate = ToneTabActivity.this;
         toneAnalyzerAsyncTask.execute(toneAnalyzerService, textInput);
 
         setContentView(R.layout.activity_tone_tab);
@@ -65,8 +66,8 @@ public class ToneAnalyserTabActivity extends AppCompatActivity implements AsyncR
     @Override
     public void processFinish(String resultJson){
         this.resultJson = resultJson;
-        toneAnalyserBarFragment.createGraphs(ToneAnalyserTabActivity.this);
-        toneAnalyserRadarFragment.createGraphs(ToneAnalyserTabActivity.this);
+        toneAnalyserBarFragment.createGraphs(ToneTabActivity.this);
+        toneAnalyserRadarFragment.createGraphs(ToneTabActivity.this);
     }
 
     private void setupViewPager(ViewPager viewPager) {

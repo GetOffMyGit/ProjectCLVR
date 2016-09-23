@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.agile.dawndev.projectclvr.R;
-import com.agile.dawndev.projectclvr.ToneAnalyser.AsyncResponse;
+import com.agile.dawndev.projectclvr.AsyncResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;

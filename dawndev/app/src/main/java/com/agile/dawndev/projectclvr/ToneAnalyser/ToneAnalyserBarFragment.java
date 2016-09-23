@@ -11,11 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.Button;
 
+import com.agile.dawndev.projectclvr.AsyncResponse;
 import com.agile.dawndev.projectclvr.R;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +50,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
     private ColumnChartView languageToneView;
     private ColumnChartView socialToneView;
 
-    ToneAnalyserTabActivity toneTabActivity;
+    ToneTabActivity toneTabActivity;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -91,7 +89,7 @@ public class ToneAnalyserBarFragment extends Fragment implements AsyncResponse {
         return inflatedView;
     }
 
-    public void createGraphs(ToneAnalyserTabActivity activity) {
+    public void createGraphs(ToneTabActivity activity) {
         Log.d("screenshot", "inside create view");
 
         JSONObject reader = null;

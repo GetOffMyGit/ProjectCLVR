@@ -45,7 +45,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private RadarChart languageChart;
     private RadarChart socialChart;
 
-    ToneAnalyserTabActivity toneTabActivity;
+    ToneTabActivity toneTabActivity;
 
     public ToneAnalyserRadarFragment() {
         // Required empty public constructor
@@ -81,7 +81,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         return inflatedView;
     }
 
-    public void createGraphs(ToneAnalyserTabActivity activity) {
+    public void createGraphs(ToneTabActivity activity) {
         JSONObject reader = null;
         try {
             this.toneTabActivity = activity;

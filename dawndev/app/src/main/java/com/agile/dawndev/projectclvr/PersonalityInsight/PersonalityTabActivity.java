@@ -9,7 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.agile.dawndev.projectclvr.R;
-import com.agile.dawndev.projectclvr.ToneAnalyser.AsyncResponse;
+import com.agile.dawndev.projectclvr.AsyncResponse;
 import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
 
 import java.util.ArrayList;

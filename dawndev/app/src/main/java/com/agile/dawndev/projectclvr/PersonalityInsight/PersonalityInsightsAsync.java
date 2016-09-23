@@ -4,12 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.agile.dawndev.projectclvr.R;
-import com.agile.dawndev.projectclvr.ToneAnalyser.AsyncResponse;
+import com.agile.dawndev.projectclvr.AsyncResponse;
 import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
-import com.ibm.watson.developer_cloud.personality_insights.v2.model.Profile;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
 /**
  * Created by Zoe on 21/09/16.
