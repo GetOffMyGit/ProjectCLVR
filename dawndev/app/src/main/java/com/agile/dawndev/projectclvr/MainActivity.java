@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    
     public void moveToSpeech(View view){
         Intent intent = new Intent(MainActivity.this, SpeechToTextActivity.class);
         startActivity(intent);
