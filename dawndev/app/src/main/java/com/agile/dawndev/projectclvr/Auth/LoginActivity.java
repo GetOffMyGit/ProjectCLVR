@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.Models.User;
 import com.agile.dawndev.projectclvr.R;
-import com.agile.dawndev.projectclvr.SpeechToTextActivity;
+import com.agile.dawndev.projectclvr.SpeechAnalyserActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     public void goToCompanyMain() {
-        startActivity(new Intent(this, SpeechToTextActivity.class));
+        startActivity(new Intent(this, SpeechAnalyserActivity.class));
         finish();
     }
 
