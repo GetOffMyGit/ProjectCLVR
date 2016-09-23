@@ -32,11 +32,21 @@
         <activity
             android:name=".SpeechToTextActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
-        <activity android:name=".ToneAnalyser.ToneTabActivity" />
+        <activity android:name=".ToneAnalyser.ToneAnalyserTabActivity" />
         <activity
+<<<<<<< HEAD
             android:name=".PersonalityInsight.PersonalityTabActivity"
             android:label="@string/title_activity_personality"></activity>
         <activity android:name=".SendEmailActivity"></activity>
+=======
+            android:name=".ToneAnalyzerActivity"
+            android:label="@string/title_activity_tone_analyzer"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ToneAnalyserGraph"
+            android:label="@string/title_activity_tone_analyser_graph"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+>>>>>>> b3f2aeeb1b20640245fe692be85be3224b5de7fc
     </application>
 
 </manifest>
