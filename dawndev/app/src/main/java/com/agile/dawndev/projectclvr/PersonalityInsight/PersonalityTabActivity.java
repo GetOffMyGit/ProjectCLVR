@@ -7,11 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.agile.dawndev.projectclvr.R;
 import com.agile.dawndev.projectclvr.ToneAnalyser.AsyncResponse;
-import com.agile.dawndev.projectclvr.ToneAnalyser.RadarFragment;
 import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
 
 import java.util.ArrayList;
@@ -45,7 +43,7 @@ public class PersonalityTabActivity extends AppCompatActivity implements AsyncRe
 
         PersonalityInsightsAsync personalityAsyncTask = new PersonalityInsightsAsync(this);
         personalityAsyncTask.delegate = PersonalityTabActivity.this;
-        personalityAsyncTask.execute(new PersonalityInsights(), textInput);
+        personalityAsyncTask.execute(personalityInsightsService, textInput);
 
         setContentView(R.layout.activity_personality_tab);
 

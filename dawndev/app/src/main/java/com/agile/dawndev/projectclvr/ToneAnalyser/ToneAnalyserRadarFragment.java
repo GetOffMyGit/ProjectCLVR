@@ -39,7 +39,7 @@ import java.util.List;
  * Creates the fragment that contains the radar graph which displays the results from the
  * tone analyzer activity
  */
-public class RadarFragment extends Fragment {
+public class ToneAnalyserRadarFragment extends Fragment {
 
     private RadarChart emotionChart;
     private RadarChart languageChart;
@@ -51,15 +51,15 @@ public class RadarFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public RadarFragment() {
+    public ToneAnalyserRadarFragment() {
         // Required empty public constructor
     }
 
     /**
      * Creates the radar fragment
      */
-    public static RadarFragment newInstance() {
-        RadarFragment fragment = new RadarFragment();
+    public static ToneAnalyserRadarFragment newInstance() {
+        ToneAnalyserRadarFragment fragment = new ToneAnalyserRadarFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
