@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -27,7 +28,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
 import org.json.JSONArray;
@@ -37,6 +40,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
@@ -66,7 +70,7 @@ public class SpeechAnalyserActivity extends Activity  {
     private TextView textviewtimer;
     private long timerLimit = 120000;
     private MediaRecorder myAudioRecorder = new MediaRecorder();
-    private static String outputFile = null;
+    private Button buttonRecord = null;
 
     private static final int PERMISSION_ALL = 1;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
@@ -78,7 +82,7 @@ public class SpeechAnalyserActivity extends Activity  {
         super.onCreate(savedInstanceState);
 
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.mp3";
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bat.wav";
         Log.d(TAG, "File name to transcribe: " + mFileName);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
@@ -129,7 +133,7 @@ public class SpeechAnalyserActivity extends Activity  {
         Log.d(TAG, "please, press the button to start speaking");
 
         //Start and Stop Record Button
-        final Button buttonRecord = (Button) findViewById(R.id.buttonRecord);
+       buttonRecord = (Button) findViewById(R.id.buttonRecord);
         buttonRecord.setOnClickListener(new View.OnClickListener() {
 
 
@@ -138,62 +142,61 @@ public class SpeechAnalyserActivity extends Activity  {
 
                 speechRecognition();
 
-
+                //recordAudio();
                 //uploadRecording();
-//                    if (mState == ConnectionState.IDLE) {
-//
-//
-////
-//                        try {
-//                            myAudioRecorder.prepare();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        myAudioRecorder.start();
-//                        Log.d("RECORDING", "start");
-//
-//                        //Start the timer
-//                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
-//                        countdowntimer.start();
-//
-//
-//                        mContinueButton.setVisibility(View.GONE);
-//                        mText.setVisibility(View.GONE);
-//                        mState = ConnectionState.CONNECTED;
-//                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
-//
-//
-//
-//                        //Display results
-//                        mRecognitionResults = "";
-//
-//
-//                        buttonRecord.setText("Stop Recording");
-//                    } else if (mState == ConnectionState.CONNECTED) {
-//                        mContinueButton.setVisibility(View.VISIBLE);
-//                        mText.setVisibility(View.VISIBLE);
-////
-//                        mState = ConnectionState.IDLE;
-//                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-//                        buttonRecord.setText("Start Recording");
-//
-//                        countdowntimer.cancel();
-////
-//
-//                        //speechRecognition();
-//
-//                        myAudioRecorder.stop();
-//                        myAudioRecorder.release();
-//                        myAudioRecorder  = null;
-//                        Log.d("RECORDING", "stop");
-////
-////
-//
-//                    }
+
                 }
         });
     }
+    public void recordAudio(){
 
+        if (mState == ConnectionState.IDLE) {
+                        try {
+                            myAudioRecorder.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        myAudioRecorder.start();
+                        Log.d("RECORDING", "start");
+
+                        //Start the timer
+                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
+                        countdowntimer.start();
+
+
+                        mContinueButton.setVisibility(View.GONE);
+                        mText.setVisibility(View.GONE);
+                        mState = ConnectionState.CONNECTED;
+                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
+
+
+
+                        //Display results
+                        mRecognitionResults = "";
+
+
+                        buttonRecord.setText("Stop Recording");
+                    } else if (mState == ConnectionState.CONNECTED) {
+                        mContinueButton.setVisibility(View.VISIBLE);
+                        mText.setVisibility(View.VISIBLE);
+//
+                        mState = ConnectionState.IDLE;
+                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
+                        buttonRecord.setText("Start Recording");
+
+                        countdowntimer.cancel();
+
+                        //speechRecognition();
+
+                        myAudioRecorder.stop();
+                        myAudioRecorder.release();
+                        myAudioRecorder  = null;
+                        Log.d("RECORDING", "stop");
+
+                    }
+
+
+    }
     public static boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
@@ -206,15 +209,32 @@ public class SpeechAnalyserActivity extends Activity  {
     }
 
     private void speechRecognition(){
-        SpeechToText service = new SpeechToText();
-        service.setUsernameAndPassword(getString(R.string.STTdefaultUsername), getString(R.string.STTdefaultPassword));
 
-        File audio = new File(mFileName);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... none) {
+                SpeechToText service = new SpeechToText();
+                service.setUsernameAndPassword(getString(R.string.STTdefaultUsername), getString(R.string.STTdefaultPassword));
+                RecognizeOptions options = new RecognizeOptions.Builder()
+                        .continuous(true)
+                        .interimResults(true)
+                        .timestamps(true)
+                        .wordConfidence(true)
+                        .inactivityTimeout(600)
+                        .wordAlternativesThreshold(0.001)
+                        .maxAlternatives(3)
+                        .contentType(HttpMediaType.AUDIO_WAV)
+                        .model("en-US_NarrowbandModel").build();
+                File audio = new File(mFileName);
 
 
-        SpeechResults transcript = service.recognize(audio).execute();
+                SpeechResults transcript = service.recognize(audio, options).execute();
+                Log.d(TAG, "TRANSCRIPT " + transcript);
+                return null;
+              }
+            }.execute();
 
-        Log.d(TAG, "TRANSCRIPT " + transcript);
+
     }
 
     public void uploadRecording() {
