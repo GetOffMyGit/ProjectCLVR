@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.agile.dawndev.projectclvr.R;
 import com.agile.dawndev.projectclvr.ToneAnalyser.AsyncResponse;
-import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,12 +40,9 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
     private ColumnChartView personalityView;
     private ColumnChartView consumerView;
     private ColumnChartView valuesView;
-    private View _inflatedView;
+    private View inflatedView;
 
     PersonalityTabActivity personalityTabActivity;
-
-//    private PersonalityInsights personalityInsightsService;
-//    String text;
 
     public PersonalityInsightsBarFragment(){
     }
@@ -73,13 +68,13 @@ public class PersonalityInsightsBarFragment extends android.support.v4.app.Fragm
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        _inflatedView = inflater.inflate(R.layout.fragment_bar_graph, container, false);
-        Log.d("ZOE", "hi");
-        personalityView = (ColumnChartView) _inflatedView.findViewById(R.id.firstGraph);
-        consumerView = (ColumnChartView) _inflatedView.findViewById(R.id.secondGraph);
-        valuesView = (ColumnChartView) _inflatedView.findViewById(R.id.thirdGraph);
+        inflatedView = inflater.inflate(R.layout.fragment_bar_graph, container, false);
 
-        return _inflatedView;
+        personalityView = (ColumnChartView) inflatedView.findViewById(R.id.firstGraph);
+        consumerView = (ColumnChartView) inflatedView.findViewById(R.id.secondGraph);
+        valuesView = (ColumnChartView) inflatedView.findViewById(R.id.thirdGraph);
+
+        return inflatedView;
     }
 
 

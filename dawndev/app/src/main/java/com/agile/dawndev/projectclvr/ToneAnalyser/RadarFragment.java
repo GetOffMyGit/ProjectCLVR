@@ -78,9 +78,9 @@ public class RadarFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
 
         //find the graphs in the fragment
-        emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
-        languageChart = (RadarChart) inflatedView.findViewById(R.id.languageGraph);
-        socialChart = (RadarChart) inflatedView.findViewById(R.id.socialToneGraph);
+        emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
+        languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
+        socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
 
         //define the labels for the graph
         String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};

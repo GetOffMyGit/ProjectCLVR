@@ -25,6 +25,7 @@ public class PersonalityTabActivity extends AppCompatActivity implements AsyncRe
     private String resultJson;
 
     PersonalityInsightsBarFragment personalityInsightsBarFragment;
+    PersonalityInsightsRadarFragment personalityInsightsRadarFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +65,14 @@ public class PersonalityTabActivity extends AppCompatActivity implements AsyncRe
     public void processFinish(String resultJson){
         this.resultJson = resultJson;
         personalityInsightsBarFragment.createGraphs(PersonalityTabActivity.this);
-        // personalityInsightsRadarFragment.createGraphs();
+        personalityInsightsRadarFragment.createGraphs(PersonalityTabActivity.this);
     }
 
     private void setupViewPager(ViewPager viewPager) {
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new RadarFragment(), "Radar");
+
+        personalityInsightsRadarFragment = new PersonalityInsightsRadarFragment();
+        adapter.addFragment(personalityInsightsRadarFragment, "Radar");
 
         personalityInsightsBarFragment = new PersonalityInsightsBarFragment();
         adapter.addFragment(personalityInsightsBarFragment, "Bar");
