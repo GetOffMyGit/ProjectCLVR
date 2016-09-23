@@ -24,14 +24,18 @@ public class ToneAnalyserTabActivity extends AppCompatActivity implements AsyncR
     ToneAnalyserBarFragment toneAnalyserBarFragment;
     ToneAnalyserRadarFragment toneAnalyserRadarFragment;
 
-    private String textInput = "IBM announced new and expanded solutions and features including cognitive technologies that enable companies to deliver personalized customer experiences.\n" +
+    private String textInput = "Hi Team,\n" +
             "\n" +
-            "According to a new report from Nucleus Research, IBM delivers $15.82 return on investment (ROI) for every dollar spent on its marketing, sales, merchandising and analytics offerings1 which today are being used by leading brands such as ING Direct, The Home Shopping Network (HSN) and Standard Life to meet the personalized, real-time needs of their customers. The importance of these experiences was highlighted in a recent IBM Study, “Redefining Markets,” where 66 percent of CxOs stated they are interested in creating more digital, individualized experiences. \n" +
+            "The times are difficult! Our sales have been disappointing for the past three quarters for our data analytics product suite. We have a competitive data analytics product suite in the industry. But we are not doing a good job at selling it.\n" +
             "\n" +
-            "IBM is infusing cognitive technologies into the tools that practitioners work with today to help companies deliver these complete end-to-end customer experiences. These new offerings will leverage cognitive’s ability to understand, reason and learn over time and in the end provide teams with the expert in-the-moment advice, insights and recommendations to help them make better, more informed decisions at each step in the brand journey.\n" +
+            "We need to acknowledge and fix our sales challenges. We cannot blame the economy for our lack of execution! We are missing critical sales opportunities. Our clients are hungry for analytical tools to improve their business outcomes. In fact, it is in times such as this, our clients want to get the insights they need to turn their businesses around. We need to buckle up and execute.\n" +
             "\n" +
+            "In summary, we have a competitive product, and a hungry market. We have to do our job to close the deals.\n" +
             "\n" +
-            "By continuously investing in building portfolio that includes new cognitive solutions, IBM is helping completely transform the way companies serve each customer. With the help of IBM cognitive tools, businesses will be able to quickly understand, reason and learn from every customer interaction - and use that knowledge to find new opportunities from insights.\n";
+            "Jennifer Baker\n" +
+            "\n" +
+            "Sales Leader, North-East region\n" +
+            "\n";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

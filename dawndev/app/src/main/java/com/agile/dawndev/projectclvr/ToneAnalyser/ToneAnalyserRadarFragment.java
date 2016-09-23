@@ -45,11 +45,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private RadarChart languageChart;
     private RadarChart socialChart;
 
-    private JSONArray emotionTones;
-    private JSONArray languageTones;
-    private  JSONArray socialTones;
-
-    private OnFragmentInteractionListener mListener;
+    ToneAnalyserTabActivity toneTabActivity;
 
     public ToneAnalyserRadarFragment() {
         // Required empty public constructor
@@ -82,69 +78,42 @@ public class ToneAnalyserRadarFragment extends Fragment {
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
 
-        //define the labels for the graph
-        String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-        String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-        String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+        return inflatedView;
+    }
 
-
+    public void createGraphs(ToneAnalyserTabActivity activity) {
+        JSONObject reader = null;
         try {
-            //parse the result from the JSON result
-            JSONObject reader = new JSONObject(Constants.ToneAnalyzerResult);
+            this.toneTabActivity = activity;
+
+            String jsonResult = activity.getJsonResult();
+            reader = new JSONObject(jsonResult);
+            JSONArray results = reader.getJSONArray("tone_categories");
 
             // Emotion Tone Graph
-            JSONArray emotionToneCategories  = reader.getJSONArray("tone_categories");
-            emotionTones = emotionToneCategories.getJSONObject(0).getJSONArray("tones");
+            String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
+            JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(emotionChart, emotionToneCategories, emotionLabels);
+
             // language Tone Graph
-            JSONArray languageToneCategories  = reader.getJSONArray("tone_categories");
-            languageTones = languageToneCategories.getJSONObject(1).getJSONArray("tones");
+            String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
+            JSONArray languageToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(languageChart, languageToneCategories, languageToneLabels);
+
             // Social Tone Graph
-            JSONArray socialToneCategories  = reader.getJSONArray("tone_categories");
-            socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
+            String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+            JSONArray socialToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(socialChart, socialToneCategories, socialToneLabels);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        setUpGraph(emotionChart,emotionTones,emotionLabels);
-        setUpGraph(languageChart,languageTones,languageToneLabels);
-        setUpGraph(socialChart,socialTones,socialToneLabels);
-
-        return inflatedView;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Activity a;
-        if (context instanceof Activity) {
-            a=(Activity) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     *  Mandatory interface
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 
     /*
         Generates the graph using the given inputs
      */
-    public void setUpGraph(RadarChart chart, JSONArray array, final String[] labels){
+    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
         //retrieve the entry values
         for ( int i = 0; i<array.length();i++){
@@ -189,6 +158,30 @@ public class ToneAnalyserRadarFragment extends Fragment {
         chart.setDescription("");
         chart.invalidate();
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity a;
+        if (context instanceof Activity) {
+            a=(Activity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+//        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
+
+    /*
+        Screenshot taking for emailing graph results
+     */
 
     public void makePDF(View rootView){
         // image naming and path  to include sd card  appending name you choose for file
