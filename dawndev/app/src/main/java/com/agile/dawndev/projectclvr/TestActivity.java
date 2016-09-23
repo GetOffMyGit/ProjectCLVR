@@ -48,7 +48,7 @@ public class TestActivity extends AppCompatActivity {
             Log.v("ELSEEEEEEEEEEEEEEEEE", mTestKey);
         }
 
-        mDatabase.child("companies").child("1").child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 //                DataSnapshot test = dataSnapshot.child(mTestKey);

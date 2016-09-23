@@ -33,7 +33,7 @@ public class ShowTestsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //mAuth.getCurrentUser().getUid()
-        mDatabase.child("users").child("1").addValueEventListener(new ValueEventListener() {
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DataSnapshot companies = dataSnapshot.child("companies");
