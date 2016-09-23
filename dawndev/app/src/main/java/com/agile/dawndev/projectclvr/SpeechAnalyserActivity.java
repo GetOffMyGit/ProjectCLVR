@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
+import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -327,7 +327,7 @@ public class SpeechAnalyserActivity extends Activity  {
 
 
     public void toneResults(View view){
-        Intent intent = new Intent(SpeechAnalyserActivity.this, AnalyserTabActivity.class);
+        Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
         intent.putExtra("message", message);
         startActivity(intent);
     }

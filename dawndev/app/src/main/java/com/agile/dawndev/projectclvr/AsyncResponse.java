@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr.ToneAnalyser;
+package com.agile.dawndev.projectclvr;
 
 /*
     Interface for the tone analyser async to pass the output to the main tone analyser activity
