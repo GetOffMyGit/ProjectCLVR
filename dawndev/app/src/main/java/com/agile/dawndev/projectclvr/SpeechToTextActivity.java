@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
+import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
@@ -441,7 +441,7 @@ public class SpeechToTextActivity extends Activity {
     }
 
     public void toneResults(View view){
-        Intent intent = new Intent(SpeechToTextActivity.this, AnalyserTabActivity.class);
+        Intent intent = new Intent(SpeechToTextActivity.this, ToneTabActivity.class);
         intent.putExtra("message", message);
         startActivity(intent);
     }
@@ -470,7 +470,7 @@ public class SpeechToTextActivity extends Activity {
         }
 
         //set the content view
-        setContentView(R.layout.content_activity_speech_to_text);
+        setContentView(R.layout.activity_speech_to_text);
 
 
     }

@@ -4,11 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.agile.dawndev.projectclvr.ToneAnalyser.AnalyserTabActivity;
+import com.agile.dawndev.projectclvr.PersonalityInsight.PersonalityTabActivity;
+import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Once output from tone analyser is received, move to the tone analyser graph activity
     public void moveToToneResult(View view){
-        Intent intent = new Intent(MainActivity.this, AnalyserTabActivity.class);
+        Intent intent = new Intent(MainActivity.this, ToneTabActivity.class);
         startActivity(intent);
     }
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void moveToPersonality(View view){
-        Intent intent = new Intent(MainActivity.this, PersonalityActivity.class);
+        Intent intent = new Intent(MainActivity.this, PersonalityTabActivity.class);
         startActivity(intent);
     }
 
