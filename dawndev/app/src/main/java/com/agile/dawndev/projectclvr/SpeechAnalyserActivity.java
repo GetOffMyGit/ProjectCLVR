@@ -29,10 +29,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.ISpeechDelegate;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.SpeechToText;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.audio.FileCaptureThread;
-import com.ibm.watson.developer_cloud.android.speech_to_text.v1.dto.SpeechConfiguration;
+
+import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Christina on 22/09/2016.
  */
-public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate {
+public class SpeechAnalyserActivity extends Activity  {
     private static final String TAG = "SpeechToTextActivity";
     private static String message;
     private String mCompanyName = "CrimsonJelly";
@@ -73,7 +72,6 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
     private long timerLimit = 120000;
     private MediaRecorder myAudioRecorder = new MediaRecorder();
     private static String outputFile = null;
-    private FileCaptureThread mFileCaptureThread = null;
 
     private static final int PERMISSION_ALL = 1;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
@@ -84,15 +82,6 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
 
         super.onCreate(savedInstanceState);
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/clvr.3gp";
-
-
-        // Strictmode needed to run the http/wss request for devices > Gingerbread
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                    .permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
 
@@ -103,8 +92,12 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         mText = (TextView) findViewById(R.id.isThisRight);
         textviewtimer = (TextView)findViewById(R.id.textViewtimer);
 
-        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath();
-        outputFile += "/clvr.3gp";
+        // Strictmode needed to run the http/wss request for devices > Gingerbread
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         // Check appropriate permissions
         if(!hasPermissions(this, PERMISSIONS)) {
@@ -122,16 +115,12 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         }
 
         //Check for connection with IBM Watson API
-        if (initSTT() == false) {
-            displayResult("Error: no authentication credentials/token available, please enter your authentication information");
-        }
-
         if (!isNetworkAvailable()) {
-            displayResult("Please, check internet connection.");
+            Log.d(TAG, "Please, check internet connection.");
             return;
         }
 
-        displayStatus("please, press the button to start speaking");
+        Log.d(TAG, "please, press the button to start speaking");
 
         //Start and Stop Record Button
         final Button buttonRecord = (Button) findViewById(R.id.buttonRecord);
@@ -140,75 +129,63 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
             @Override
             public void onClick(View arg0) {
 
-                //speechRecognition();
+                speechRecognition();
                 //uploadRecording();
 
-                    if (mState == ConnectionState.IDLE) {
 
-//                        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//                        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//                        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                        // myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-                        // myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.MPEG_4);
-                        myAudioRecorder.setOutputFile(outputFile);
+//                    if (mState == ConnectionState.IDLE) {
 //
-//                        try {
-//                            myAudioRecorder.prepare();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        myAudioRecorder.start();
-                        Log.d("RECORDING", "start");
-
-                        //Start the timer
-                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
-                        countdowntimer.start();
-
-
-                        mContinueButton.setVisibility(View.GONE);
-                        mText.setVisibility(View.GONE);
-                        mState = ConnectionState.CONNECTING;
-                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
-
-
-
-                        //Display results
-                        mRecognitionResults = "";
-                        displayResult(mRecognitionResults);
-
-                        displayStatus("connecting to the STT service...");
-                        // start recognition
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... none) {
-                                SpeechToText.sharedInstance().recognize();
-                                return null;
-                            }
-                        }.execute();
-
-
-                        buttonRecord.setText("Connecting...");
-                    } else if (mState == ConnectionState.CONNECTED) {
-                        mContinueButton.setVisibility(View.VISIBLE);
-                        mText.setVisibility(View.VISIBLE);
+////                        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+////                        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+////                        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+//                        // myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+//                        // myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.MPEG_4);
+//                        myAudioRecorder.setOutputFile(outputFile);
+////
+////                        try {
+////                            myAudioRecorder.prepare();
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                        }
+////                        myAudioRecorder.start();
+//                        Log.d("RECORDING", "start");
 //
-                        mState = ConnectionState.IDLE;
-                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-
-                       // SpeechToText.sharedInstance().stopRecognition();
-
-                        countdowntimer.cancel();
-                       // displayResult(mRecognitionResults);
-                       // message = mRecognitionResults;
+//                        //Start the timer
+//                        countdowntimer = new CountDownTimerClass(timerLimit, 1000);
+//                        countdowntimer.start();
 //
-//                        myAudioRecorder.stop();
-//                        myAudioRecorder.release();
-//                        myAudioRecorder  = null;
-//                        Log.d("RECORDING", "stop");
 //
-//                        speechRecognition();
-
-                    }
+//                        mContinueButton.setVisibility(View.GONE);
+//                        mText.setVisibility(View.GONE);
+//                        mState = ConnectionState.CONNECTING;
+//                        Log.d(TAG, "onClickRecord: IDLE -> CONNECTING");
+//
+//
+//
+//                        //Display results
+//                        mRecognitionResults = "";
+//
+//
+//                        buttonRecord.setText("Connecting...");
+//                    } else if (mState == ConnectionState.CONNECTED) {
+//                        mContinueButton.setVisibility(View.VISIBLE);
+//                        mText.setVisibility(View.VISIBLE);
+////
+//                        mState = ConnectionState.IDLE;
+//                        Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
+//
+//                        countdowntimer.cancel();
+//                       // displayResult(mRecognitionResults);
+//                       // message = mRecognitionResults;
+////
+////                        myAudioRecorder.stop();
+////                        myAudioRecorder.release();
+////                        myAudioRecorder  = null;
+////                        Log.d("RECORDING", "stop");
+////
+////                        speechRecognition();
+//
+//                    }
                 }
         });
     }
@@ -225,10 +202,15 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
     }
 
     private void speechRecognition(){
+        SpeechToText service = new SpeechToText();
+        service.setUsernameAndPassword(getString(R.string.STTdefaultUsername), getString(R.string.STTdefaultPassword));
+//
+        File audio = new File(mFileName);
+//
 
-        File file = new File(mFileName);
-        mFileCaptureThread = SpeechToText.sharedInstance().recognizeWithFile(file);
-        Log.d("RECORDING", mFileName);
+        SpeechResults transcript = service.recognize(audio).execute();
+
+        Log.d(TAG, "TRANSCRIPT " + transcript);
     }
 
     public void uploadRecording() {
@@ -267,99 +249,7 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         }
     }
 
-    private boolean initSTT() {
-        // initialize the connection to the Watson STT service
-        String username = getString(R.string.STTdefaultUsername);
-        String password = getString(R.string.STTdefaultPassword);
-        String serviceURL = "wss://stream.watsonplatform.net/speech-to-text/api";
-        SpeechConfiguration sConfig = new SpeechConfiguration(SpeechConfiguration.AUDIO_FORMAT_OGGOPUS);
-        try {
-            SpeechToText.sharedInstance().initWithContext(new URI(serviceURL), this.getApplicationContext(), sConfig);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return  false;
-        }
-        // Basic Authentication
-        SpeechToText.sharedInstance().setCredentials(username, password);
-        SpeechToText.sharedInstance().setModel(getString(R.string.modelDefault));
-        SpeechToText.sharedInstance().setDelegate(this);
-        return true;
-    }
 
-
-    /**
-     * Change the display's result
-     */
-    public void displayResult(final String result) {
-        final Runnable runnableUi = new Runnable() {
-            @Override
-            public void run() {
-                TextView textResult = (TextView) findViewById(R.id.textResult);
-                textResult.setText(result);
-            }
-        };
-
-        new Thread() {
-            public void run() {
-                mHandler.post(runnableUi);
-            }
-        }.start();
-    }
-
-    public void displayStatus(final String status) {
-            /*final Runnable runnableUi = new Runnable(){
-                @Override
-                public void run() {
-                    TextView textResult = (TextView)mView.findViewById(R.id.sttStatus);
-                    textResult.setText(status);
-                }
-            };
-            new Thread(){
-                public void run(){
-                    mHandler.post(runnableUi);
-                }
-            }.start();*/
-    }
-
-    public void onOpen() {
-        Log.d(TAG, "onOpen");
-        displayStatus("successfully connected to the STT service");
-        setButtonLabel("Stop recroding");
-        mState = ConnectionState.CONNECTED;
-    }
-
-    @Override
-    public void onBegin() {
-        if(mFileCaptureThread != null) {
-            Log.d("RECORDING", "begin");
-
-//                mFileCaptureThread.start();
-            new Thread(mFileCaptureThread).start();
-            Log.d("RECORDING", "finish");
-            Log.d("RECORDING",  "finish ;" + mRecognitionResults);
-
-
-            displayResult(mRecognitionResults);
-            message = mRecognitionResults;
-            //SpeechToText.sharedInstance().endTransmission();
-        }
-    }
-
-    public void onError(String error) {
-
-        Log.e(TAG, error);
-        displayResult(error);
-        mState = ConnectionState.IDLE;
-    }
-
-    public void onClose(int code, String reason, boolean remote) {
-        Log.d(TAG, "onClose, code: " + code + " reason: " + reason);
-        displayStatus("connection closed");
-        setButtonLabel("Record");
-        mState = ConnectionState.IDLE;
-    }
-
-    @Override
     public void onMessage(String message) {
 
         Log.d(TAG, "onMessage, message: " + message);
@@ -383,23 +273,19 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
                     if (obj.getString("final").equals("true")) {
                         mRecognitionResults += strFormatted.substring(0, strFormatted.length() - 1);
 
-                        displayResult(mRecognitionResults);
+                        Log.d(TAG, mRecognitionResults);
                     } else {
-                        displayResult(mRecognitionResults + strFormatted);
+                        Log.d(TAG, mRecognitionResults + strFormatted);
                     }
                     break;
                 }
             } else {
-                displayResult("unexpected data coming from stt server: \n" + message);
+                Log.d(TAG, "unexpected data coming from stt server: \n" + message);
             }
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON", e);
         }
-    }
-
-    public void onAmplitude(double amplitude, double volume) {
-        //Logger.e(TAG, "amplitude=" + amplitude + ", volume=" + volume);
     }
 
     public class CountDownTimerClass extends CountDownTimer {
@@ -447,21 +333,4 @@ public class SpeechAnalyserActivity extends Activity implements ISpeechDelegate 
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-
-    /**
-     * Change the button's label
-     */
-    public void setButtonLabel(final String label) {
-        final Runnable runnableUi = new Runnable() {
-            @Override
-            public void run() {
-                mRecordButton.setText(label);
-            }
-        };
-        new Thread() {
-            public void run() {
-                mHandler.post(runnableUi);
-            }
-        }.start();
-    }
 }
