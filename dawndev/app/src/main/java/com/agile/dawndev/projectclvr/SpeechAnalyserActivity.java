@@ -82,7 +82,7 @@ public class SpeechAnalyserActivity extends Activity  {
         super.onCreate(savedInstanceState);
 
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Us_English_Broadband_Sample_1.wav";
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.wav";
         Log.d(TAG, "File name to transcribe: " + mFileName);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
@@ -122,6 +122,8 @@ public class SpeechAnalyserActivity extends Activity  {
             return;
         }
 
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
         Log.d(TAG, "please, press the button to start speaking");
 
@@ -133,9 +135,9 @@ public class SpeechAnalyserActivity extends Activity  {
             @Override
             public void onClick(View arg0) {
 
-                speechRecognition();
+                //speechRecognition();
 
-                //recordAudio();
+                recordAudio();
                 //uploadRecording();
 
                 }
@@ -192,6 +194,7 @@ public class SpeechAnalyserActivity extends Activity  {
                         myAudioRecorder  = null;
                         Log.d("RECORDING", "stop");
 
+                        speechRecognition();
                     }
 
 
