@@ -32,6 +32,7 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -181,6 +182,9 @@ public class SpeechAnalyserActivity extends Activity  {
                     finalTranscript += trans;
                 }
                 mResponseText.setText(finalTranscript);
+                Log.d(TAG, "TRANSCRIPT " + result);
+                
+
 
                 // TODO: save the text somewhere else
                 Log.d(TAG, "Done anaylsing text; " + finalTranscript);
