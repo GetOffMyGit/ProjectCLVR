@@ -33,8 +33,6 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -53,8 +51,7 @@ public class SpeechAnalyserActivity extends Activity  {
     private String mTestNum = "test_1";
     private String mUser = "Zelda";
     private String mQuestionNum = "Q1";
-    // session recognition results
-    private static String mRecognitionResults = "";
+
     private enum ConnectionState {
         IDLE, CONNECTING, CONNECTED
     }
@@ -210,7 +207,8 @@ public class SpeechAnalyserActivity extends Activity  {
             @Override
             protected void onPostExecute(SpeechResults result) {
                 Log.d(TAG, "TRANSCRIPT " + result);
-                mText.setText(result.toString());
+                
+                mText.setText(result.getResults().toString());
 
                 Log.d(TAG, "DONE");
             }
@@ -255,44 +253,6 @@ public class SpeechAnalyserActivity extends Activity  {
         }
     }
 
-
-    public void onMessage(String message) {
-
-        Log.d(TAG, "onMessage, message: " + message);
-        try {
-            JSONObject jObj = new JSONObject(message);
-            // state message
-            if (jObj.has("state")) {
-                Log.d(TAG, "Status message: " + jObj.getString("state"));
-            }
-            // results message
-            else if (jObj.has("results")) {
-                //if has result
-                Log.d(TAG, "Results message: ");
-                JSONArray jArr = jObj.getJSONArray("results");
-                for (int i = 0; i < jArr.length(); i++) {
-                    JSONObject obj = jArr.getJSONObject(i);
-                    JSONArray jArr1 = obj.getJSONArray("alternatives");
-                    String str = jArr1.getJSONObject(0).getString("transcript");
-
-                    String strFormatted = Character.toUpperCase(str.charAt(0)) + str.substring(1);
-                    if (obj.getString("final").equals("true")) {
-                        mRecognitionResults += strFormatted.substring(0, strFormatted.length() - 1);
-
-                        Log.d(TAG, mRecognitionResults);
-                    } else {
-                        Log.d(TAG, mRecognitionResults + strFormatted);
-                    }
-                    break;
-                }
-            } else {
-                Log.d(TAG, "unexpected data coming from stt server: \n" + message);
-            }
-
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON", e);
-        }
-    }
 
     public class CountDownTimerClass extends CountDownTimer {
 
