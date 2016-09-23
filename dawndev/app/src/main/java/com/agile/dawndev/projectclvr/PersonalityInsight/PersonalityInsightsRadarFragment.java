@@ -36,10 +36,6 @@ public class PersonalityInsightsRadarFragment extends Fragment {
     private RadarChart consumerChart;
     private RadarChart valuesChart;
 
-    private JSONArray personalityInsights;
-    private JSONArray consumerInsights;
-    private  JSONArray valuesInsights;
-
     PersonalityTabActivity personalityTabActivity;
 
     public PersonalityInsightsRadarFragment() {
@@ -105,7 +101,6 @@ public class PersonalityInsightsRadarFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     /*
