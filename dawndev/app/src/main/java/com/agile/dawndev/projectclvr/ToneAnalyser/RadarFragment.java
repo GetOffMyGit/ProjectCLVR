@@ -29,6 +29,12 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -249,7 +256,7 @@ public class RadarFragment extends Fragment {
 
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 
-        Log.d("screenshot", screen.toString() );
+        Log.d("screenshot", screen.toString());
 
         v1.setDrawingCacheEnabled(false);
 
@@ -261,15 +268,66 @@ public class RadarFragment extends Fragment {
             fout.flush();
             fout.close();
 
+            Document document = new Document();
+
+            PdfWriter.getInstance(document, fout);
+            document.open();
+
+           // addImage(document);
+            document.close();
+
+
             openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+    }
+/*
+    private static void addImage(Document document)
+    {
+
+        try
+        {
+            //Image image = Image.getInstance(bArray);  ///Here i set byte array..you can do bitmap to byte array and set in image...
+            try
+            {
+                document.add(image);
+            } catch (DocumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        catch (BadElementException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (MalformedURLException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // image.scaleAbsolute(150f, 150f);
+        try
+        {
+            document.add(image);
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
-
+*/
 
     //function opens the screenshot in a new intent
     private void openScreenshot(File imageFile) {
