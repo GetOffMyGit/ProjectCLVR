@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -271,7 +273,7 @@ public class RadarFragment extends Fragment {
         OutputStream fout = null;
         File imageFile =  new File(pdfDir+"/graphScreenShot.jpg" );
         try{
-            fout = new FileOutputStream(new File(pdfDir+  "/ok.pdf"));
+            fout = new FileOutputStream(new File(pdfDir+  "/graphResult.pdf"));
             //screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
             fout.flush();
 
@@ -279,6 +281,7 @@ public class RadarFragment extends Fragment {
             PdfWriter.getInstance(document, fout);
             document.open();
             Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            bitmap = getResizedBitmap(bitmap,250 ,765);
             addImage(document,bitmap);
          //  addContent(document);
             document.close();
@@ -296,44 +299,11 @@ public class RadarFragment extends Fragment {
         }
 
     }
-    private Document  addContent(Document document) throws DocumentException {
-        Anchor anchor = new Anchor("First Chapter");
-        anchor.setName("First Chapter");
 
-        // Second parameter is the number of the chapter
-        Chapter catPart = new Chapter(new Paragraph(anchor), 1);
-
-        Paragraph subPara = new Paragraph("Subcategory 1");
-        Section subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph("Hello"));
-
-        subPara = new Paragraph("Subcategory 2");
-        subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph("Paragraph 1"));
-        subCatPart.add(new Paragraph("Paragraph 2"));
-        subCatPart.add(new Paragraph("Paragraph 3"));
-
-        // now add all this to the document
-        document.add(catPart);
-
-        // Next section
-        anchor = new Anchor("Second Chapter");
-        anchor.setName("Second Chapter");
-
-        // Second parameter is the number of the chapter
-        catPart = new Chapter(new Paragraph(anchor), 1);
-
-        subPara = new Paragraph("Subcategory");
-        subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph("This is a very important message"));
-
-        // now add all this to the document
-        document.add(catPart);
-return document;
+    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
+        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
     }
-
-
-    private static void addImage(Document document,Bitmap bitmap)
+       private static void addImage(Document document,Bitmap bitmap)
     {
 
         try
