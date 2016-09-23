@@ -313,13 +313,13 @@ public class SpeechAnalyserActivity extends Activity  {
             mContinueButton.setVisibility(View.VISIBLE);
             mText.setVisibility(View.VISIBLE);
 
-            mState = ConnectionState.IDLE;
-            Log.d(TAG, "onClickRecord: CONNECTED -> IDLE");
-            //SpeechToText.sharedInstance().stopRecognition();
+            countdowntimer.cancel();
+            mRecorder.stop();
+            mRecorder.reset();
+            buttonRecord.setText("Start Recording");
+            speechRecognition();
+            uploadRecording();
 
-            //countdowntimer.cancel();
-            //displayResult(mRecognitionResults);
-            //message = mRecognitionResults;
             textviewtimer.setText(" Count Down Finish ");
 
         }
