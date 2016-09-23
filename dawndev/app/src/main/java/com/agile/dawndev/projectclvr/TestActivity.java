@@ -38,21 +38,16 @@ public class TestActivity extends AppCompatActivity {
             if(extras != null) {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
-                Log.v("EXTRAAAAAAAAAAAA", mCompanyKey);
-                Log.v("EXTRAAAAAAAAAAAA", mTestKey);
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
-            Log.v("ELSEEEEEEEEEEEEEEEEE", mCompanyKey);
-            Log.v("ELSEEEEEEEEEEEEEEEEE", mTestKey);
         }
 
         mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 //                DataSnapshot test = dataSnapshot.child(mTestKey);
-                Log.v("AYYYYYYYYYYYYYYYYYEEE", dataSnapshot.getKey());
 //                Log.v("AYYYYYYYYYYYYYYYYYEEE", dataSnapshot.getValue().toString());
 
                 for(DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {

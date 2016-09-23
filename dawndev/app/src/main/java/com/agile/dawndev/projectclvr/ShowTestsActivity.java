@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.PersonalityInsight.PersonalityTabActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,13 +17,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ShowTestsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
-    private final ArrayList<String> mCompanyKeyArray = new ArrayList<String>();
-    private final ArrayList<String> mTestKeyArray = new ArrayList<String>();
+    private HashMap<String,TextView> textViews = new HashMap<String,TextView>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,10 @@ public class ShowTestsActivity extends AppCompatActivity {
                 //Loop through companies
                 for(final DataSnapshot companySnapshot : companies.getChildren()) {
                     TextView companyName = new TextView(ShowTestsActivity.this);
-                    companyName.setText(companySnapshot.getKey());
+                    String companyID = companySnapshot.getKey();
+                    companyName.setText(companyID);
                     linearLayout.addView(companyName);
+                    textViews.put(companyID, companyName);
                     //Loop through that company for their tests.
                     for(final DataSnapshot testSnapshot : companySnapshot.getChildren()) {
                         Button testButton = new Button(ShowTestsActivity.this);
@@ -51,7 +56,7 @@ public class ShowTestsActivity extends AppCompatActivity {
                         testButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(ShowTestsActivity.this, TestActivity.class);
+                                Intent intent = new Intent(ShowTestsActivity.this, SpeechToTextActivity.class);
                                 intent.setAction(Intent.ACTION_SEND);
                                 intent.putExtra("companyKey", companySnapshot.getKey());
                                 intent.putExtra("testKey", testSnapshot.getKey());
@@ -63,6 +68,7 @@ public class ShowTestsActivity extends AppCompatActivity {
                     }
 
                 }
+                nameCompanies();
             }
 
             @Override
@@ -70,5 +76,25 @@ public class ShowTestsActivity extends AppCompatActivity {
 
             }
         });
+
     }
+
+
+    public void nameCompanies() {
+        for (final String companyID : textViews.keySet()) {
+            mDatabase.child("companies").child(companyID).child("name").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    TextView companyToName = textViews.get(companyID);
+                    companyToName.setText(dataSnapshot.getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
 }
