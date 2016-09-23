@@ -239,6 +239,8 @@ public class LoginActivity extends AppCompatActivity implements
         int i = v.getId();
         if (i == R.id.sign_in_button) {
             signIn();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         } else if (i == R.id.sign_out_button) {
             signOut();
         } else if (i == R.id.disconnect_button) {

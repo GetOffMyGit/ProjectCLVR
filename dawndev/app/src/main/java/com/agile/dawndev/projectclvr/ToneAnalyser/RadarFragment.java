@@ -16,6 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.agile.dawndev.projectclvr.R;
 
@@ -49,6 +51,8 @@ public class RadarFragment extends Fragment {
     private RadarChart languageChart;
     private RadarChart socialChart;
 
+    private ScrollView graphScrollView;
+
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private  JSONArray socialTones;
@@ -74,6 +78,7 @@ public class RadarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -81,6 +86,10 @@ public class RadarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
+        LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
+        graphCoverUpLayout.bringToFront();
+
+        graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView) ;
 
         //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
@@ -120,7 +129,8 @@ public class RadarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 makePDF(inflatedView);
-                getResult.setVisibility(View.VISIBLE);
+                graphScrollView.setVisibility(View.INVISIBLE);
+               // getResult.setVisibility(View.VISIBLE);
             }
         });
         return inflatedView;
@@ -243,9 +253,8 @@ public class RadarFragment extends Fragment {
 
         v1.setDrawingCacheEnabled(false);
 
-
         OutputStream fout = null;
-        File imageFile =  new File(pdfDir+"/hi.jpg" );
+        File imageFile =  new File(pdfDir+"/graphScreenShot.jpg" );
         try{
             fout = new FileOutputStream(imageFile);
             screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
@@ -255,10 +264,8 @@ public class RadarFragment extends Fragment {
             openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
