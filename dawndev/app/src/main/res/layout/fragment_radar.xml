@@ -30,19 +30,19 @@
                 android:layout_width="300sp"
                 android:layout_height="300sp"
                 android:layout_marginTop="25dp"
-                android:id="@+id/emotionGraph"/>
+                android:id="@+id/firstChart"/>
             <com.github.mikephil.charting.charts.RadarChart
                 android:layout_width="300sp"
                 android:layout_height="300sp"
                 android:layout_marginTop="25dp"
-                android:layout_below="@id/emotionGraph"
-                android:id="@+id/languageGraph"/>
+                android:layout_below="@id/firstChart"
+                android:id="@+id/secondChart"/>
             <com.github.mikephil.charting.charts.RadarChart
                 android:layout_width="300sp"
                 android:layout_height="300sp"
                 android:layout_marginTop="25dp"
-                android:layout_below="@id/languageGraph"
-                android:id="@+id/socialToneGraph"/>
+                android:layout_below="@id/secondChart"
+                android:id="@+id/thirdChart"/>
         </android.support.v7.widget.LinearLayoutCompat>
 
     </ScrollView>

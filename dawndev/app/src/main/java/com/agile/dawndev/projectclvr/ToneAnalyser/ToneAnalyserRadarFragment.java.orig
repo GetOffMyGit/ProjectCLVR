@@ -64,30 +64,32 @@ import java.util.List;
  * Creates the fragment that contains the radar graph which displays the results from the
  * tone analyzer activity
  */
-public class RadarFragment extends Fragment {
+public class ToneAnalyserRadarFragment extends Fragment {
 
     private RadarChart emotionChart;
     private RadarChart languageChart;
     private RadarChart socialChart;
 
+<<<<<<< HEAD:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/RadarFragment.java
     private ScrollView graphScrollView;
 
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private  JSONArray socialTones;
     private Button getResult;
+=======
+    ToneTabActivity toneTabActivity;
+>>>>>>> master:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/ToneAnalyserRadarFragment.java
 
-    private OnFragmentInteractionListener mListener;
-
-    public RadarFragment() {
+    public ToneAnalyserRadarFragment() {
         // Required empty public constructor
     }
 
     /**
      * Creates the radar fragment
      */
-    public static RadarFragment newInstance() {
-        RadarFragment fragment = new RadarFragment();
+    public static ToneAnalyserRadarFragment newInstance() {
+        ToneAnalyserRadarFragment fragment = new ToneAnalyserRadarFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -111,33 +113,41 @@ public class RadarFragment extends Fragment {
         graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView) ;
 
         //find the graphs in the fragment
-        emotionChart = (RadarChart) inflatedView.findViewById(R.id.emotionGraph);
-        languageChart = (RadarChart) inflatedView.findViewById(R.id.languageGraph);
-        socialChart = (RadarChart) inflatedView.findViewById(R.id.socialToneGraph);
+        emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
+        languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
+        socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
 
-        //define the labels for the graph
-        String[]emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-        String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-        String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+        return inflatedView;
+    }
 
-
+    public void createGraphs(ToneTabActivity activity) {
+        JSONObject reader = null;
         try {
-            //parse the result from the JSON result
-            JSONObject reader = new JSONObject(Constants.ToneAnalyzerResult);
+            this.toneTabActivity = activity;
+
+            String jsonResult = activity.getJsonResult();
+            reader = new JSONObject(jsonResult);
+            JSONArray results = reader.getJSONArray("tone_categories");
 
             // Emotion Tone Graph
-            JSONArray emotionToneCategories  = reader.getJSONArray("tone_categories");
-            emotionTones = emotionToneCategories.getJSONObject(0).getJSONArray("tones");
+            String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
+            JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(emotionChart, emotionToneCategories, emotionLabels);
+
             // language Tone Graph
-            JSONArray languageToneCategories  = reader.getJSONArray("tone_categories");
-            languageTones = languageToneCategories.getJSONObject(1).getJSONArray("tones");
+            String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
+            JSONArray languageToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(languageChart, languageToneCategories, languageToneLabels);
+
             // Social Tone Graph
-            JSONArray socialToneCategories  = reader.getJSONArray("tone_categories");
-            socialTones = languageToneCategories.getJSONObject(2).getJSONArray("tones");
+            String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+            JSONArray socialToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(socialChart, socialToneCategories, socialToneLabels);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+<<<<<<< HEAD:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/RadarFragment.java
 
         setUpGraph(emotionChart, emotionTones, emotionLabels);
         setUpGraph(languageChart, languageTones, languageToneLabels);
@@ -182,12 +192,14 @@ public class RadarFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+=======
+>>>>>>> master:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/ToneAnalyserRadarFragment.java
     }
 
     /*
         Generates the graph using the given inputs
      */
-    public void setUpGraph(RadarChart chart, JSONArray array, final String[] labels){
+    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels){
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
         //retrieve the entry values
         for ( int i = 0; i<array.length();i++){
@@ -232,6 +244,30 @@ public class RadarFragment extends Fragment {
         chart.setDescription("");
         chart.invalidate();
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity a;
+        if (context instanceof Activity) {
+            a=(Activity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+//        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
+
+    /*
+        Screenshot taking for emailing graph results
+     */
 
     public void makePDF(View rootView){
         Log.d("screenshot", rootView.toString());
