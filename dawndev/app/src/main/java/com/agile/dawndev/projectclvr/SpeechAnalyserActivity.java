@@ -82,7 +82,7 @@ public class SpeechAnalyserActivity extends Activity  {
         super.onCreate(savedInstanceState);
 
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bat.wav";
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Us_English_Broadband_Sample_1.wav";
         Log.d(TAG, "File name to transcribe: " + mFileName);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
@@ -122,13 +122,6 @@ public class SpeechAnalyserActivity extends Activity  {
             return;
         }
 
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        myAudioRecorder.setOutputFile(mFileName);
-
 
         Log.d(TAG, "please, press the button to start speaking");
 
@@ -151,6 +144,12 @@ public class SpeechAnalyserActivity extends Activity  {
     public void recordAudio(){
 
         if (mState == ConnectionState.IDLE) {
+            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+//            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+//            myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            myAudioRecorder.setOutputFile(mFileName);
                         try {
                             myAudioRecorder.prepare();
                         } catch (IOException e) {
@@ -210,28 +209,31 @@ public class SpeechAnalyserActivity extends Activity  {
 
     private void speechRecognition(){
 
-        new AsyncTask<Void, Void, Void>() {
+        Log.d(TAG, "START");
+        new AsyncTask<Void, SpeechResults, SpeechResults>() {
             @Override
-            protected Void doInBackground(Void... none) {
+            protected SpeechResults doInBackground(Void... none) {
                 SpeechToText service = new SpeechToText();
                 service.setUsernameAndPassword(getString(R.string.STTdefaultUsername), getString(R.string.STTdefaultPassword));
                 RecognizeOptions options = new RecognizeOptions.Builder()
                         .continuous(true)
-                        .interimResults(true)
-                        .timestamps(true)
-                        .wordConfidence(true)
                         .inactivityTimeout(600)
-                        .wordAlternativesThreshold(0.001)
-                        .maxAlternatives(3)
+                        //.wordAlternativesThreshold(0.001)
+                        //.maxAlternatives(3)
                         .contentType(HttpMediaType.AUDIO_WAV)
-                        .model("en-US_NarrowbandModel").build();
+                        .model("en-US_BroadbandModel").build();
                 File audio = new File(mFileName);
 
-
                 SpeechResults transcript = service.recognize(audio, options).execute();
-                Log.d(TAG, "TRANSCRIPT " + transcript);
-                return null;
+
+                return transcript;
               }
+
+            @Override
+            protected void onPostExecute(SpeechResults result) {
+                Log.d(TAG, "TRANSCRIPT " + result);
+                Log.d(TAG, "DONE");
+            }
             }.execute();
 
 
