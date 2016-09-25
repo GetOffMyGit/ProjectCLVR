@@ -70,14 +70,16 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private RadarChart languageChart;
     private RadarChart socialChart;
 
+<<<<<<< HEAD:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/RadarFragment.java
     private ScrollView graphScrollView;
 
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private  JSONArray socialTones;
     private Button getResult;
+=======
     ToneTabActivity toneTabActivity;
-
+>>>>>>> master:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/ToneAnalyserRadarFragment.java
 
     public ToneAnalyserRadarFragment() {
         // Required empty public constructor
@@ -114,15 +116,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
-        getResult = (Button) inflatedView.findViewById(R.id.getResult);
-        getResult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makePDF(inflatedView);
-                graphScrollView.setVisibility(View.INVISIBLE);
-                // getResult.setVisibility(View.VISIBLE);
-            }
-        });
+
         return inflatedView;
     }
 
@@ -153,9 +147,53 @@ public class ToneAnalyserRadarFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+<<<<<<< HEAD:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/RadarFragment.java
 
+        setUpGraph(emotionChart, emotionTones, emotionLabels);
+        setUpGraph(languageChart, languageTones, languageToneLabels);
+        setUpGraph(socialChart, socialTones, socialToneLabels);
 
+        getResult = (Button) inflatedView.findViewById(R.id.getResult);
+        getResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePDF(inflatedView);
+                graphScrollView.setVisibility(View.INVISIBLE);
+               // getResult.setVisibility(View.VISIBLE);
+            }
+        });
+        return inflatedView;
+    }
 
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity a;
+        if (context instanceof Activity) {
+            a=(Activity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+
+    }
+
+    /**
+     *  Mandatory interface
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+=======
+>>>>>>> master:dawndev/app/src/main/java/com/agile/dawndev/projectclvr/ToneAnalyser/ToneAnalyserRadarFragment.java
     }
 
     /*

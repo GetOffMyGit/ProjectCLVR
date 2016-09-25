@@ -9,6 +9,7 @@ import java.util.List;
 public class Company {
     private long id;
     private String name;
+    private int available;
     private List<Test> tests;
 
     public Company() {
@@ -18,6 +19,10 @@ public class Company {
 
     public String getName() {
         return this.name;
+    }
+
+    public int getAvailable() {
+        return this.available;
     }
 
     public List<Test> getTests() {

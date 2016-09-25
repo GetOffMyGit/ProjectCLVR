@@ -23,9 +23,9 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go to Speech Analyser"
+            android:text="Go to Tests"
             android:id="@+id/button2"
-            android:onClick="moveToSpeech"
+            android:onClick="moveToTests"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:background="@color/colorPrimary"

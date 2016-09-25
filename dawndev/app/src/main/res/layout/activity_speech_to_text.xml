@@ -13,7 +13,7 @@
         android:padding="16sp"
         android:textSize="24sp"
         android:textColor="@color/colorPrimaryDark"
-        android:text="@string/sttTitle"
+        android:text=""
         />
 
     <ScrollView
@@ -29,7 +29,7 @@
             android:padding="16dp"
             android:background="@color/grey400"
             android:layout_below="@+id/title"
-            android:text="@string/sttInstructions"
+            android:text=""
 
             />
 
