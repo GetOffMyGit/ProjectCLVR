@@ -74,7 +74,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
     private JSONArray emotionTones;
     private JSONArray languageTones;
-    private  JSONArray socialTones;
+    private JSONArray socialTones;
     private Button getResult;
     ToneTabActivity toneTabActivity;
 
@@ -108,7 +108,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
         graphCoverUpLayout.bringToFront();
 
-        graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView) ;
+        graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
 
         //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
@@ -142,12 +142,12 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
             // language Tone Graph
             String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-            JSONArray languageToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
             makeRadar(languageChart, languageToneCategories, languageToneLabels);
 
             // Social Tone Graph
             String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
-            JSONArray socialToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
             makeRadar(socialChart, socialToneCategories, socialToneLabels);
 
         } catch (JSONException e) {
@@ -155,18 +155,17 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
 
-
     }
 
     /*
         Generates the graph using the given inputs
      */
-    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels){
+    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels) {
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
         //retrieve the entry values
-        for ( int i = 0; i<array.length();i++){
+        for (int i = 0; i < array.length(); i++) {
             try {
-                entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()) ,array.getJSONObject(0).get("tone_name")));
+                entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()), array.getJSONObject(0).get("tone_name")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -212,7 +211,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         super.onAttach(context);
         Activity a;
         if (context instanceof Activity) {
-            a=(Activity) context;
+            a = (Activity) context;
         }
     }
 
@@ -231,21 +230,21 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Screenshot taking for emailing graph results
      */
 
-    public void makePDF(View rootView){
+    public void makePDF(View rootView) {
         Log.d("screenshot", rootView.toString());
-        boolean success =  false;
+        boolean success = false;
         getResult.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
-        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
+        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
-        if (!pdfDir.exists()){
+        if (!pdfDir.exists()) {
             success = pdfDir.mkdirs();
         }
 
-        if(!success){
+        if (!success) {
             Log.d("screesnhot", "folder not created");
-        }else{
+        } else {
             Log.d("screenshot", "folder created");
         }
 
@@ -262,31 +261,42 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         v1.buildDrawingCache(true);
 
+//        screen = Bitmap.createScaledBitmap(v1.getDrawingCache(), 250, 765, true);
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 
         Log.d("screenshot", screen.toString());
 
         v1.setDrawingCacheEnabled(false);
 
-        OutputStream fout = null;
-        File imageFile =  new File(pdfDir+"/graphScreenShot.jpg" );
-        try{
-            fout = new FileOutputStream(new File(pdfDir+  "/graphResult.pdf"));
-            //screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
-            fout.flush();
+        OutputStream foutPdf = null;
+        OutputStream foutImage = null;
+
+
+
+        try {
+            File imageFile = new File(pdfDir + "/graphScreenShot.png");
+            foutImage = new FileOutputStream(imageFile);
+            foutPdf = new FileOutputStream(new File(pdfDir + "/graphResult.pdf"));
+            screen.compress(Bitmap.CompressFormat.PNG, 90, foutImage);
+            foutImage.flush();
+            foutImage.close();
 
             Document document = new Document();
-            PdfWriter.getInstance(document, fout);
+            PdfWriter.getInstance(document, foutPdf);
             document.open();
-            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-//            bitmap = getResizedBitmap(bitmap,250 ,765);
-            addImage(document,bitmap);
-         //  addContent(document);
+            Image graph = Image.getInstance(imageFile.getAbsolutePath());
+//            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            graph.scaleAbsolute(500, 500);
+           // Bitmap.createBitmap(graph, );
+//            bitmap = getResizedBitmap(bitmap, 765, 250);
+            //addImage(document, graph);
+            //  addContent(document);
+            document.add(graph);
             document.close();
 
-           fout.close();
+            foutPdf.close();
 
-           // openScreenshot(imageFile);
+            // openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -298,38 +308,41 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
     }
 
-    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
-        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
-    }
-       private static void addImage(Document document,Bitmap bitmap)
-    {
+//    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth)
+//    {
+//        int width = bm.getWidth();
+//        int height = bm.getHeight();
+//        float scaleWidth = ((float) newWidth) / width;
+//        float scaleHeight = ((float) newHeight) / height;
+//        // create a matrix for the manipulation
+//        Matrix matrix = new Matrix();
+//        // resize the bit map
+//        matrix.postScale(scaleWidth, scaleHeight);
+//        // recreate the new Bitmap
+//        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
+//        return resizedBitmap;
+//    }
 
-        try
-        {
-Log.d("Generating pdf...","Generating");
+
+    private static void addImage(Document document, Bitmap bitmap) {
+        try {
+            Log.d("Generating pdf...", "Generating");
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
 
             Image image = Image.getInstance(byteArray);
             ///Here i set byte array..you can do bitmap to byte array and set in image...
-            try
-            {
+            try {
                 document.add(image);
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
-        }
-        catch (BadElementException e)
-        {
+        } catch (BadElementException e) {
             e.printStackTrace();
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         // image.scaleAbsolute(150f, 150f);
