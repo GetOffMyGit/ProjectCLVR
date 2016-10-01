@@ -23,12 +23,24 @@
             android:text="Welcome"
             android:id="@+id/welcome"
             android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
             android:layout_gravity="center_horizontal"
             />
 
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_marginTop="-50sp"
+            android:layout_marginRight="40sp"
+            android:id="@+id/progress_bar"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/colorPrimaryDark"
+            android:layout_gravity="right" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/my_recycler_view"
