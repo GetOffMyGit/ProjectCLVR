@@ -51,6 +51,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +76,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private RadarChart emotionChart;
     private RadarChart languageChart;
     private RadarChart socialChart;
+    private int counter = 1;
 
     private ScrollView graphScrollView;
 
@@ -263,11 +265,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
 //        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
 //                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
+        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
 
         v1.buildDrawingCache(true);
-
-//        screen = Bitmap.createScaledBitmap(v1.getDrawingCache(), 250, 765, true);
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 
         Log.d("screenshot", screen.toString());
@@ -288,26 +288,12 @@ public class ToneAnalyserRadarFragment extends Fragment {
             Document document = new Document();
             PdfWriter.getInstance(document, foutPdf);
             document.open();
-            Image graph = Image.getInstance(imageFile.getAbsolutePath());
-//            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            graph.scaleAbsolute(500, 500);
-           // Bitmap.createBitmap(graph, );
-//            bitmap = getResizedBitmap(bitmap, 765, 250);
-            //addImage(document, graph);
-            //  addContent(document);
-            document.add(new Paragraph("Question One"));
-            //add question and answer from db
-            document.add(new Paragraph("How are you feeling today?"));
-            document.add(new Paragraph("answer: like shit"));
-            document.add(graph);
 
-            //document.newPage();
-            //cb.addTemplate(page, 0, 0);
+            //for each question, call this method and pass the right imageFile to get the graphs
+            addQuestionAnswerAndGraph(document, imageFile);
+            addQuestionAnswerAndGraph(document, imageFile);
 
-            // Add your new data / text here
-            // for example...
             document.close();
-
             foutPdf.close();
 
             // openScreenshot(imageFile);
@@ -321,6 +307,19 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
     }
+    public void addQuestionAnswerAndGraph(Document document, File imageFile) throws DocumentException, IOException {
+        Image graph = Image.getInstance(imageFile.getAbsolutePath());
+        graph.scaleAbsolute(500, 500);
+
+        document.add(new Paragraph("Question "+counter));
+        counter++;
+
+        //add question and answer from db
+        document.add(new Paragraph("How are you feeling today?"));
+        document.add(new Paragraph("answer: like shit"));
+        document.add(graph);
+    }
+
 
     public void fetchQuestion(){
 //       DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
