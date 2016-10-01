@@ -1,5 +1,6 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -80,6 +81,9 @@ public class NewUserActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 

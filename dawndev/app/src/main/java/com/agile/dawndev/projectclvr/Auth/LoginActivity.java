@@ -202,7 +202,7 @@ public class LoginActivity extends AppCompatActivity implements
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists() != true) {
-//                            goToNewUser();
+                            goToNewUser();
                         }
                     }
 
