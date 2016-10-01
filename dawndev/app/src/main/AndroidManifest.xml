@@ -38,6 +38,8 @@
             android:label="@string/title_activity_personality"></activity>
         <activity android:name=".SendEmailActivity"></activity>
         <activity android:name=".CompanyMainActivity"></activity>
+        <activity android:name=".TestActivity"></activity>
+        <activity android:name=".ShowTestsActivity"></activity>
     </application>
 
 </manifest>
