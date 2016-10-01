@@ -279,7 +279,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
             PdfWriter.getInstance(document, fout);
             document.open();
             Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            bitmap = getResizedBitmap(bitmap,250 ,765);
+//            bitmap = getResizedBitmap(bitmap,250 ,765);
             addImage(document,bitmap);
          //  addContent(document);
             document.close();
