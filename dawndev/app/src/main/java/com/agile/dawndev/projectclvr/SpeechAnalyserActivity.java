@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,12 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
-    private String mCompanyName = "CrimsonJelly";
-    private String mTestNum = "test_1";
-    private String mUser = "Zelda";
-    private String mQuestionNum = "Q1";
 
-    private Button mContinueButton;
     private TextView mText;
     private TextView mResponseText;
 
@@ -75,10 +71,14 @@ public class SpeechAnalyserActivity extends Activity {
 
     private WavAudioRecorder mRecorder;
     private Button mButtonRecord = null;
+    private Button mContinueButton = null;
 
     private DatabaseReference mDatabase;
+    private String mCompanyName;
     private String mCompanyKey;
     private String mTestKey;
+    private String mUsername;
+    private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
 
@@ -102,6 +102,7 @@ public class SpeechAnalyserActivity extends Activity {
             if (extras != null) {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
+                mCompanyName = extras.getString("companyName");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
@@ -109,12 +110,19 @@ public class SpeechAnalyserActivity extends Activity {
         }
 
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.wav";
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
         audioFile = new File(mFileName);
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mContinueButton = (Button) findViewById(R.id.continue_button);
+        mContinueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toneResults(v);
+            }
+        });
+
         mText = (TextView) findViewById(R.id.isThisRight);
         mResponseText = (TextView) findViewById(R.id.textResult);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
@@ -128,6 +136,11 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         populateMap();
+
+        // get user's display name for recording storage purposes
+        FirebaseAuth mAuth;
+        mAuth = FirebaseAuth.getInstance();
+        mUsername = mAuth.getCurrentUser().getDisplayName();
         //updateText();
 
         // Check appropriate permissions
@@ -159,6 +172,7 @@ public class SpeechAnalyserActivity extends Activity {
                 recordAudio();
             }
         });
+
     }
 
     public void recordAudio() {
@@ -239,7 +253,7 @@ public class SpeechAnalyserActivity extends Activity {
 
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReferenceFromUrl("gs://projectclvr.appspot.com");
-        StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestNum + "/" + mUser);
+        StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestKey + "/" + mUsername);
 
         StorageReference recordingRef = companyRef.child("test1" + ".wav");
 
@@ -295,17 +309,21 @@ public class SpeechAnalyserActivity extends Activity {
     }
 
     private void finishRecording() {
+        Log.d("Pablo", mRecorder.getState().toString());
         countdowntimer.cancel();
         mRecorder.stop();
+        Log.d("Pablo", mRecorder.getState().toString());
         mRecorder.reset();
+        Log.d("Pablo", mRecorder.getState().toString());
         textviewtimer.setVisibility(View.INVISIBLE);
-        speechRecognition();
-        uploadRecording();
+        //speechRecognition();
+        //uploadRecording();
 
-        mButtonRecord.setText("Analysing Text...");
+        mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
         // set the text color to grey
         mButtonRecord.setTextColor(Color.parseColor("#737373"));
+        mContinueButton.setVisibility(View.VISIBLE);
     }
 
     public void updateText() {
@@ -317,8 +335,27 @@ public class SpeechAnalyserActivity extends Activity {
 
 
     public void toneResults(View view) {
-        Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
-        startActivity(intent);
+        // if there are no questions left
+        if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
+            Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
+            startActivity(intent);
+        } else {
+            Log.d("Pablo", mRecorder.getState().toString());
+            mContinueButton.setVisibility(View.INVISIBLE);
+
+            // show next question for user and allow recording again
+            mInstructionCounter++;
+            mQuestionNum++;
+            updateText();
+            mButtonRecord.setText("Start Recording");
+            mButtonRecord.setEnabled(true);
+            mButtonRecord.setTextColor(Color.WHITE);
+
+            // prepare for recording next question
+            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
+            audioFile = new File(mFileName);
+            mRecorder.setOutputFile(mFileName);
+        }
     }
 
     private boolean isNetworkAvailable() {
@@ -366,5 +403,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         });
     }
+
 
 }
