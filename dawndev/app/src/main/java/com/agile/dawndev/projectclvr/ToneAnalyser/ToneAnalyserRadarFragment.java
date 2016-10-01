@@ -36,9 +36,15 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -255,9 +261,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
 
-        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
+//        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+//                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+//        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
 
         v1.buildDrawingCache(true);
 
@@ -270,8 +276,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         OutputStream foutPdf = null;
         OutputStream foutImage = null;
-
-
 
         try {
             File imageFile = new File(pdfDir + "/graphScreenShot.png");
@@ -291,7 +295,17 @@ public class ToneAnalyserRadarFragment extends Fragment {
 //            bitmap = getResizedBitmap(bitmap, 765, 250);
             //addImage(document, graph);
             //  addContent(document);
+            document.add(new Paragraph("Question One"));
+            //add question and answer from db
+            document.add(new Paragraph("How are you feeling today?"));
+            document.add(new Paragraph("answer: like shit"));
             document.add(graph);
+
+            //document.newPage();
+            //cb.addTemplate(page, 0, 0);
+
+            // Add your new data / text here
+            // for example...
             document.close();
 
             foutPdf.close();
@@ -306,6 +320,27 @@ public class ToneAnalyserRadarFragment extends Fragment {
             e.printStackTrace();
         }
 
+    }
+
+    public void fetchQuestion(){
+//       DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+//
+//        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
+//                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
+//                }
+//                updateText();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//
+//        });
     }
 
 //    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth)
