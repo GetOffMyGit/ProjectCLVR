@@ -54,6 +54,7 @@
         android:textColor="@color/white"
         android:background="@drawable/gobutton2"
         android:elevation="3dp"
+        android:onClick="assignCompany"
         android:id="@+id/done_button"
         android:layout_below="@+id/editText"
         android:layout_centerHorizontal="true"

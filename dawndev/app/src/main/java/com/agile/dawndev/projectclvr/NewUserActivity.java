@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +19,7 @@ public class NewUserActivity extends AppCompatActivity {
     private AutoCompleteTextView mEdit;
     private DatabaseReference mDatabase;
     private DatabaseReference mCompanyRef;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -31,7 +33,7 @@ public class NewUserActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
         mEdit = (AutoCompleteTextView) findViewById(R.id.editText);
-
+        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
@@ -59,6 +61,26 @@ public class NewUserActivity extends AppCompatActivity {
 
     }
 
+
+    public void assignCompany(View view) {
+        String company = mEdit.getText().toString();
+        mDatabase.child("company_names").child(company).addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Long id = dataSnapshot.child("id").getValue(Long.class);
+                        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("companies").child(id.toString()).setValue(true);
+                        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").setValue(true);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
+    }
 
 
     @Override
