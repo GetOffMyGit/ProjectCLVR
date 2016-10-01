@@ -114,7 +114,6 @@ public class ShowTestsActivity extends AppCompatActivity {
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<UsersCompany, CompanyHolder>(
                 UsersCompany.class, R.layout.company_card_layout, CompanyHolder.class, lastFifty) {
 
-
             @Override
             public void populateViewHolder(CompanyHolder companyView, final UsersCompany company, int position) {
 

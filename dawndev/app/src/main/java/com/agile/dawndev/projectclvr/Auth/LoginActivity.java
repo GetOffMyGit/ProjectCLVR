@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.Models.User;
+import com.agile.dawndev.projectclvr.NewUserActivity;
 import com.agile.dawndev.projectclvr.R;
 import com.agile.dawndev.projectclvr.SpeechAnalyserActivity;
 import com.google.android.gms.auth.api.Auth;
@@ -183,6 +184,8 @@ public class LoginActivity extends AppCompatActivity implements
                             User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
                             mDatabase.child("users").child(fbUser.getUid()).setValue(user);
                         }
+
+                        checkIfExists();
                     }
 
                     @Override
@@ -191,6 +194,29 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 }
         );
+    }
+
+    private void checkIfExists() {
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists() != true) {
+                            goToNewUser();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
+    }
+
+    private void goToNewUser() {
+        startActivity(new Intent(this, NewUserActivity.class));
+        finish();
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -265,7 +291,6 @@ public class LoginActivity extends AppCompatActivity implements
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
-
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
