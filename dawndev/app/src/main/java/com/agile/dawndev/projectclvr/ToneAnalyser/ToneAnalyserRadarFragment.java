@@ -3,11 +3,7 @@ package com.agile.dawndev.projectclvr.ToneAnalyser;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +22,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.R;
 
 
@@ -36,22 +33,12 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Chapter;
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.LineSeparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +52,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,7 +71,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private JSONArray socialTones;
-    private Button getResult;
+    private Button nextQuestion;
     ToneTabActivity toneTabActivity;
 
 
@@ -117,23 +105,32 @@ public class ToneAnalyserRadarFragment extends Fragment {
         graphCoverUpLayout.bringToFront();
 
         graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
-
+        graphScrollView.setVisibility(View.INVISIBLE);
         //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
-        getResult = (Button) inflatedView.findViewById(R.id.getResult);
-        getResult.setOnClickListener(new View.OnClickListener() {
+        nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
+        nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                graphScrollView.setVisibility(View.VISIBLE);
                 makePDF(inflatedView);
                 graphScrollView.setVisibility(View.INVISIBLE);
-                // getResult.setVisibility(View.VISIBLE);
+                nextQuestion.setVisibility(View.VISIBLE);
+
             }
+
+
         });
         return inflatedView;
     }
 
+    private void goTo() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+
+        startActivity(intent);
+    }
     public void createGraphs(ToneTabActivity activity) {
         JSONObject reader = null;
         try {
@@ -241,7 +238,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     public void makePDF(View rootView) {
         Log.d("screenshot", rootView.toString());
         boolean success = false;
-        getResult.setVisibility(View.INVISIBLE);
+        nextQuestion.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
@@ -262,13 +259,19 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
-
+//        v1.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.WRAP_CONTENT,
+//                ScrollView.LayoutParams.WRAP_CONTENT));
+//
 //        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
 //                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
         v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
 
         v1.buildDrawingCache(true);
+
+
         screen = Bitmap.createBitmap(v1.getDrawingCache());
+
 
         Log.d("screenshot", screen.toString());
 
@@ -311,7 +314,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Image graph = Image.getInstance(imageFile.getAbsolutePath());
         graph.scaleAbsolute(500, 500);
 
-        document.add(new Paragraph("Question "+counter));
+        document.add(new Paragraph("Question "+counter+ new Date()));
         counter++;
 
         //add question and answer from db

@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:background="#ffffff"
         android:id="@+id/graphCoverUpLayout"
+        android:visibility="invisible"
         />
 
     <ScrollView
@@ -51,7 +52,7 @@
         android:id="@+id/getResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Take Screenshot"/>
+        android:text="Next Question >"/>
 
 
 </RelativeLayout>
