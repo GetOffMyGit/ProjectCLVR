@@ -104,6 +104,7 @@ public class TestListActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Intent intent = new Intent(view.getContext(), SpeechAnalyserActivity.class);
                         intent.setAction(Intent.ACTION_SEND);
+                        intent.putExtra("companyName", mCompanyName.getText());
                         intent.putExtra("companyKey", mCompanyKey);
                         intent.putExtra("testKey", itemKey);
                         intent.setType("text/plain");

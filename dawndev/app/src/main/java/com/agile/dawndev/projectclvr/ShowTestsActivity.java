@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.UsersCompany;
@@ -26,10 +27,12 @@ public class ShowTestsActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private HashMap<String,TextView> textViews = new HashMap<String,TextView>();
     private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     private DatabaseReference mRef;
     private DatabaseReference mCompanyRef;
-    private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
+    private FirebaseRecyclerAdapter<UsersCompany, CompanyHolder> mRecyclerViewAdapter;
+    private static final String TAG = "ShowTestsActivity";
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,7 @@ public class ShowTestsActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
@@ -110,6 +113,7 @@ public class ShowTestsActivity extends AppCompatActivity {
 
     private void attachRecyclerViewAdapter() {
 
+        Log.d(TAG, "STEP 1: loading data");
         Query lastFifty = mCompanyRef.limitToLast(50);
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Boolean, CompanyHolder>(
                 Boolean.class, R.layout.company_card_layout, CompanyHolder.class, lastFifty) {
@@ -117,8 +121,10 @@ public class ShowTestsActivity extends AppCompatActivity {
             @Override
             public void populateViewHolder(CompanyHolder companyView, final Boolean company, int position) {
 
+
                 DatabaseReference ref = getRef(position);
                 final String itemKey = ref.getKey();
+                Log.d(TAG, "STEP 2: company " +  position + " : " +  itemKey);
 
 
                 companyView.setName(itemKey);
@@ -138,8 +144,25 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         mRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
+            // http://stackoverflow.com/a/38986252 from
             public void onItemRangeInserted(int positionStart, int itemCount) {
-                mLayoutManager.smoothScrollToPosition(mRecyclerView, null, mRecyclerViewAdapter.getItemCount());
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = mRecyclerViewAdapter.getItemCount();
+
+                int lastVisiblePosition =   mLayoutManager.findLastVisibleItemPosition();
+
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (friendlyMessageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    mLayoutManager.scrollToPosition(positionStart);
+                }
+                if (lastVisiblePosition == -1) {
+                    // first time load - remove loading
+                    mProgressBar.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -166,14 +189,13 @@ public class ShowTestsActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.company_name);
                     field.setText(dataSnapshot.getValue().toString());
-                    Log.d("cjsetName", dataSnapshot.getValue().toString());
+                    Log.d(TAG, "STEP 3: " + dataSnapshot.getValue().toString());
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
-
 
             });
 
