@@ -30,7 +30,7 @@ public class ShowTestsActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private DatabaseReference mRef;
     private DatabaseReference mCompanyRef;
-    private FirebaseRecyclerAdapter<UsersCompany, CompanyHolder> mRecyclerViewAdapter;
+    private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
 
