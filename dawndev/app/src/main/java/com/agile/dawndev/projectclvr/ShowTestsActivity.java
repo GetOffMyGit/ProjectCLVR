@@ -30,7 +30,7 @@ public class ShowTestsActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private DatabaseReference mRef;
     private DatabaseReference mCompanyRef;
-    private FirebaseRecyclerAdapter<UsersCompany, CompanyHolder> mRecyclerViewAdapter;
+    private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
 
@@ -54,7 +54,7 @@ public class ShowTestsActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
-        mCompanyRef = mRef.child("users").child("1").child("companies");
+        mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
 
         attachRecyclerViewAdapter();
 
@@ -115,12 +115,11 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         Log.d(TAG, "STEP 1: loading data");
         Query lastFifty = mCompanyRef.limitToLast(50);
-        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<UsersCompany, CompanyHolder>(
-                UsersCompany.class, R.layout.company_card_layout, CompanyHolder.class, lastFifty) {
-
+        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Boolean, CompanyHolder>(
+                Boolean.class, R.layout.company_card_layout, CompanyHolder.class, lastFifty) {
 
             @Override
-            public void populateViewHolder(CompanyHolder companyView, final UsersCompany company, int position) {
+            public void populateViewHolder(CompanyHolder companyView, final Boolean company, int position) {
 
 
                 DatabaseReference ref = getRef(position);
@@ -236,6 +235,18 @@ public class ShowTestsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 }

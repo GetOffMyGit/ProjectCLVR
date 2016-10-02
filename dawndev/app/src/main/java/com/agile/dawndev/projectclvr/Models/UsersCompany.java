@@ -4,20 +4,20 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class UsersCompany {
-    private String key;
+    private boolean key;
 
 
     public UsersCompany() {}
 
-    public UsersCompany(String key) {
+    public UsersCompany(Boolean key) {
         this.key = key;
     }
 
-    public String getKey() {
+    public Boolean getKey() {
         return this.key;
     }
 
-    public void setKey(String key) {
+    public void setKey(Boolean key) {
         this.key = key;
     }
 

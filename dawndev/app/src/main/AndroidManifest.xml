@@ -48,6 +48,7 @@
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
         <activity android:name=".TestListActivity" />
+        <activity android:name=".NewUserActivity"></activity>
     </application>
 
 </manifest>
