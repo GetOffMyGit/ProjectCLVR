@@ -121,7 +121,7 @@ public class NewUserActivity extends AppCompatActivity {
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
-    
+
 
     @Override
     public void onResume() {
