@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -23,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -75,7 +77,7 @@ public class PersonalityInsightsRadarFragment extends Fragment {
         try {
             this.personalityTabActivity = activity;
 
-            String jsonResult = activity.getJsonResult();
+            HashMap<Integer, CLVRQuestion> jsonResult = activity.getJsonResult();
             reader = new JSONObject(jsonResult);
             JSONArray results = reader.getJSONObject("tree").getJSONArray("children");
 
