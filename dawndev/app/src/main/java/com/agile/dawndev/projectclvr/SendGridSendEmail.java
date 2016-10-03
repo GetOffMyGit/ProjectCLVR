@@ -2,9 +2,13 @@ package com.agile.dawndev.projectclvr;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 
 import com.sendgrid.SendGrid;
 import com.sendgrid.SendGridException;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Paul Joo on 13/09/2016.
@@ -44,6 +48,14 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         email.setFrom(mSentFrom);
         email.setSubject(mSubject);
         email.setText(mBody);
+
+        //add attachment
+        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+        try {
+            email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //Send email.
         try {
