@@ -129,18 +129,20 @@ public class ToneAnalyserRadarFragment extends Fragment {
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //nextQuestion.setVisibility(View.INVISIBLE);
+
                 //for(int i =0; i<10; i++){
 
                     //graphScrollView.setVisibility(View.VISIBLE);
                     createGraphs();
                     makePDF(true, "withImage");
                     //graphScrollView.setVisibility(View.INVISIBLE);
-                    nextQuestion.setVisibility(View.VISIBLE);
 
                 //}
                 mProgress.setVisibility(View.GONE);
-
                 nextQuestion.setVisibility(View.VISIBLE);
+
+
             }
         });
 
@@ -161,6 +163,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
             for(int question : testResult.keySet()){
                 String jsonResult = testResult.get(question).getmToneAnalysis();
+                Log.d("zoe-chan", question + " result" + jsonResult);
 
                 reader = new JSONObject(jsonResult);
                 JSONArray results = reader.getJSONArray("tone_categories");
@@ -337,9 +340,14 @@ public class ToneAnalyserRadarFragment extends Fragment {
             document.open();
 
             document.add(new Chunk(""));
+//            document.add(new Paragraph("Company:"));
+//            document.add(new Paragraph("Candidate:"));
+//            document.add(new Paragraph("Candidate Email:"));
 
             CLVRResults results = CLVRResults.getInstance();
             HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
+
+            //final graphs
 
             // iterate through all bitmaps or file location and call this
             for(int question : testResult.keySet()){
@@ -352,8 +360,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
             document.close();
             foutPdf.close();
 
-            // openScreenshot(imageFile);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -361,6 +367,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+
+        Log.d("zoe-chan", "PDF generated");
 
     }
     public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
@@ -377,6 +385,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
             Image graph = Image.getInstance(imageFile.getAbsolutePath());
             graph.scaleAbsolute(500, 500);
             document.add(graph);
+            Log.d("zoe-chan", "new page added");
+            document.newPage();
         }
 
     }
