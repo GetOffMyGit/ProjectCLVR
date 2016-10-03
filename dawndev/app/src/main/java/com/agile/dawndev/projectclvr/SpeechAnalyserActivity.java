@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.agile.dawndev.projectclvr.ToneAnalyser.ToneAnalyzerAsync;
 import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,6 +37,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
+import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
@@ -50,7 +53,9 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -100,8 +105,12 @@ public class SpeechAnalyserActivity extends Activity {
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mToneMap = new HashMap<Integer, String>();
+    private HashMap<Integer, String> mRecordingURLs = new HashMap<Integer, String>();
+    private String mOverallToneAnalysis;
+    private String mPersonalityAnalysis;
 
     private ToneAnalyzer mToneAnalyzerService;
+    private PersonalityInsights mPersonalityInsightsService;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,6 +199,9 @@ public class SpeechAnalyserActivity extends Activity {
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
         Log.d("Swamp monster", "new ad33f03f-e1b7-4963-a444-aef4001c5b7b");
         mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
+
+        mPersonalityInsightsService = new PersonalityInsights();
+        mPersonalityInsightsService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
     }
 
     public void recordAudio() {
@@ -259,14 +271,14 @@ public class SpeechAnalyserActivity extends Activity {
                 mTranscriptionMap.put(questionNum, finalTranscript);
                 mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
-                toneAnalysis(finalTranscript, questionNum);
+                toneAnalysis(finalTranscript, questionNum, false);
                 whenDone();
             }
         }.execute();
 
     }
 
-    private void toneAnalysis(final String stringInput, final int questionNum) {
+    private void toneAnalysis(final String stringInput, final int questionNum, final boolean forCombinedText) {
         new AsyncTask<Object, Void, String>() {
             @Override
             protected String doInBackground(Object... input) {
@@ -283,7 +295,11 @@ public class SpeechAnalyserActivity extends Activity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 if (result != null) {
-                    mToneMap.put(questionNum, result);
+                    if (!forCombinedText) {
+                        mToneMap.put(questionNum, result);
+                    } else {
+                        mOverallToneAnalysis = result;
+                    }
                     Log.d("Swamp monster", " " + mToneMap.size());
                     Log.d("Swamp monster", result);
                 }
@@ -291,8 +307,23 @@ public class SpeechAnalyserActivity extends Activity {
         }.execute(mToneAnalyzerService);
     }
 
-    private void personalityInsight() {
+    private void personalityInsight(final String stringInput) {
+        new AsyncTask<Object, Void, String>() {
+            @Override
+            protected String doInBackground(Object... input) {
+                PersonalityInsights service = (PersonalityInsights) input[0];
 
+                return service.getProfile(stringInput).execute().toString();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if (result != null) {
+                    mPersonalityAnalysis = result;
+                }
+            }
+        }.execute(mPersonalityInsightsService);
     }
 
     public void uploadRecording(File recordedResponse, int questionNum) {
@@ -304,7 +335,8 @@ public class SpeechAnalyserActivity extends Activity {
         StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestKey + "/" + mUsername);
 
         StorageReference recordingRef = companyRef.child("Question" + questionNum + ".wav");
-
+        //store location of recording
+        mRecordingURLs.put(questionNum, recordingRef.toString());
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
@@ -440,9 +472,31 @@ public class SpeechAnalyserActivity extends Activity {
                 }
             }
 
-            //Order the map
+            //Order the maps by key
+            String allTextAnswers = "";
+            HashMap<Integer, CLVRQuestion> questionResults = new HashMap<Integer, CLVRQuestion>();
+            String[] questionTitles = (String[])mInstructionAndAnswerMap.keySet().toArray();
+            //Get and concatenate all transcribed answers
+            //At the same time prepare a map of results per question for pdf generation
+            for (int i = 0; i < mTranscriptionMap.size(); i++) {
+                allTextAnswers += mTranscriptionMap.get(i+1) + "\n";
+                CLVRQuestion questionStuff = new CLVRQuestion(mInstructionAndAnswerMap.get(questionTitles[i]), mTranscriptionMap.get(i+1),
+                        mRecordingURLs.get(i+1), mToneMap.get(i+1));
+                questionResults.put(i+1, questionStuff);
+            }
 
-            //Send maps
+            // execute tone analysis and personality analysis on combined text
+            toneAnalysis(allTextAnswers, -1, true);
+            personalityInsight(allTextAnswers);
+
+            //Send all data for PDF generation in encapsulating object
+            CLVRResults finalResults = new CLVRResults();
+            finalResults.setmCompanyName(mCompanyName);
+            finalResults.setmUsername(mUsername);
+            finalResults.setmTestnumber(mTestKey);
+            finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
+            finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
+            finalResults.setClvrQuestionHashMap(questionResults);
 
             mProgressBar.setVisibility(View.INVISIBLE);
             //Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
