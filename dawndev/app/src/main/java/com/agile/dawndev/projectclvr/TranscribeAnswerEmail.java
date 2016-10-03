@@ -28,8 +28,8 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         this.mContext = context;
 
         //Set content for email from constructor.
-        //mSendTo = sentTo;
-        mSendTo = "ccha504@aucklanduni.ac.nz";
+        mSendTo = sentTo;
+        //mSendTo = "ccha504@aucklanduni.ac.nz";
         mSentFrom = sentFrom;
         mSubject = subject;
         mBody = body;
@@ -53,6 +53,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         //add attachment
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
+            //TODO: change to pdf with only transcript from graphResult.pdf
             email.addAttachment("transcript.pdf", new File(pdfDir + "/graphResult.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
