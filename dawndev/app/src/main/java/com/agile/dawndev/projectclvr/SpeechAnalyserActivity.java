@@ -84,8 +84,10 @@ public class SpeechAnalyserActivity extends Activity {
     private DatabaseReference mDatabase;
     private String mCompanyName;
     private String mCompanyKey;
+    private String mCompanyEmail;
     private String mTestKey;
     private String mUsername;
+    private String mUserEmail;
     private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
@@ -126,6 +128,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
                 mCompanyName = extras.getString("companyName");
+                mCompanyEmail = extras.getString("companyEmail");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
@@ -167,6 +170,7 @@ public class SpeechAnalyserActivity extends Activity {
         FirebaseAuth mAuth;
         mAuth = FirebaseAuth.getInstance();
         mUsername = mAuth.getCurrentUser().getDisplayName();
+        mUserEmail = mAuth.getCurrentUser().getEmail();
         //updateText();
 
         // Check appropriate permissions
@@ -408,6 +412,9 @@ public class SpeechAnalyserActivity extends Activity {
         String instructionKey = instructionSet[mInstructionCounter];
         mTitle.setText(instructionKey);
         mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
+
+        // change recording time for this question
+        timerLimit = mqTimes.get(instructionKey) * 1000;
     }
 
     public void continueButtonOnClick(View view) {
@@ -504,10 +511,13 @@ public class SpeechAnalyserActivity extends Activity {
             personalityInsight(test);
         }
         if(num == totalNumTasks) {
+
             //Send all data for PDF generation in encapsulating object
             CLVRResults finalResults = CLVRResults.getInstance();
             finalResults.setmCompanyName(mCompanyName);
+            finalResults.setmCompanyEmail(mCompanyEmail);
             finalResults.setmUsername(mUsername);
+            finalResults.setmUserEmail(mUserEmail);
             finalResults.setmTestnumber(mTestKey);
             finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
