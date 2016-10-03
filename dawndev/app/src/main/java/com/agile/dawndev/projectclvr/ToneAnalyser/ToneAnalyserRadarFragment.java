@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import com.agile.dawndev.projectclvr.MainActivity;
@@ -70,6 +71,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private JSONArray emotionTones;
     private JSONArray languageTones;
     private JSONArray socialTones;
+
+    private ProgressBar mProgress;
+
     private Button nextQuestion;
     ToneTabActivity toneTabActivity;
 
@@ -105,19 +109,28 @@ public class ToneAnalyserRadarFragment extends Fragment {
         final LinearLayoutCompat  llc = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
         //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
         //graphScrollView.setVisibility(View.INVISIBLE);
+        mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
+
         //find the graphs in the fragment
+
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
         nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
+//        graphScrollView.setVisibility(View.INVISIBLE);
+
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // graphScrollView.setVisibility(View.VISIBLE);
-                makePDF(llc);
-                // graphScrollView.setVisibility(View.INVISIBLE);
-                nextQuestion.setVisibility(View.VISIBLE);
+                for(int i =0; i<10; i++){
 
+                    //graphScrollView.setVisibility(View.VISIBLE);
+                    makePDF(llc);
+                    //graphScrollView.setVisibility(View.INVISIBLE);
+                    //nextQuestion.setVisibility(View.VISIBLE);
+
+                }
+                mProgress.setVisibility(View.GONE);
             }
 
         });
