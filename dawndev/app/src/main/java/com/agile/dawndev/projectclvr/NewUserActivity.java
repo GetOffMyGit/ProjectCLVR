@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,10 +24,8 @@ public class NewUserActivity extends AppCompatActivity {
 
     private AutoCompleteTextView mEdit;
     private DatabaseReference mDatabase;
-    private DatabaseReference mCompanyRef;
     private FirebaseAuth mAuth;
     private EditText mPassword;
-    private boolean mPasswordCheck;
 
 
     @Override
@@ -38,6 +39,7 @@ public class NewUserActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
         mEdit = (AutoCompleteTextView) findViewById(R.id.editText);
+
         mPassword = (EditText) findViewById(R.id.companyPassword);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -75,7 +77,6 @@ public class NewUserActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
-                            mPasswordCheck = true;
                             addCompany();
                         }
                         else {
@@ -116,8 +117,6 @@ public class NewUserActivity extends AppCompatActivity {
                     }
                 }
         );
-
-
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -125,7 +124,9 @@ public class NewUserActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
+
+        // Always call the superclass method first
+        super.onResume();
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.

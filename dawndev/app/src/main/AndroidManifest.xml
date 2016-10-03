@@ -49,7 +49,9 @@
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
         <activity android:name=".TestListActivity" />
-        <activity android:name=".NewUserActivity"></activity>
+        <activity android:name=".NewUserActivity" />
+        <activity android:name=".TestInformationActivity" />
+        <activity android:name=".PrivacyPolicyActivity"></activity>
     </application>
 
 </manifest>
