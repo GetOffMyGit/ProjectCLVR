@@ -182,8 +182,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
             JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
             makeRadar(socialChart, socialToneCategories, socialToneLabels);
 
-            makePDF(screenshotArea);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
