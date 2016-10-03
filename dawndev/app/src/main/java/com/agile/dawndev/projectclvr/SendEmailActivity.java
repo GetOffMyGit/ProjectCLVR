@@ -1,8 +1,8 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,9 +35,16 @@ public class SendEmailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Create SendGridSendEmail object. Send context and email content.
+
+                //Log.d("email", CLVRResults.getInstance().getmCompanyEmail());
                 SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task.execute();
+
+//              Log.d("email", CLVRResults.getInstance().getmUserEmail());
+                TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(SendEmailActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                //Execute async task.
+                task2.execute();
 
                 Context context = getApplicationContext();
                 CharSequence text = "Email Sent!";

@@ -60,25 +60,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
-
-    <TextView
-        android:id="@+id/textResult"
-        android:layout_width="fill_parent"
-        android:layout_height="210dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_below="@+id/textViewtimer"
-        android:background="@drawable/back"
-        android:height="150dp"
-        android:text=""/>
-
-
     <TextView
         android:id="@+id/isThisRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Is this correct?"
-        android:layout_below="@+id/textResult"
+        android:layout_below="@+id/textViewtimer"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"

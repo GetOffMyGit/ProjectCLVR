@@ -74,5 +74,9 @@
     <string name="terms_and_conditions">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut faucibus arcu non vestibulum interdum. Phasellus id sodales nisi. Donec ut cursus diam. Morbi in diam id diam posuere rutrum. Donec faucibus nisl sit amet tortor scelerisque, ac hendrerit nibh mollis. Nam quis erat rutrum, blandit dui in, sollicitudin ante. Pellentesque dictum nisi eget dui fringilla, in sollicitudin dolor elementum. Donec eget odio vel nisi scelerisque placerat a fermentum magna. Sed pretium est felis, non porttitor est placerat eget. In vel tempor purus. Cras lacus leo, varius sit amet dui vitae, porttitor dapibus metus. Sed a vulputate libero, nec ultricies leo. Etiam ut tempor justo. Donec volutpat pulvinar dui quis molestie. Morbi ultrices diam faucibus, dignissim urna a, aliquam nulla.
 
         Donec vestibulum tempus suscipit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus a risus quis neque ultrices pulvinar nec pharetra arcu. Etiam varius, leo et hendrerit porttitor, mi leo finibus tellus, id pulvinar quam nibh at tortor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin tristique ex arcu, non consectetur odio semper luctus. Cras in euismod libero, ut finibus enim.</string>
+    <string name="add_company_message">Add a Company</string>
+    <string name="add_company_info">If a company has referred you to use CLVR, specify their name along with the password they have provided</string>
+
+
 </resources>
 

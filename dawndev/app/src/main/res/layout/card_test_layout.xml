@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:id="@+id/test_name"
             android:textSize="16sp"
-            android:text="Developer Test"
+            android:text=""
             android:layout_marginLeft="25dp"
             android:gravity="center"
             />
@@ -39,7 +39,7 @@
             android:layout_height="match_parent"
             android:id="@+id/number_of_questions"
             android:textSize="16sp"
-            android:text="8 Questions"
+            android:text=""
             android:layout_marginLeft="70dp"
             android:gravity="center"
             android:layout_toEndOf="@id/test_name"/>

@@ -66,7 +66,6 @@ public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
 
     private TextView mText;
-    private TextView mResponseText;
     private ProgressBar mProgressBar;
 
     private CountDownTimer countdowntimer;
@@ -84,8 +83,10 @@ public class SpeechAnalyserActivity extends Activity {
     private DatabaseReference mDatabase;
     private String mCompanyName;
     private String mCompanyKey;
+    private String mCompanyEmail;
     private String mTestKey;
     private String mUsername;
+    private String mUserEmail;
     private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
@@ -105,6 +106,7 @@ public class SpeechAnalyserActivity extends Activity {
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mToneMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mRecordingURLs = new HashMap<Integer, String>();
+    private HashMap<String, Integer> mqTimes = new HashMap<String, Integer>();
     private String mOverallToneAnalysis;
     private String mPersonalityAnalysis;
 
@@ -125,6 +127,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
                 mCompanyName = extras.getString("companyName");
+                mCompanyEmail = extras.getString("companyEmail");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
@@ -147,7 +150,6 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mText = (TextView) findViewById(R.id.isThisRight);
-        mResponseText = (TextView) findViewById(R.id.textResult);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
@@ -166,6 +168,7 @@ public class SpeechAnalyserActivity extends Activity {
         FirebaseAuth mAuth;
         mAuth = FirebaseAuth.getInstance();
         mUsername = mAuth.getCurrentUser().getDisplayName();
+        mUserEmail = mAuth.getCurrentUser().getEmail();
         //updateText();
 
         // Check appropriate permissions
@@ -207,7 +210,6 @@ public class SpeechAnalyserActivity extends Activity {
 
     public void recordAudio() {
         if (WavAudioRecorder.State.INITIALIZING == mRecorder.getState()) {
-            mResponseText.setText("");
             mRecorder.prepare();
             mRecorder.start();
             mButtonRecord.setText("Stop Recording");
@@ -270,7 +272,6 @@ public class SpeechAnalyserActivity extends Activity {
                     finalTranscript += trans;
                 }
                 mTranscriptionMap.put(questionNum, finalTranscript);
-                mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
                 whenDone();
@@ -407,6 +408,9 @@ public class SpeechAnalyserActivity extends Activity {
         String instructionKey = instructionSet[mInstructionCounter];
         mTitle.setText(instructionKey);
         mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
+
+        // change recording time for this question
+        timerLimit = mqTimes.get(instructionKey) * 1000;
     }
 
     public void continueButtonOnClick(View view) {
@@ -503,10 +507,13 @@ public class SpeechAnalyserActivity extends Activity {
             personalityInsight(test);
         }
         if(num == totalNumTasks) {
+
             //Send all data for PDF generation in encapsulating object
             CLVRResults finalResults = CLVRResults.getInstance();
             finalResults.setmCompanyName(mCompanyName);
+            finalResults.setmCompanyEmail(mCompanyEmail);
             finalResults.setmUsername(mUsername);
+            finalResults.setmUserEmail(mUserEmail);
             finalResults.setmTestnumber(mTestKey);
             finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
@@ -522,7 +529,8 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
-                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
+                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.child("Question").getValue().toString());
+                    mqTimes.put(questionSnapshot.getKey(), Integer.parseInt(questionSnapshot.child("Time").getValue().toString()));
                 }
                 updateText();
                 numOfTasks = mInstructionAndAnswerMap.size() * 2;

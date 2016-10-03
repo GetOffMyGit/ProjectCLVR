@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Created by Paul Joo on 13/09/2016.
  */
-public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
+public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
     private Context mContext;
 
@@ -24,7 +24,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     private String mBody;
 
     //Constructor providing context and content for the email.
-    public SendGridSendEmail(Context context, String sentTo, String sentFrom, String subject, String body) {
+    public TranscribeAnswerEmail(Context context, String sentTo, String sentFrom, String subject, String body) {
         this.mContext = context;
 
         //Set content for email from constructor.
@@ -53,7 +53,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         //add attachment
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
+            email.addAttachment("transcript.pdf", new File(pdfDir + "/graphResult.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
