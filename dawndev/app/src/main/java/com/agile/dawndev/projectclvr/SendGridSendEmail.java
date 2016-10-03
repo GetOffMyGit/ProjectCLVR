@@ -28,8 +28,8 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         this.mContext = context;
 
         //Set content for email from constructor.
-        //mSendTo = sentTo;
-        mSendTo = "ccha504@aucklanduni.ac.nz";
+        mSendTo = sentTo;
+        //mSendTo = "ccha504@aucklanduni.ac.nz";
         mSentFrom = sentFrom;
         mSubject = subject;
         mBody = body;

@@ -39,7 +39,7 @@ public class SendEmailActivity extends AppCompatActivity {
                 //Create SendGridSendEmail object. Send context and email content.
 
                 //Log.d("email", CLVRResults.getInstance().getmCompanyEmail());
-                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, CLVRResults.getInstance().getmCompanyEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task.execute();
 
