@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,10 +35,13 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
+import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
 
 import java.io.File;
@@ -46,7 +51,9 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -83,18 +90,29 @@ public class SpeechAnalyserActivity extends Activity {
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
 
-
     private static final int PERMISSION_ALL = 1;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private String mFileName;
     private int numOfTasks;
+    private int totalNumTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
+    private AtomicInteger totalCompleted = new AtomicInteger(1);
     private File audioFile;
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
+    private HashMap<Integer, String> mToneMap = new HashMap<Integer, String>();
+    private HashMap<Integer, String> mRecordingURLs = new HashMap<Integer, String>();
+    private String mOverallToneAnalysis;
+    private String mPersonalityAnalysis;
+
+    private ToneAnalyzer mToneAnalyzerService;
+    private PersonalityInsights mPersonalityInsightsService;
+    private String mAllTextAnswers = "";
+    private HashMap<Integer, CLVRQuestion> mQuestionResults = new HashMap<Integer, CLVRQuestion>();
+    private String[] mQuestionTitles;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +142,7 @@ public class SpeechAnalyserActivity extends Activity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toneResults(v);
+                continueButtonOnClick(v);
             }
         });
 
@@ -141,7 +159,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         Log.d("cj", mTestKey);
         Log.d("cj", mCompanyKey);
-
 
         populateMap();
 
@@ -181,6 +198,11 @@ public class SpeechAnalyserActivity extends Activity {
             }
         });
 
+        mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
+        mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
+
+        mPersonalityInsightsService = new PersonalityInsights();
+        mPersonalityInsightsService.setUsernameAndPassword("08370735-0a92-4d70-aa80-dc10e80c70a7", "gYZ48Vlbj6xT");
     }
 
     public void recordAudio() {
@@ -216,7 +238,7 @@ public class SpeechAnalyserActivity extends Activity {
         return true;
     }
 
-    private void speechRecognition(final File recordedResponse) {
+    private void speechRecognition(final File recordedResponse, final int questionNum) {
         Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
             @Override
@@ -247,14 +269,60 @@ public class SpeechAnalyserActivity extends Activity {
                     String trans = t.getAlternatives().get(0).getTranscript();
                     finalTranscript += trans;
                 }
-                mTranscriptionMap.put(mInstructionCounter, finalTranscript);
-                Log.d("Swamp Monster", finalTranscript);
+                mTranscriptionMap.put(questionNum, finalTranscript);
                 mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
+                toneAnalysis(finalTranscript, questionNum, false);
                 whenDone();
             }
         }.execute();
 
+    }
+
+    private void toneAnalysis(final String stringInput, final int questionNum, final boolean forCombinedText) {
+        new AsyncTask<Object, Void, String>() {
+            @Override
+            protected String doInBackground(Object... input) {
+                ToneAnalyzer service = (ToneAnalyzer) input[0];
+                //String text = (String) input[1];
+
+                ToneAnalysis tone = service.getTone(stringInput, null).execute();
+                return tone.getDocumentTone().toString();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if (result != null) {
+                    if (!forCombinedText) {
+                        mToneMap.put(questionNum, result);
+                        doDoneDone();
+                    } else {
+                        mOverallToneAnalysis = result;
+                        doDoneDone();
+                    }
+                }
+            }
+        }.execute(mToneAnalyzerService);
+    }
+
+    private void personalityInsight(final String stringInput) {
+        new AsyncTask<Object, Void, String>() {
+            @Override
+            protected String doInBackground(Object... input) {
+                PersonalityInsights service = (PersonalityInsights) input[0];
+                return service.getProfile(stringInput).execute().toString();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if (result != null) {
+                    mPersonalityAnalysis = result;
+                    doDoneDone();
+                }
+            }
+        }.execute(mPersonalityInsightsService);
     }
 
     public void uploadRecording(File recordedResponse, int questionNum) {
@@ -266,7 +334,8 @@ public class SpeechAnalyserActivity extends Activity {
         StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestKey + "/" + mUsername);
 
         StorageReference recordingRef = companyRef.child("Question" + questionNum + ".wav");
-
+        //store location of recording
+        mRecordingURLs.put(questionNum, recordingRef.toString());
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
@@ -340,13 +409,12 @@ public class SpeechAnalyserActivity extends Activity {
         mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
     }
 
-
-    public void toneResults(View view) {
+    public void continueButtonOnClick(View view) {
         // if there are no questions left
         if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
             mInstructionCounter++;
             mFileMap.put(mInstructionCounter, mFileName);
-            doUploadAndRecog();
+            doUploadingAndRecognition();
         } else {
             mContinueButton.setVisibility(View.INVISIBLE);
 
@@ -367,11 +435,11 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
-    private void doUploadAndRecog() {
+    private void doUploadingAndRecognition() {
         mProgressBar.setVisibility(View.VISIBLE);
         for(int questionNum : mFileMap.keySet()) {
             File theFile = new File(mFileMap.get(questionNum));
-            speechRecognition(theFile);
+            speechRecognition(theFile, questionNum);
             uploadRecording(theFile, questionNum);
         }
     }
@@ -408,9 +476,48 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    private void doDoneDone() {
+        int num = totalCompleted.getAndIncrement();
+        if(num == totalNumTasks - 2) {
+            //Order the maps by key
+
+            //Get and concatenate all transcribed answers
+            //At the same time prepare a map of results per question for pdf generation
+            for (int i = 0; i < mTranscriptionMap.size(); i++) {
+                mAllTextAnswers += mTranscriptionMap.get(i+1) + "\n";
+                CLVRQuestion questionStuff = new CLVRQuestion(mInstructionAndAnswerMap.get(mQuestionTitles[i]), mTranscriptionMap.get(i+1),
+                        mRecordingURLs.get(i+1), mToneMap.get(i+1));
+                mQuestionResults.put(i+1, questionStuff);
+            }
+
+            // execute tone analysis and personality analysis on combined text
+            toneAnalysis(mAllTextAnswers, -1, true);
+            String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
+                    "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
+                    "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
+                    "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
+                    "promise I'll fight just as hard in a second term. \n"
+                    + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
+                    "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
+                    "had frozen up.";
+            personalityInsight(test);
+        }
+        if(num == totalNumTasks) {
+            //Send all data for PDF generation in encapsulating object
+            CLVRResults finalResults = CLVRResults.getInstance();
+            finalResults.setmCompanyName(mCompanyName);
+            finalResults.setmUsername(mUsername);
+            finalResults.setmTestnumber(mTestKey);
+            finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
+            finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
+            finalResults.setClvrQuestionHashMap(mQuestionResults);
+
+            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            startActivity(intent);
+        }
+    }
+
     public void populateMap() {
-
-
         mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -419,6 +526,8 @@ public class SpeechAnalyserActivity extends Activity {
                 }
                 updateText();
                 numOfTasks = mInstructionAndAnswerMap.size() * 2;
+                totalNumTasks = mInstructionAndAnswerMap.size() + 2;
+                mQuestionTitles = Arrays.copyOf(mInstructionAndAnswerMap.keySet().toArray(), mInstructionAndAnswerMap.size(), String[].class);
             }
 
             @Override
