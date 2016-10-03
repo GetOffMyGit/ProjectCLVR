@@ -31,8 +31,11 @@ public class GraphGenActivity extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 //        rootLayout.setupWithViewPager(viewPager);
+
+        // Get bundle from previous activity with question jsonResults, store in field
     }
 
+    //output -> bundle list of json results, need to change in the tone ana fragment
     public String getJsonResult() {
         return this.output;
     }
@@ -75,6 +78,8 @@ public class GraphGenActivity extends AppCompatActivity {
             mFragmentTitleList.add(title);
         }
     }
+
+    String[] jsonResults;
 
     String output = "{\n" +
             "   \"tone_categories\": [\n" +
