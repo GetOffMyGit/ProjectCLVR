@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:id="@+id/company_name"
             android:textSize="16sp"
-            android:text="Orion Health"
+            android:text=""
             android:layout_marginLeft="25dp"
             android:gravity="center"
             />
@@ -39,7 +39,7 @@
             android:layout_height="match_parent"
             android:id="@+id/number_of_tests"
             android:textSize="16sp"
-            android:text="3 Tests Available"
+            android:text=""
             android:layout_marginLeft="70dp"
             android:gravity="center"
             android:layout_toEndOf="@id/company_name"/>
