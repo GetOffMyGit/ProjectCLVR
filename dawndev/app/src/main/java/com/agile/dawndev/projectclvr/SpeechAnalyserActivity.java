@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.ToneAnalyser.ToneAnalyzerAsync;
 import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,6 +39,8 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
+import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
 
 import java.io.File;
@@ -96,6 +99,9 @@ public class SpeechAnalyserActivity extends Activity {
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
+    private HashMap<Integer, String> mToneMap = new HashMap<Integer, String>();
+
+    private ToneAnalyzer mToneAnalyzerService;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +130,7 @@ public class SpeechAnalyserActivity extends Activity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toneResults(v);
+                continueButtonOnClick(v);
             }
         });
 
@@ -181,6 +187,9 @@ public class SpeechAnalyserActivity extends Activity {
             }
         });
 
+        mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
+        Log.d("Swamp monster", "new ad33f03f-e1b7-4963-a444-aef4001c5b7b");
+        mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
     }
 
     public void recordAudio() {
@@ -216,7 +225,7 @@ public class SpeechAnalyserActivity extends Activity {
         return true;
     }
 
-    private void speechRecognition(final File recordedResponse) {
+    private void speechRecognition(final File recordedResponse, final int questionNum) {
         Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
             @Override
@@ -247,13 +256,42 @@ public class SpeechAnalyserActivity extends Activity {
                     String trans = t.getAlternatives().get(0).getTranscript();
                     finalTranscript += trans;
                 }
-                mTranscriptionMap.put(mInstructionCounter, finalTranscript);
-                Log.d("Swamp Monster", finalTranscript);
+                mTranscriptionMap.put(questionNum, finalTranscript);
                 mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
+                toneAnalysis(finalTranscript, questionNum);
                 whenDone();
             }
         }.execute();
+
+    }
+
+    private void toneAnalysis(final String stringInput, final int questionNum) {
+        new AsyncTask<Object, Void, String>() {
+            @Override
+            protected String doInBackground(Object... input) {
+                Log.d("Swamp monster", " " + stringInput);
+                ToneAnalyzer service = (ToneAnalyzer) input[0];
+                //String text = (String) input[1];
+
+                ToneAnalysis tone = service.getTone(stringInput, null).execute();
+                Log.d("Swamp monster", " NAAAAASABEEENAAAACHHEE CCEEHAHAZHABBAA" + stringInput);
+                return tone.getDocumentTone().toString();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                if (result != null) {
+                    mToneMap.put(questionNum, result);
+                    Log.d("Swamp monster", " " + mToneMap.size());
+                    Log.d("Swamp monster", result);
+                }
+            }
+        }.execute(mToneAnalyzerService);
+    }
+
+    private void personalityInsight() {
 
     }
 
@@ -341,12 +379,12 @@ public class SpeechAnalyserActivity extends Activity {
     }
 
 
-    public void toneResults(View view) {
+    public void continueButtonOnClick(View view) {
         // if there are no questions left
         if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
             mInstructionCounter++;
             mFileMap.put(mInstructionCounter, mFileName);
-            doUploadAndRecog();
+            doUploadingAndRecognition();
         } else {
             mContinueButton.setVisibility(View.INVISIBLE);
 
@@ -367,11 +405,11 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
-    private void doUploadAndRecog() {
+    private void doUploadingAndRecognition() {
         mProgressBar.setVisibility(View.VISIBLE);
         for(int questionNum : mFileMap.keySet()) {
             File theFile = new File(mFileMap.get(questionNum));
-            speechRecognition(theFile);
+            speechRecognition(theFile, questionNum);
             uploadRecording(theFile, questionNum);
         }
     }
@@ -402,15 +440,17 @@ public class SpeechAnalyserActivity extends Activity {
                 }
             }
 
+            //Order the map
+
+            //Send maps
+
             mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
+            //startActivity(intent);
         }
     }
 
     public void populateMap() {
-
-
         mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
