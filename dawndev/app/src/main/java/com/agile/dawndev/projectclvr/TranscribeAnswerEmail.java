@@ -50,10 +50,9 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         email.setSubject(mSubject);
         email.setText(mBody);
 
-        //add attachment
+        //add attachment with only the transcrip answers
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            //TODO: change to pdf with only transcript from graphResult.pdf
             email.addAttachment("transcript.pdf", new File(pdfDir + "/answers.pdf"));
         } catch (IOException e) {
             e.printStackTrace();

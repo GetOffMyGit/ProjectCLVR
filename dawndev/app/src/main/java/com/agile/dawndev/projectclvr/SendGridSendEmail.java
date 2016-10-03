@@ -50,7 +50,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         email.setSubject(mSubject);
         email.setText(mBody);
 
-        //add attachment
+        //add attachment with graphs
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
             email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));

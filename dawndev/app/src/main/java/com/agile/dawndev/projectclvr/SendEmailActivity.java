@@ -36,14 +36,12 @@ public class SendEmailActivity extends AppCompatActivity {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Create SendGridSendEmail object. Send context and email content.
-
-                //Log.d("email", CLVRResults.getInstance().getmCompanyEmail());
+                //Create SendGridSendEmail object for company pdf. Send context and email content.
                 SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, CLVRResults.getInstance().getmCompanyEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task.execute();
 
-//              Log.d("email", CLVRResults.getInstance().getmUserEmail());
+                //Create SendGridSendEmail object for user pdf. Send context and email content.
                 TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(SendEmailActivity.this, CLVRResults.getInstance().getmUserEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task2.execute();
