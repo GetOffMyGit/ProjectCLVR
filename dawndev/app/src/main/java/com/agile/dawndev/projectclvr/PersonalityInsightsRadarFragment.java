@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr.PersonalityInsight;
+package com.agile.dawndev.projectclvr;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.agile.dawndev.projectclvr.R;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -36,7 +35,7 @@ public class PersonalityInsightsRadarFragment extends Fragment {
     private RadarChart consumerChart;
     private RadarChart valuesChart;
 
-    PersonalityTabActivity personalityTabActivity;
+    GraphGenActivity personalityTabActivity;
 
     public PersonalityInsightsRadarFragment() {
         // Required empty public constructor
@@ -71,7 +70,7 @@ public class PersonalityInsightsRadarFragment extends Fragment {
         return inflatedView;
     }
 
-    public void createGraphs(PersonalityTabActivity activity) {
+    public void createGraphs(GraphGenActivity activity) {
         JSONObject reader = null;
         try {
             this.personalityTabActivity = activity;
