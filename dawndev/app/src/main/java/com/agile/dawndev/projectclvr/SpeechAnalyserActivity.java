@@ -127,6 +127,7 @@ public class SpeechAnalyserActivity extends Activity {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
             mCompanyName = (String) savedInstanceState.getSerializable("companyName");
+            mCompanyEmail = (String) savedInstanceState.getSerializable("companyEmail");
         }
 
 
