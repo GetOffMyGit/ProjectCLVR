@@ -19,12 +19,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
+import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,6 +34,7 @@ import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -52,6 +54,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -78,6 +81,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private Button nextQuestion;
     GraphGenActivity graphGenActivity;
 
+    HashMap<Integer, CLVRQuestion> testResult;
 
     public ToneAnalyserRadarFragment() {
         // Required empty public constructor
@@ -110,8 +114,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         screenshotArea = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
 
-        Log.d("ZOE", screenshotArea.toString());
-
         //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
         //graphScrollView.setVisibility(View.INVISIBLE);
         mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
@@ -127,18 +129,20 @@ public class ToneAnalyserRadarFragment extends Fragment {
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //nextQuestion.setVisibility(View.INVISIBLE);
+
                 //for(int i =0; i<10; i++){
 
                     //graphScrollView.setVisibility(View.VISIBLE);
                     createGraphs();
-                    makePDF(screenshotArea);
+                    makePDF(true, "withImage");
                     //graphScrollView.setVisibility(View.INVISIBLE);
-                    //nextQuestion.setVisibility(View.VISIBLE);
 
                 //}
                 mProgress.setVisibility(View.GONE);
-
                 nextQuestion.setVisibility(View.VISIBLE);
+
+
             }
         });
 
@@ -151,36 +155,39 @@ public class ToneAnalyserRadarFragment extends Fragment {
 //        createGraphs();
     }
 
-    private void goTo() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
-    }
-
     public void createGraphs() {
         JSONObject reader = null;
         try {
             this.graphGenActivity = (GraphGenActivity)getActivity();
-            String jsonResult = graphGenActivity.getJsonResult();
+            this.testResult = graphGenActivity.getJsonResult();
 
-            Log.d("ZOE", jsonResult);
+            for(int question : testResult.keySet()){
+                String jsonResult = testResult.get(question).getmToneAnalysis();
+                Log.d("zoe-chan", question + " result" + jsonResult);
 
-            reader = new JSONObject(jsonResult);
-            JSONArray results = reader.getJSONArray("tone_categories");
+                reader = new JSONObject(jsonResult);
+                JSONArray results = reader.getJSONArray("tone_categories");
 
-            // Emotion Tone Graph
-            String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-            JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
-            makeRadar(emotionChart, emotionToneCategories, emotionLabels);
+                // Emotion Tone Graph
+                String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
+                JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
+                makeRadar(emotionChart, emotionToneCategories, emotionLabels);
 
-            // language Tone Graph
-            String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-            JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
-            makeRadar(languageChart, languageToneCategories, languageToneLabels);
+                // language Tone Graph
+                String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
+                JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
+                makeRadar(languageChart, languageToneCategories, languageToneLabels);
 
-            // Social Tone Graph
-            String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
-            JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
-            makeRadar(socialChart, socialToneCategories, socialToneLabels);
+                // Social Tone Graph
+                String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+                JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
+                makeRadar(socialChart, socialToneCategories, socialToneLabels);
+
+                takeScreenShot(screenshotArea, question);
+            }
+
+
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -254,17 +261,56 @@ public class ToneAnalyserRadarFragment extends Fragment {
 //        mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public void takeScreenShot(View rootView, int questionNum) {
+        Bitmap screen;
+        View v1 = rootView;
+
+        //converting the current root view to a bitmap (image)
+        v1.setDrawingCacheEnabled(true);
+
+        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
+
+        v1.buildDrawingCache(true);
+
+        screen = Bitmap.createBitmap(v1.getDrawingCache());
+
+        Log.d("screenshot", screen.toString());
+
+        v1.setDrawingCacheEnabled(false);
+
+        //Create a directory for your PDF
+        //make a new clvr directory if it doesnt already exist
+        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+
+        if (!pdfDir.exists()) {
+             pdfDir.mkdirs();
+        }
+
+        // save this bitmap somewhere
+
+        File imageFile = new File(pdfDir + "/graphScreenShot" + questionNum + ".png");
+        OutputStream foutImage = null;
+
+        try {
+            foutImage = new FileOutputStream(imageFile);
+            screen.compress(Bitmap.CompressFormat.PNG, 90, foutImage);
+            foutImage.flush();
+            foutImage.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("zoe chan", imageFile.getAbsolutePath() + " downloaded");
+
+
     }
-
-
     /*
         Screenshot taking for emailing graph results
      */
 
-    public void makePDF(View rootView) {
-        Log.d("screenshot", rootView.toString());
+    public void makePDF(boolean haveImage, String fileName) {
         boolean success = false;
 
         nextQuestion.setVisibility(View.INVISIBLE);
@@ -283,53 +329,36 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
         // Log.d("screenshot", rootView.toString() );
-        Bitmap screen;
-        View v1 = rootView;
-
-        //converting the current root view to a bitmap (image)
-        v1.setDrawingCacheEnabled(true);
-//        v1.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.WRAP_CONTENT,
-//                ScrollView.LayoutParams.WRAP_CONTENT));
-//
-//        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-//                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-        v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
-
-        v1.buildDrawingCache(true);
-
-
-        screen = Bitmap.createBitmap(v1.getDrawingCache());
-
-
-        Log.d("screenshot", screen.toString());
-
-        v1.setDrawingCacheEnabled(false);
 
         OutputStream foutPdf = null;
-        OutputStream foutImage = null;
 
         try {
-            File imageFile = new File(pdfDir + "/graphScreenShot.png");
-            foutImage = new FileOutputStream(imageFile);
-            foutPdf = new FileOutputStream(new File(pdfDir + "/graphResult.pdf"));
-            screen.compress(Bitmap.CompressFormat.PNG, 90, foutImage);
-            foutImage.flush();
-            foutImage.close();
+            foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
 
             Document document = new Document();
             PdfWriter.getInstance(document, foutPdf);
             document.open();
 
-            //for each question, call this method and pass the right imageFile to get the graphs
-            for(int i =0; i<5; i++) {
-                addQuestionAnswerAndGraph(document, imageFile);
+            document.add(new Chunk(""));
+//            document.add(new Paragraph("Company:"));
+//            document.add(new Paragraph("Candidate:"));
+//            document.add(new Paragraph("Candidate Email:"));
+
+            CLVRResults results = CLVRResults.getInstance();
+            HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
+
+            //final graphs
+
+            // iterate through all bitmaps or file location and call this
+            for(int question : testResult.keySet()){
+                File imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
+                CLVRQuestion clvrQuestion = testResult.get(question);
+
+                addQuestionAnswerAndGraph(document, imageFile, clvrQuestion, haveImage);
             }
 
             document.close();
             foutPdf.close();
-
-            // openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -339,130 +368,26 @@ public class ToneAnalyserRadarFragment extends Fragment {
             e.printStackTrace();
         }
 
+        Log.d("zoe-chan", "PDF generated");
+
     }
-    public void addQuestionAnswerAndGraph(Document document, File imageFile) throws DocumentException, IOException {
-        Image graph = Image.getInstance(imageFile.getAbsolutePath());
-        graph.scaleAbsolute(500, 500);
+    public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
 
         document.add(new Paragraph("Question "+counter+ " "+new Date()));
         counter++;
 
         //add question and answer from db
-        document.add(new Paragraph("How are you feeling today?"));
-        document.add(new Paragraph("answer: like shit"));
-        document.add(graph);
-    }
+        document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
+        document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
+        document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
 
-
-    public void fetchQuestion(){
-//       DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-//
-//        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
-//                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
-//                }
-//                updateText();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//
-//
-//        });
-    }
-
-//    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth)
-//    {
-//        int width = bm.getWidth();
-//        int height = bm.getHeight();
-//        float scaleWidth = ((float) newWidth) / width;
-//        float scaleHeight = ((float) newHeight) / height;
-//        // create a matrix for the manipulation
-//        Matrix matrix = new Matrix();
-//        // resize the bit map
-//        matrix.postScale(scaleWidth, scaleHeight);
-//        // recreate the new Bitmap
-//        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
-//        return resizedBitmap;
-//    }
-
-
-    private static void addImage(Document document, Bitmap bitmap) {
-        try {
-            Log.d("Generating pdf...", "Generating");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-
-            Image image = Image.getInstance(byteArray);
-            ///Here i set byte array..you can do bitmap to byte array and set in image...
-            try {
-                document.add(image);
-            } catch (DocumentException e) {
-                e.printStackTrace();
-            }
-        } catch (BadElementException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(addImage){
+            Image graph = Image.getInstance(imageFile.getAbsolutePath());
+            graph.scaleAbsolute(500, 500);
+            document.add(graph);
+            Log.d("zoe-chan", "new page added");
+            document.newPage();
         }
-        // image.scaleAbsolute(150f, 150f);
-//        try
-//        {
-//            document.add(image);
-//        } catch (DocumentException e) {
-//            e.printStackTrace();
-//        }
+
     }
-
-
-    //function opens the screenshot in a new intent
-    private void openScreenshot(File imageFile) {
-        Intent intent = new Intent();
-        Log.d("screenshot", "inside open screenshot");
-
-        intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(imageFile);
-        Log.d("screenshot", uri.toString());
-        intent.setDataAndType(uri, "image/*");
-        startActivity(intent);
-    }
-
-
-    private void checkStoragePermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-
-            // Here, thisActivity is the current activity
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                    // Show an expanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-
-                } else {
-
-                    // No explanation needed, we can request the permission.
-
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            1);
-
-
-                }
-            }
-        }
-    }
-
 }

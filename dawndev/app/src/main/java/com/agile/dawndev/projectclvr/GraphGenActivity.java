@@ -7,9 +7,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,11 +36,13 @@ public class GraphGenActivity extends AppCompatActivity {
 //        rootLayout.setupWithViewPager(viewPager);
 
         // Get bundle from previous activity with question jsonResults, store in field
+        CLVRResults results = CLVRResults.getInstance();
+        this.toneResults = results.getClvrQuestionHashMap();
     }
 
     //output -> bundle list of json results, need to change in the tone ana fragment
-    public String getJsonResult() {
-        return this.output;
+    public HashMap<Integer, CLVRQuestion> getJsonResult() {
+        return this.toneResults;
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -79,7 +84,7 @@ public class GraphGenActivity extends AppCompatActivity {
         }
     }
 
-    String[] jsonResults;
+    HashMap<Integer, CLVRQuestion> toneResults;
 
     String output = "{\n" +
             "   \"tone_categories\": [\n" +
