@@ -102,7 +102,7 @@ public class TestListActivity extends AppCompatActivity {
                 testView.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(view.getContext(), SpeechAnalyserActivity.class);
+                        Intent intent = new Intent(view.getContext(), TestInformationActivity.class);
                         intent.setAction(Intent.ACTION_SEND);
                         intent.putExtra("companyName", mCompanyName.getText());
                         intent.putExtra("companyKey", mCompanyKey);

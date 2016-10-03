@@ -1,33 +1,29 @@
-package com.agile.dawndev.projectclvr.ToneAnalyser;
+package com.agile.dawndev.projectclvr;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Paint;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Environment;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
-
-import com.agile.dawndev.projectclvr.R;
-
 
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -36,14 +32,11 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
-import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import org.json.JSONArray;
@@ -58,6 +51,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,14 +63,20 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private RadarChart emotionChart;
     private RadarChart languageChart;
     private RadarChart socialChart;
+    private int counter = 1;
 
     private ScrollView graphScrollView;
 
     private JSONArray emotionTones;
     private JSONArray languageTones;
-    private  JSONArray socialTones;
-    private Button getResult;
-    ToneTabActivity toneTabActivity;
+    private JSONArray socialTones;
+
+    LinearLayoutCompat screenshotArea;
+
+    private ProgressBar mProgress;
+
+    private Button nextQuestion;
+    GraphGenActivity graphGenActivity;
 
 
     public ToneAnalyserRadarFragment() {
@@ -97,41 +97,73 @@ public class ToneAnalyserRadarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
         LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
         graphCoverUpLayout.bringToFront();
 
-        graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView) ;
+        screenshotArea = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
+
+        Log.d("ZOE", screenshotArea.toString());
+
+        //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
+        //graphScrollView.setVisibility(View.INVISIBLE);
+        mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
 
         //find the graphs in the fragment
+
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
-        getResult = (Button) inflatedView.findViewById(R.id.getResult);
-        getResult.setOnClickListener(new View.OnClickListener() {
+        nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
+//        graphScrollView.setVisibility(View.INVISIBLE);
+
+        nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                makePDF(inflatedView);
-                graphScrollView.setVisibility(View.INVISIBLE);
-                // getResult.setVisibility(View.VISIBLE);
+                //for(int i =0; i<10; i++){
+
+                    //graphScrollView.setVisibility(View.VISIBLE);
+                    createGraphs();
+                    makePDF(screenshotArea);
+                    //graphScrollView.setVisibility(View.INVISIBLE);
+                    //nextQuestion.setVisibility(View.VISIBLE);
+
+                //}
+                mProgress.setVisibility(View.GONE);
+
+                nextQuestion.setVisibility(View.VISIBLE);
             }
         });
+
         return inflatedView;
     }
 
-    public void createGraphs(ToneTabActivity activity) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+//        createGraphs();
+    }
+
+    private void goTo() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void createGraphs() {
         JSONObject reader = null;
         try {
-            this.toneTabActivity = activity;
+            this.graphGenActivity = (GraphGenActivity)getActivity();
+            String jsonResult = graphGenActivity.getJsonResult();
 
-            String jsonResult = activity.getJsonResult();
+            Log.d("ZOE", jsonResult);
+
             reader = new JSONObject(jsonResult);
             JSONArray results = reader.getJSONArray("tone_categories");
 
@@ -142,38 +174,36 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
             // language Tone Graph
             String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-            JSONArray languageToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
             makeRadar(languageChart, languageToneCategories, languageToneLabels);
 
             // Social Tone Graph
             String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
-            JSONArray socialToneCategories  = results.getJSONObject(0).getJSONArray("tones");
+            JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
             makeRadar(socialChart, socialToneCategories, socialToneLabels);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
     /*
         Generates the graph using the given inputs
      */
-    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels){
+    public void makeRadar(RadarChart chart, JSONArray array, final String[] labels) {
+
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
         //retrieve the entry values
-        for ( int i = 0; i<array.length();i++){
+        for (int i = 0; i < array.length(); i++) {
             try {
-                entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()) ,array.getJSONObject(0).get("tone_name")));
+                entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()), array.getJSONObject(0).get("tone_name")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         // add entries to dataset
-        RadarDataSet dataSet = new RadarDataSet(entries, "Tone Analyzer");
+        RadarDataSet dataSet = new RadarDataSet(entries,"");
 
         //set how the graph looks
         dataSet.setColor(Color.rgb(103, 110, 129));
@@ -186,7 +216,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         RadarData radarData = new RadarData(dataSet);
         XAxis xAxis = chart.getXAxis();
-        xAxis.setTextSize(9f);
+        xAxis.setTextSize(6f);
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
         xAxis.setValueFormatter(new AxisValueFormatter() {
@@ -204,6 +234,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         chart.setData(radarData);
         chart.setDescription("");
+        chart.getYAxis().setDrawLabels(false);
+        chart.getLegend().setEnabled(false);
         chart.invalidate();
     }
 
@@ -212,7 +244,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         super.onAttach(context);
         Activity a;
         if (context instanceof Activity) {
-            a=(Activity) context;
+            a = (Activity) context;
         }
     }
 
@@ -231,21 +263,22 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Screenshot taking for emailing graph results
      */
 
-    public void makePDF(View rootView){
+    public void makePDF(View rootView) {
         Log.d("screenshot", rootView.toString());
-        boolean success =  false;
-        getResult.setVisibility(View.INVISIBLE);
+        boolean success = false;
+
+        nextQuestion.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
-        File pdfDir = new File(Environment.getExternalStorageDirectory() +  "/CLVR");
+        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
-        if (!pdfDir.exists()){
+        if (!pdfDir.exists()) {
             success = pdfDir.mkdirs();
         }
 
-        if(!success){
+        if (!success) {
             Log.d("screesnhot", "folder not created");
-        }else{
+        } else {
             Log.d("screenshot", "folder created");
         }
 
@@ -255,38 +288,48 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         //converting the current root view to a bitmap (image)
         v1.setDrawingCacheEnabled(true);
+//        v1.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.WRAP_CONTENT,
+//                ScrollView.LayoutParams.WRAP_CONTENT));
+//
+//        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+//                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-        v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         v1.layout(0, 0, v1.getMeasuredWidth(), v1.getMeasuredHeight());
 
         v1.buildDrawingCache(true);
 
+
         screen = Bitmap.createBitmap(v1.getDrawingCache());
+
 
         Log.d("screenshot", screen.toString());
 
         v1.setDrawingCacheEnabled(false);
 
-        OutputStream fout = null;
-        File imageFile =  new File(pdfDir+"/graphScreenShot.jpg" );
-        try{
-            fout = new FileOutputStream(new File(pdfDir+  "/graphResult.pdf"));
-            //screen.compress(Bitmap.CompressFormat.JPEG, 90, fout);
-            fout.flush();
+        OutputStream foutPdf = null;
+        OutputStream foutImage = null;
+
+        try {
+            File imageFile = new File(pdfDir + "/graphScreenShot.png");
+            foutImage = new FileOutputStream(imageFile);
+            foutPdf = new FileOutputStream(new File(pdfDir + "/graphResult.pdf"));
+            screen.compress(Bitmap.CompressFormat.PNG, 90, foutImage);
+            foutImage.flush();
+            foutImage.close();
 
             Document document = new Document();
-            PdfWriter.getInstance(document, fout);
+            PdfWriter.getInstance(document, foutPdf);
             document.open();
-            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            bitmap = getResizedBitmap(bitmap,250 ,765);
-            addImage(document,bitmap);
-         //  addContent(document);
+
+            //for each question, call this method and pass the right imageFile to get the graphs
+            for(int i =0; i<5; i++) {
+                addQuestionAnswerAndGraph(document, imageFile);
+            }
+
             document.close();
+            foutPdf.close();
 
-           fout.close();
-
-           // openScreenshot(imageFile);
+            // openScreenshot(imageFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -297,39 +340,76 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
     }
+    public void addQuestionAnswerAndGraph(Document document, File imageFile) throws DocumentException, IOException {
+        Image graph = Image.getInstance(imageFile.getAbsolutePath());
+        graph.scaleAbsolute(500, 500);
 
-    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
-        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
+        document.add(new Paragraph("Question "+counter+ " "+new Date()));
+        counter++;
+
+        //add question and answer from db
+        document.add(new Paragraph("How are you feeling today?"));
+        document.add(new Paragraph("answer: like shit"));
+        document.add(graph);
     }
-       private static void addImage(Document document,Bitmap bitmap)
-    {
 
-        try
-        {
-Log.d("Generating pdf...","Generating");
+
+    public void fetchQuestion(){
+//       DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+//
+//        mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
+//                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
+//                }
+//                updateText();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//
+//
+//        });
+    }
+
+//    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth)
+//    {
+//        int width = bm.getWidth();
+//        int height = bm.getHeight();
+//        float scaleWidth = ((float) newWidth) / width;
+//        float scaleHeight = ((float) newHeight) / height;
+//        // create a matrix for the manipulation
+//        Matrix matrix = new Matrix();
+//        // resize the bit map
+//        matrix.postScale(scaleWidth, scaleHeight);
+//        // recreate the new Bitmap
+//        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
+//        return resizedBitmap;
+//    }
+
+
+    private static void addImage(Document document, Bitmap bitmap) {
+        try {
+            Log.d("Generating pdf...", "Generating");
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
 
             Image image = Image.getInstance(byteArray);
             ///Here i set byte array..you can do bitmap to byte array and set in image...
-            try
-            {
+            try {
                 document.add(image);
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
-        }
-        catch (BadElementException e)
-        {
+        } catch (BadElementException e) {
             e.printStackTrace();
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         // image.scaleAbsolute(150f, 150f);

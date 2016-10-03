@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ToneAnalyser.ToneAnalyzerGraph"
     android:background="#ffffff">
     <LinearLayout
         android:orientation="horizontal"
@@ -13,45 +12,49 @@
         android:layout_height="match_parent"
         android:background="#ffffff"
         android:id="@+id/graphCoverUpLayout"
+        android:visibility="invisible"
         />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.ProgressBar.Small"
+        android:layout_marginRight="50dp" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/graphScrollView"
-        >
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginLeft="25dp"
+            android:id="@+id/linearLayoutGraphs"
           >
             <com.github.mikephil.charting.charts.RadarChart
-                android:layout_width="300sp"
-                android:layout_height="300sp"
-                android:layout_marginTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:layout_gravity="center"
                 android:id="@+id/firstChart"/>
             <com.github.mikephil.charting.charts.RadarChart
-                android:layout_width="300sp"
-                android:layout_height="300sp"
-                android:layout_marginTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_gravity="center"
+                android:layout_weight="1.3"
                 android:layout_below="@id/firstChart"
                 android:id="@+id/secondChart"/>
             <com.github.mikephil.charting.charts.RadarChart
-                android:layout_width="300sp"
-                android:layout_height="300sp"
-                android:layout_marginTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_gravity="center"
+                android:layout_weight="1.7"
                 android:layout_below="@id/secondChart"
                 android:id="@+id/thirdChart"/>
         </android.support.v7.widget.LinearLayoutCompat>
-
-    </ScrollView>
+ew>
 
     <Button
         android:id="@+id/getResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Take Screenshot"/>
+        android:text="Next Question >"/>
 
 
 </RelativeLayout>
