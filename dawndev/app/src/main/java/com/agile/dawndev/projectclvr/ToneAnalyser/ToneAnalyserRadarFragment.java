@@ -117,16 +117,13 @@ public class ToneAnalyserRadarFragment extends Fragment {
                 makePDF(llc);
                 // graphScrollView.setVisibility(View.INVISIBLE);
                 nextQuestion.setVisibility(View.VISIBLE);
-
             }
-
         });
         return inflatedView;
     }
 
     private void goTo() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
-
         startActivity(intent);
     }
     public void createGraphs(ToneTabActivity activity) {
@@ -175,7 +172,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
         // add entries to dataset
-        RadarDataSet dataSet = new RadarDataSet(entries, "Tone Analyzer");
+        RadarDataSet dataSet = new RadarDataSet(entries,"");
 
         //set how the graph looks
         dataSet.setColor(Color.rgb(103, 110, 129));
@@ -188,7 +185,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         RadarData radarData = new RadarData(dataSet);
         XAxis xAxis = chart.getXAxis();
-        xAxis.setTextSize(9f);
+        xAxis.setTextSize(6f);
         xAxis.setYOffset(0f);
         xAxis.setXOffset(0f);
         xAxis.setValueFormatter(new AxisValueFormatter() {
@@ -206,6 +203,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         chart.setData(radarData);
         chart.setDescription("");
+        chart.getYAxis().setDrawLabels(false);
+        chart.getLegend().setEnabled(false);
         chart.invalidate();
     }
 
