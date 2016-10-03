@@ -122,14 +122,14 @@ public class ToneAnalyserRadarFragment extends Fragment {
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int i =0; i<10; i++){
+                //for(int i =0; i<10; i++){
 
                     //graphScrollView.setVisibility(View.VISIBLE);
                     makePDF(llc);
                     //graphScrollView.setVisibility(View.INVISIBLE);
                     //nextQuestion.setVisibility(View.VISIBLE);
 
-                }
+                //}
                 mProgress.setVisibility(View.GONE);
 
                 nextQuestion.setVisibility(View.VISIBLE);
@@ -306,8 +306,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
             document.open();
 
             //for each question, call this method and pass the right imageFile to get the graphs
-            addQuestionAnswerAndGraph(document, imageFile);
-            addQuestionAnswerAndGraph(document, imageFile);
+            for(int i =0; i<5; i++) {
+                addQuestionAnswerAndGraph(document, imageFile);
+            }
 
             document.close();
             foutPdf.close();
@@ -327,7 +328,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Image graph = Image.getInstance(imageFile.getAbsolutePath());
         graph.scaleAbsolute(500, 500);
 
-        document.add(new Paragraph("Question "+counter+ new Date()));
+        document.add(new Paragraph("Question "+counter+ " "+new Date()));
         counter++;
 
         //add question and answer from db
