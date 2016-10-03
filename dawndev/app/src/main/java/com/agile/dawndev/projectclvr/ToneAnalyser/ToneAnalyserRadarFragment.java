@@ -123,12 +123,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //for(int i =0; i<10; i++){
-
-                    //graphScrollView.setVisibility(View.VISIBLE);
                     makePDF(llc);
-                    //graphScrollView.setVisibility(View.INVISIBLE);
-                    //nextQuestion.setVisibility(View.VISIBLE);
-
                 //}
                 mProgress.setVisibility(View.GONE);
 
@@ -253,7 +248,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         boolean success = false;
         nextQuestion.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
-        //make a new clvr directory if it doesnt already exist
+        //make a new clvr directory if it doesn't already exist
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
         if (!pdfDir.exists()) {
@@ -261,7 +256,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
         if (!success) {
-            Log.d("screesnhot", "folder not created");
+            Log.d("screenshot", "folder not created");
         } else {
             Log.d("screenshot", "folder created");
         }
@@ -282,7 +277,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
         v1.buildDrawingCache(true);
 
-
+        //taking the screenshot as a bitmap
         screen = Bitmap.createBitmap(v1.getDrawingCache());
 
 
