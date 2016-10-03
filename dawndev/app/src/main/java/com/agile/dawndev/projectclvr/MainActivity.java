@@ -90,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void addCompany(View view) {
+        Intent intent = new Intent(MainActivity.this, AddCompanyActivity.class);
+        startActivity(intent);
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
