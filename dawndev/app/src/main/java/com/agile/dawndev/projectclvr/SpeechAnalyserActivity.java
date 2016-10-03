@@ -105,6 +105,7 @@ public class SpeechAnalyserActivity extends Activity {
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mToneMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mRecordingURLs = new HashMap<Integer, String>();
+    private HashMap<String, Integer> mqTimes = new HashMap<String, Integer>();
     private String mOverallToneAnalysis;
     private String mPersonalityAnalysis;
 
@@ -522,7 +523,8 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
-                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
+                    mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.child("Question").getValue().toString());
+                    mqTimes.put(questionSnapshot.getKey(), Integer.parseInt(questionSnapshot.child("Time").getValue().toString()));
                 }
                 updateText();
                 numOfTasks = mInstructionAndAnswerMap.size() * 2;
