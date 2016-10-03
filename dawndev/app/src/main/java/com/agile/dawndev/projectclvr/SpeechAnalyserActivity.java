@@ -92,14 +92,15 @@ public class SpeechAnalyserActivity extends Activity {
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
 
-
     private static final int PERMISSION_ALL = 1;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private String mFileName;
     private int numOfTasks;
+    private int totalNumTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
+    private AtomicInteger totalCompleted = new AtomicInteger(1);
     private File audioFile;
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
@@ -111,6 +112,9 @@ public class SpeechAnalyserActivity extends Activity {
 
     private ToneAnalyzer mToneAnalyzerService;
     private PersonalityInsights mPersonalityInsightsService;
+    private String mAllTextAnswers = "";
+    private HashMap<Integer, CLVRQuestion> mQuestionResults = new HashMap<Integer, CLVRQuestion>();
+    private String[] mQuestionTitles;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,7 +161,6 @@ public class SpeechAnalyserActivity extends Activity {
         Log.d("cj", mTestKey);
         Log.d("cj", mCompanyKey);
 
-
         populateMap();
 
         // get user's display name for recording storage purposes
@@ -197,11 +200,10 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        Log.d("Swamp monster", "new ad33f03f-e1b7-4963-a444-aef4001c5b7b");
         mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
 
         mPersonalityInsightsService = new PersonalityInsights();
-        mPersonalityInsightsService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
+        mPersonalityInsightsService.setUsernameAndPassword("08370735-0a92-4d70-aa80-dc10e80c70a7", "gYZ48Vlbj6xT");
     }
 
     public void recordAudio() {
@@ -282,12 +284,10 @@ public class SpeechAnalyserActivity extends Activity {
         new AsyncTask<Object, Void, String>() {
             @Override
             protected String doInBackground(Object... input) {
-                Log.d("Swamp monster", " " + stringInput);
                 ToneAnalyzer service = (ToneAnalyzer) input[0];
                 //String text = (String) input[1];
 
                 ToneAnalysis tone = service.getTone(stringInput, null).execute();
-                Log.d("Swamp monster", " NAAAAASABEEENAAAACHHEE CCEEHAHAZHABBAA" + stringInput);
                 return tone.getDocumentTone().toString();
             }
 
@@ -297,11 +297,11 @@ public class SpeechAnalyserActivity extends Activity {
                 if (result != null) {
                     if (!forCombinedText) {
                         mToneMap.put(questionNum, result);
+                        doDoneDone();
                     } else {
                         mOverallToneAnalysis = result;
+                        doDoneDone();
                     }
-                    Log.d("Swamp monster", " " + mToneMap.size());
-                    Log.d("Swamp monster", result);
                 }
             }
         }.execute(mToneAnalyzerService);
@@ -312,7 +312,6 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             protected String doInBackground(Object... input) {
                 PersonalityInsights service = (PersonalityInsights) input[0];
-
                 return service.getProfile(stringInput).execute().toString();
             }
 
@@ -321,6 +320,7 @@ public class SpeechAnalyserActivity extends Activity {
                 super.onPostExecute(result);
                 if (result != null) {
                     mPersonalityAnalysis = result;
+                    doDoneDone();
                 }
             }
         }.execute(mPersonalityInsightsService);
@@ -410,7 +410,6 @@ public class SpeechAnalyserActivity extends Activity {
         mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
     }
 
-
     public void continueButtonOnClick(View view) {
         // if there are no questions left
         if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
@@ -472,23 +471,39 @@ public class SpeechAnalyserActivity extends Activity {
                 }
             }
 
+            mProgressBar.setVisibility(View.INVISIBLE);
+            //Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
+            //startActivity(intent);
+        }
+    }
+
+    private void doDoneDone() {
+        int num = totalCompleted.getAndIncrement();
+        if(num == totalNumTasks - 2) {
             //Order the maps by key
-            String allTextAnswers = "";
-            HashMap<Integer, CLVRQuestion> questionResults = new HashMap<Integer, CLVRQuestion>();
-            String[] questionTitles = (String[])mInstructionAndAnswerMap.keySet().toArray();
+
             //Get and concatenate all transcribed answers
             //At the same time prepare a map of results per question for pdf generation
             for (int i = 0; i < mTranscriptionMap.size(); i++) {
-                allTextAnswers += mTranscriptionMap.get(i+1) + "\n";
-                CLVRQuestion questionStuff = new CLVRQuestion(mInstructionAndAnswerMap.get(questionTitles[i]), mTranscriptionMap.get(i+1),
+                mAllTextAnswers += mTranscriptionMap.get(i+1) + "\n";
+                CLVRQuestion questionStuff = new CLVRQuestion(mInstructionAndAnswerMap.get(mQuestionTitles[i]), mTranscriptionMap.get(i+1),
                         mRecordingURLs.get(i+1), mToneMap.get(i+1));
-                questionResults.put(i+1, questionStuff);
+                mQuestionResults.put(i+1, questionStuff);
             }
 
             // execute tone analysis and personality analysis on combined text
-            toneAnalysis(allTextAnswers, -1, true);
-            personalityInsight(allTextAnswers);
-
+            toneAnalysis(mAllTextAnswers, -1, true);
+            String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
+                    "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
+                    "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
+                    "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
+                    "promise I'll fight just as hard in a second term. \n"
+                    + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
+                    "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
+                    "had frozen up.";
+            personalityInsight(test);
+        }
+        if(num == totalNumTasks) {
             //Send all data for PDF generation in encapsulating object
             CLVRResults finalResults = new CLVRResults();
             finalResults.setmCompanyName(mCompanyName);
@@ -496,11 +511,7 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmTestnumber(mTestKey);
             finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
-            finalResults.setClvrQuestionHashMap(questionResults);
-
-            mProgressBar.setVisibility(View.INVISIBLE);
-            //Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
-            //startActivity(intent);
+            finalResults.setClvrQuestionHashMap(mQuestionResults);
         }
     }
 
@@ -513,6 +524,8 @@ public class SpeechAnalyserActivity extends Activity {
                 }
                 updateText();
                 numOfTasks = mInstructionAndAnswerMap.size() * 2;
+                totalNumTasks = mInstructionAndAnswerMap.size() + 2;
+                mQuestionTitles = Arrays.copyOf(mInstructionAndAnswerMap.keySet().toArray(), mInstructionAndAnswerMap.size(), String[].class);
             }
 
             @Override
