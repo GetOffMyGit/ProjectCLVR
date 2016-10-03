@@ -93,12 +93,21 @@
         android:id="@+id/continue_button"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:onClick="toneResults"
+
         android:layout_gravity="center"
         android:layout_below="@+id/isThisRight"
         android:visibility="gone"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         />
 
-
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="-50sp"
+        android:layout_marginRight="40sp"
+        android:id="@+id/progress_bar"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/colorPrimaryDark"
+        android:layout_gravity="right" />
 </RelativeLayout>

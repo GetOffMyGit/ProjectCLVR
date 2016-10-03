@@ -17,10 +17,12 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,14 +57,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
-    private String mCompanyName = "CrimsonJelly";
-    private String mTestNum = "test_1";
-    private String mUser = "Zelda";
-    private String mQuestionNum = "Q1";
 
-    private Button mContinueButton;
     private TextView mText;
     private TextView mResponseText;
+    private ProgressBar mProgressBar;
 
     private CountDownTimer countdowntimer;
     private TextView textviewtimer;
@@ -74,10 +72,14 @@ public class SpeechAnalyserActivity extends Activity {
 
     private WavAudioRecorder mRecorder;
     private Button mButtonRecord = null;
+    private Button mContinueButton = null;
 
     private DatabaseReference mDatabase;
+    private String mCompanyName;
     private String mCompanyKey;
     private String mTestKey;
+    private String mUsername;
+    private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
 
@@ -87,9 +89,12 @@ public class SpeechAnalyserActivity extends Activity {
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private String mFileName;
-    private final int numOfTasks = 2;
+    private int numOfTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
     private File audioFile;
+
+    private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
+    private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +106,7 @@ public class SpeechAnalyserActivity extends Activity {
             if (extras != null) {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
+                mCompanyName = extras.getString("companyName");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
@@ -108,12 +114,19 @@ public class SpeechAnalyserActivity extends Activity {
         }
 
 
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test1.wav";
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
         audioFile = new File(mFileName);
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mContinueButton = (Button) findViewById(R.id.continue_button);
+        mContinueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toneResults(v);
+            }
+        });
+
         mText = (TextView) findViewById(R.id.isThisRight);
         mResponseText = (TextView) findViewById(R.id.textResult);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
@@ -121,12 +134,20 @@ public class SpeechAnalyserActivity extends Activity {
         mInstruction = (TextView) findViewById(R.id.instructions);
         mRecorder = WavAudioRecorder.getInstanse();
         mRecorder.setOutputFile(mFileName);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        mProgressBar.setVisibility(View.INVISIBLE);
 
         Log.d("cj", mTestKey);
         Log.d("cj", mCompanyKey);
 
 
         populateMap();
+
+        // get user's display name for recording storage purposes
+        FirebaseAuth mAuth;
+        mAuth = FirebaseAuth.getInstance();
+        mUsername = mAuth.getCurrentUser().getDisplayName();
         //updateText();
 
         // Check appropriate permissions
@@ -158,6 +179,7 @@ public class SpeechAnalyserActivity extends Activity {
                 recordAudio();
             }
         });
+
     }
 
     public void recordAudio() {
@@ -193,7 +215,7 @@ public class SpeechAnalyserActivity extends Activity {
         return true;
     }
 
-    private void speechRecognition() {
+    private void speechRecognition(final File recordedResponse) {
         Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
             @Override
@@ -209,7 +231,7 @@ public class SpeechAnalyserActivity extends Activity {
                         .model("en-US_BroadbandModel").build();
 
                 // recognize audio file
-                SpeechResults transcript = service.recognize(audioFile, options).execute();
+                SpeechResults transcript = service.recognize(recordedResponse, options).execute();
 
                 return transcript;
             }
@@ -224,6 +246,8 @@ public class SpeechAnalyserActivity extends Activity {
                     String trans = t.getAlternatives().get(0).getTranscript();
                     finalTranscript += trans;
                 }
+                mTranscriptionMap.put(mInstructionCounter, finalTranscript);
+                Log.d("Swamp Monster", finalTranscript);
                 mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 whenDone();
@@ -232,21 +256,21 @@ public class SpeechAnalyserActivity extends Activity {
 
     }
 
-    public void uploadRecording() {
+    public void uploadRecording(File recordedResponse, int questionNum) {
         Log.d(TAG, " start uploading");
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReferenceFromUrl("gs://projectclvr.appspot.com");
-        StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestNum + "/" + mUser);
+        StorageReference companyRef = storageRef.child(mCompanyName + "/" + mTestKey + "/" + mUsername);
 
-        StorageReference recordingRef = companyRef.child("test1" + ".wav");
+        StorageReference recordingRef = companyRef.child("Question" + questionNum + ".wav");
 
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
         try {
-            InputStream stream = new FileInputStream(audioFile);
+            InputStream stream = new FileInputStream(recordedResponse);
 
             UploadTask uploadTask = recordingRef.putStream(stream, metadata);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -298,13 +322,14 @@ public class SpeechAnalyserActivity extends Activity {
         mRecorder.stop();
         mRecorder.reset();
         textviewtimer.setVisibility(View.INVISIBLE);
-        speechRecognition();
-        uploadRecording();
+        //speechRecognition();
+        //uploadRecording();
 
-        mButtonRecord.setText("Analysing Text...");
+        mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
         // set the text color to grey
         mButtonRecord.setTextColor(Color.parseColor("#737373"));
+        mContinueButton.setVisibility(View.VISIBLE);
     }
 
     public void updateText() {
@@ -316,8 +341,38 @@ public class SpeechAnalyserActivity extends Activity {
 
 
     public void toneResults(View view) {
-        Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-        startActivity(intent);
+        // if there are no questions left
+        if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
+            mInstructionCounter++;
+            mFileMap.put(mInstructionCounter, mFileName);
+            doUploadAndRecog();
+        } else {
+            mContinueButton.setVisibility(View.INVISIBLE);
+
+            // show next question for user and allow recording again
+            mInstructionCounter++;
+            mQuestionNum++;
+            updateText();
+            mButtonRecord.setText("Start Recording");
+            mButtonRecord.setEnabled(true);
+            mButtonRecord.setTextColor(Color.WHITE);
+
+            mFileMap.put(mInstructionCounter, mFileName);
+
+            // prepare for recording next question
+            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
+            audioFile = new File(mFileName);
+            mRecorder.setOutputFile(mFileName);
+        }
+    }
+
+    private void doUploadAndRecog() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        for(int questionNum : mFileMap.keySet()) {
+            File theFile = new File(mFileMap.get(questionNum));
+            speechRecognition(theFile);
+            uploadRecording(theFile, questionNum);
+        }
     }
 
     private boolean isNetworkAvailable() {
@@ -338,10 +393,17 @@ public class SpeechAnalyserActivity extends Activity {
             mContinueButton.setVisibility(View.VISIBLE);
             mText.setVisibility(View.VISIBLE);
 
-            boolean deleted = audioFile.delete();
-            if (deleted) {
-                Log.d(TAG, "Deleted file");
+            for(int questionNum : mFileMap.keySet()) {
+                File theFile = new File(mFileMap.get(questionNum));
+                boolean deleted = theFile.delete();
+                if (deleted) {
+                    Log.d(TAG, "Deleted file");
+                }
             }
+
+            mProgressBar.setVisibility(View.INVISIBLE);
+            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -355,6 +417,7 @@ public class SpeechAnalyserActivity extends Activity {
                     mInstructionAndAnswerMap.put(questionSnapshot.getKey(), questionSnapshot.getValue().toString());
                 }
                 updateText();
+                numOfTasks = mInstructionAndAnswerMap.size() * 2;
             }
 
             @Override
@@ -365,5 +428,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         });
     }
+
 
 }
