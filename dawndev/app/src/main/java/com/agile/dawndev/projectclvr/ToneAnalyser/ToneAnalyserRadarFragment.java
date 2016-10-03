@@ -3,29 +3,28 @@ package com.agile.dawndev.projectclvr.ToneAnalyser;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Environment;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.R;
-
-
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -103,9 +102,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
         LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
         graphCoverUpLayout.bringToFront();
-
-        graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
-        graphScrollView.setVisibility(View.INVISIBLE);
+        final LinearLayoutCompat  llc = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
+        //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
+        //graphScrollView.setVisibility(View.INVISIBLE);
         //find the graphs in the fragment
         emotionChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
@@ -114,13 +113,12 @@ public class ToneAnalyserRadarFragment extends Fragment {
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                graphScrollView.setVisibility(View.VISIBLE);
-                makePDF(inflatedView);
-                graphScrollView.setVisibility(View.INVISIBLE);
+                // graphScrollView.setVisibility(View.VISIBLE);
+                makePDF(llc);
+                // graphScrollView.setVisibility(View.INVISIBLE);
                 nextQuestion.setVisibility(View.VISIBLE);
 
             }
-
 
         });
         return inflatedView;
