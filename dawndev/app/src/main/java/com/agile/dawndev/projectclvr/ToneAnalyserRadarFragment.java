@@ -1,19 +1,12 @@
 package com.agile.dawndev.projectclvr;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,7 +26,6 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -45,13 +37,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -135,7 +125,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
                     //graphScrollView.setVisibility(View.VISIBLE);
                     createGraphs();
-                    makePDF(true, "withImage");
+                    makePDF(true, "graphResult");
+                    makePDF(false, "answers");
                     //graphScrollView.setVisibility(View.INVISIBLE);
 
                 //}

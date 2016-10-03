@@ -54,7 +54,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
             //TODO: change to pdf with only transcript from graphResult.pdf
-            email.addAttachment("transcript.pdf", new File(pdfDir + "/graphResult.pdf"));
+            email.addAttachment("transcript.pdf", new File(pdfDir + "/answers.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
