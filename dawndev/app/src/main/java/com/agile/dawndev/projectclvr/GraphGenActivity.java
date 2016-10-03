@@ -1,54 +1,81 @@
-package com.agile.dawndev.projectclvr.ToneAnalyser;
+package com.agile.dawndev.projectclvr;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
-import com.agile.dawndev.projectclvr.AsyncResponse;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
-import static android.app.PendingIntent.getActivity;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Makes an Async call to the Watson Tone Analyser API and returns the result
+ * Created by Zoe on 3/10/16.
  */
-public class ToneAnalyzerAsync extends AsyncTask<Object, Void, String> {
-    private Context context;
+public class GraphGenActivity extends AppCompatActivity {
+    ToneAnalyserRadarFragment toneAnalyserRadarFragment;
 
-    public AsyncResponse delegate = null;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    boolean useAPI = false;
+        ToneAnalyzer toneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
+        toneAnalyzerService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
 
-    public ToneAnalyzerAsync(Context context){
-        this.context = context;
+        setContentView(R.layout.activity_graph_gen);
+
+//        LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+//        rootLayout.setupWithViewPager(viewPager);
     }
 
-    //retrieves the input text and sends it to the API to be analyzed
-    @Override
-    protected String doInBackground(Object... input) {
-        ToneAnalyzer service = (ToneAnalyzer) input[0];
-        String text = (String) input[1];
+    public String getJsonResult() {
+        return this.output;
+    }
 
-        if(this.useAPI){
-            ToneAnalysis tone = service.getTone(text, null).execute();
-            return tone.getDocumentTone().toString();
-        } else{
-            Log.d("ToneAnalyser: ", "Just using saved output");
-            return this.output;
+    private void setupViewPager(ViewPager viewPager) {
+        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
+
+        toneAnalyserRadarFragment = new ToneAnalyserRadarFragment();
+        adapter.addFragment(toneAnalyserRadarFragment, "Radar");
+
+        viewPager.setAdapter(adapter);
+    }
+
+
+    public class PagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public PagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
         }
     }
 
-    @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
-        if (result != null) {
-            delegate.processFinish(result);
-        }
-    }
-
-    //Storing the tone analyser output so we don't have to waste API calls for testing
-    // This is for the bar graph
     String output = "{\n" +
             "   \"tone_categories\": [\n" +
             "     {\n" +
