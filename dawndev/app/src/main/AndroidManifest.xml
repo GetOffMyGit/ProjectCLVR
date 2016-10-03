@@ -40,6 +40,7 @@
             android:name=".SpeechAnalyserActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
         <activity android:name=".ToneAnalyser.ToneTabActivity" />
+        <activity android:name=".GraphGenActivity" />
         <activity
             android:name=".PersonalityInsight.PersonalityTabActivity"
             android:label="@string/title_activity_personality" />

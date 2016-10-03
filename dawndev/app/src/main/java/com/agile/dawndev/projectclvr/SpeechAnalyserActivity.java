@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -404,7 +403,7 @@ public class SpeechAnalyserActivity extends Activity {
             }
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
+            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
         }
     }
