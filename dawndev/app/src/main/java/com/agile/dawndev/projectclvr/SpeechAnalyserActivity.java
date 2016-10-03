@@ -504,13 +504,16 @@ public class SpeechAnalyserActivity extends Activity {
         }
         if(num == totalNumTasks) {
             //Send all data for PDF generation in encapsulating object
-            CLVRResults finalResults = new CLVRResults();
+            CLVRResults finalResults = CLVRResults.getInstance();
             finalResults.setmCompanyName(mCompanyName);
             finalResults.setmUsername(mUsername);
             finalResults.setmTestnumber(mTestKey);
             finalResults.setmOverallToneAnalysis(mOverallToneAnalysis);
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
+
+            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            startActivity(intent);
         }
     }
 

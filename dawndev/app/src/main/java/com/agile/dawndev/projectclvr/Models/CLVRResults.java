@@ -7,6 +7,7 @@ import java.util.HashMap;
  */
 
 public class CLVRResults {
+    private static CLVRResults clvrResults;
     private String mCompanyName;
     private String mUsername;
     private String mCompanyEmail;
@@ -16,6 +17,17 @@ public class CLVRResults {
     private String mOverallToneAnalysis;
     private String mOverallPersonalityInsights;
     private HashMap<Integer, CLVRQuestion> clvrQuestionHashMap;
+
+    public CLVRResults() {
+        clvrQuestionHashMap = new HashMap<Integer, CLVRQuestion>();
+    }
+
+    public static CLVRResults getInstance() {
+        if(clvrResults == null) {
+            clvrResults = new CLVRResults();
+        }
+        return clvrResults;
+    }
 
     public String getmCompanyName() {
         return mCompanyName;
@@ -88,9 +100,4 @@ public class CLVRResults {
     public void setClvrQuestionHashMap(HashMap<Integer, CLVRQuestion> clvrQuestionHashMap) {
         this.clvrQuestionHashMap = clvrQuestionHashMap;
     }
-
-    public CLVRResults() {
-        clvrQuestionHashMap = new HashMap<Integer, CLVRQuestion>();
-    }
-
 }
