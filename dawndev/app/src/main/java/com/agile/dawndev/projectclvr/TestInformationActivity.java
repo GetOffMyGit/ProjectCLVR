@@ -18,6 +18,7 @@ public class TestInformationActivity extends AppCompatActivity {
 
     private String mCompanyName;
     private String mCompanyKey;
+    private String mCompanyEmail;
     private String mTestKey;
     private TextView mPrivacyPolicy;
     private TextView mTermsghggghg;
@@ -43,11 +44,13 @@ public class TestInformationActivity extends AppCompatActivity {
                 mCompanyKey = extras.getString("companyKey");
                 mTestKey = extras.getString("testKey");
                 mCompanyName = extras.getString("companyName");
+                mCompanyEmail = extras.getString("companyEmail");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
             mCompanyName = (String) savedInstanceState.getSerializable("companyName");
+            mCompanyEmail = (String) savedInstanceState.getSerializable("companyEmail");
         }
 
         mTermsghggghg = (TextView) findViewById(R.id.viewTermsAndConditions);
@@ -100,6 +103,7 @@ public class TestInformationActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra("companyName", mCompanyName);
         intent.putExtra("companyKey", mCompanyKey);
+        intent.putExtra("companyEmail", mCompanyEmail);
         intent.putExtra("testKey", mTestKey);
         intent.setType("text/plain");
         startActivity(intent);

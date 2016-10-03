@@ -1,12 +1,14 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 
 
 /*
@@ -34,10 +36,15 @@ public class SendEmailActivity extends AppCompatActivity {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Create SendGridSendEmail object. Send context and email content.
-                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, mToText.getText().toString(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                //Create SendGridSendEmail object for company pdf. Send context and email content.
+                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, CLVRResults.getInstance().getmCompanyEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
                 //Execute async task.
                 task.execute();
+
+                //Create SendGridSendEmail object for user pdf. Send context and email content.
+                TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(SendEmailActivity.this, CLVRResults.getInstance().getmUserEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                //Execute async task.
+                task2.execute();
 
                 Context context = getApplicationContext();
                 CharSequence text = "Email Sent!";

@@ -28,9 +28,7 @@ public class TestListActivity extends AppCompatActivity {
     private String mCompanyKey;
     private FirebaseRecyclerAdapter<Test, TestHolder> mRecyclerViewAdapter;
     private TextView mCompanyName;
-
-
-
+    private String mCompanyEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +63,11 @@ public class TestListActivity extends AppCompatActivity {
         mRef.keepSynced(true);
         mCompanyName = (TextView) findViewById(R.id.company_name);
         mCompanyRef = mRef.child("companies").child(mCompanyKey).child("tests");
-        mRef.child("companies").child(mCompanyKey).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        mRef.child("companies").child(mCompanyKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mCompanyName.setText(dataSnapshot.getValue().toString());
+                mCompanyName.setText(dataSnapshot.child("name").getValue().toString());
+                mCompanyEmail = dataSnapshot.child("email").getValue().toString();
             }
 
             @Override
@@ -106,6 +105,7 @@ public class TestListActivity extends AppCompatActivity {
                         intent.setAction(Intent.ACTION_SEND);
                         intent.putExtra("companyName", mCompanyName.getText());
                         intent.putExtra("companyKey", mCompanyKey);
+                        intent.putExtra("companyEmail", mCompanyEmail);
                         intent.putExtra("testKey", itemKey);
                         intent.setType("text/plain");
                         startActivity(intent);
