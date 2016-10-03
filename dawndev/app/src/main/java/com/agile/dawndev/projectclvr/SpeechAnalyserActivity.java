@@ -22,8 +22,6 @@ import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
-import com.agile.dawndev.projectclvr.ToneAnalyser.ToneAnalyzerAsync;
-import com.agile.dawndev.projectclvr.ToneAnalyser.ToneTabActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -131,6 +129,7 @@ public class SpeechAnalyserActivity extends Activity {
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
+            mCompanyName = (String) savedInstanceState.getSerializable("companyName");
         }
 
 
@@ -472,8 +471,8 @@ public class SpeechAnalyserActivity extends Activity {
             }
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            //Intent intent = new Intent(SpeechAnalyserActivity.this, ToneTabActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            startActivity(intent);
         }
     }
 
