@@ -66,7 +66,6 @@ public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
 
     private TextView mText;
-    private TextView mResponseText;
     private ProgressBar mProgressBar;
 
     private CountDownTimer countdowntimer;
@@ -151,7 +150,6 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mText = (TextView) findViewById(R.id.isThisRight);
-        mResponseText = (TextView) findViewById(R.id.textResult);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
@@ -212,7 +210,6 @@ public class SpeechAnalyserActivity extends Activity {
 
     public void recordAudio() {
         if (WavAudioRecorder.State.INITIALIZING == mRecorder.getState()) {
-            mResponseText.setText("");
             mRecorder.prepare();
             mRecorder.start();
             mButtonRecord.setText("Stop Recording");
@@ -275,7 +272,6 @@ public class SpeechAnalyserActivity extends Activity {
                     finalTranscript += trans;
                 }
                 mTranscriptionMap.put(questionNum, finalTranscript);
-                mResponseText.setText(finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
                 whenDone();
