@@ -126,7 +126,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
                     //graphScrollView.setVisibility(View.VISIBLE);
                     createGraphs();
                     makePDF(true, "graphResult");
-                    makePDF(false, "answers");
+                    makePDF(false, "transcript");
                     //graphScrollView.setVisibility(View.INVISIBLE);
 
                 //}
