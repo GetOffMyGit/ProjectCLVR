@@ -53,7 +53,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         //add attachment with only the transcrip answers
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            email.addAttachment("transcript.pdf", new File(pdfDir + "/answers.pdf"));
+            email.addAttachment("transcript.pdf", new File(pdfDir + "/transcript.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
