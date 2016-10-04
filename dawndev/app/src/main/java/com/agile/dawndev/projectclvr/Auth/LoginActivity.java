@@ -116,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements
 //                            });
                 } else {
                     // User is signed out
+                    //goToMain();
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
                 // Constantly Updates the UI depending on the state of the user
@@ -144,6 +145,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
+        Log.d("gotomain", "inside method");
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }

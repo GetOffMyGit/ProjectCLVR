@@ -121,18 +121,20 @@ public class ToneAnalyserRadarFragment extends Fragment {
             public void onClick(View v) {
                 //nextQuestion.setVisibility(View.INVISIBLE);
 
-                //for(int i =0; i<10; i++){
-
                     //graphScrollView.setVisibility(View.VISIBLE);
                     createGraphs();
-                    makePDF(true, "graphResult");
-                    makePDF(false, "transcript");
-                    //graphScrollView.setVisibility(View.INVISIBLE);
+                    nextQuestion.setVisibility(View.INVISIBLE);
+//                    makePDF(true, "graphResult");
+//                    makePDF(false, "transcript");
+                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult");
+                    generatePDF.execute();
+                //THIS WAS DONE WITH ELIZA
+                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript");
+                generateTranscript.execute();
+                //TODO call it again with false
 
-                //}
                 mProgress.setVisibility(View.GONE);
                 nextQuestion.setVisibility(View.VISIBLE);
-
 
             }
         });
