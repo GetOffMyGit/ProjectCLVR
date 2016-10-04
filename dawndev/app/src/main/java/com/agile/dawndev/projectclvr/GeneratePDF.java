@@ -70,6 +70,13 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
             CLVRResults results = CLVRResults.getInstance();
             HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
 
+            document.add(new Paragraph("Company Name: "+results.getmCompanyName()));
+            document.add(new Paragraph("Candidate Name: "+results.getmUsername()));
+            document.add(new Paragraph("Candidate Email: "+results.getmUserEmail()));
+
+            document.add(new Paragraph("-------------------------------"));
+
+
             //final graphs
 
             // iterate through all bitmaps or file location and call this
@@ -97,9 +104,10 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
         return null;
     }
 
-    public void addQuestionAnswerAndGraph(File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
+    public void addQuestionAnswerAndGraph(File imageFile, CLVRQuestion clvrQuestion,
+                                          boolean addImage) throws DocumentException, IOException {
 
-        this.document.add(new Paragraph("Question "+this.counter+ " "+new Date()));
+        this.document.add(new Paragraph("Question "+ this.counter));
         this.counter++;
 
         //add question and answer from db
