@@ -126,10 +126,10 @@ public class ToneAnalyserRadarFragment extends Fragment {
                     nextQuestion.setVisibility(View.INVISIBLE);
 //                    makePDF(true, "graphResult");
 //                    makePDF(false, "transcript");
-                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult");
+                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult",getContext());
                     generatePDF.execute();
-                //THIS WAS DONE WITH ELIZA
-                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript");
+                //THIS WAS DONE WITH ELIZA <3
+                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript",getContext());
                 generateTranscript.execute();
                 //TODO call it again with false
 

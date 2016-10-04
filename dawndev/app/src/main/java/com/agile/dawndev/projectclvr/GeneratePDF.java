@@ -1,5 +1,6 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -21,20 +22,19 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
-/**
- * Created by farida on 5/10/16.
- */
 public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
 
     private boolean haveImage;
     private String fileName;
     private int counter = 1;
     private Document document;
+    private Context context;
 
-    public GeneratePDF(boolean haveImage, String fileName){
+    public GeneratePDF(boolean haveImage, String fileName,Context context){
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();
+        this.context = context;
     }
     @Override
     protected Long doInBackground(Void... params) {
@@ -51,7 +51,7 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
         }
 
         if (!success) {
-            Log.d("screesnhot", "folder not created");
+            Log.d("screenshot", "folder not created");
         } else {
             Log.d("screenshot", "folder created");
         }
@@ -115,6 +115,21 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
             Log.d("zoe-chan", "new page added");
             document.newPage();
         }
+
+    }
+
+    protected void onPostExecute() {
+//Start the async task for personality insights
+
+        //Create SendGridSendEmail object for company pdf. Send context and email content.
+        SendGridSendEmail task = new SendGridSendEmail(context);
+        //Execute async task.
+        task.execute();
+
+        //Create SendGridSendEmail object for user pdf. Send context and email content.
+        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(context);
+        //Execute async task.
+        task2.execute();
 
     }
 }
