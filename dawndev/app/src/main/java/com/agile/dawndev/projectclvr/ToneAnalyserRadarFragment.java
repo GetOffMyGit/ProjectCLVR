@@ -114,24 +114,23 @@ public class ToneAnalyserRadarFragment extends Fragment {
         languageChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         socialChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
         nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
-//        graphScrollView.setVisibility(View.INVISIBLE);
+
 
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //nextQuestion.setVisibility(View.INVISIBLE);
 
-                    //graphScrollView.setVisibility(View.VISIBLE);
-                    createGraphs();
-                    nextQuestion.setVisibility(View.INVISIBLE);
-//                    makePDF(true, "graphResult");
-//                    makePDF(false, "transcript");
-                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult");
-                    generatePDF.execute();
+                createGraphs();
+                nextQuestion.setVisibility(View.INVISIBLE);
+
                 //THIS WAS DONE WITH ELIZA
-                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript");
+                //employer pdf with graphs
+                GeneratePDF generatePDF = new GeneratePDF(true, "graphResult");
+                generatePDF.execute();
+
+                //user's pdf iwthout graphs
+                GeneratePDF generateTranscript = new GeneratePDF(false, "transcript");
                 generateTranscript.execute();
-                //TODO call it again with false
 
                 mProgress.setVisibility(View.GONE);
                 nextQuestion.setVisibility(View.VISIBLE);
@@ -143,7 +142,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 //        createGraphs();
     }
@@ -151,10 +150,10 @@ public class ToneAnalyserRadarFragment extends Fragment {
     public void createGraphs() {
         JSONObject reader = null;
         try {
-            this.graphGenActivity = (GraphGenActivity)getActivity();
+            this.graphGenActivity = (GraphGenActivity) getActivity();
             this.testResult = graphGenActivity.getJsonResult();
 
-            for(int question : testResult.keySet()){
+            for (int question : testResult.keySet()) {
                 String jsonResult = testResult.get(question).getmToneAnalysis();
                 Log.d("zoe-chan", question + " result" + jsonResult);
 
@@ -180,8 +179,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
             }
 
 
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -203,7 +200,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         }
 
         // add entries to dataset
-        RadarDataSet dataSet = new RadarDataSet(entries,"");
+        RadarDataSet dataSet = new RadarDataSet(entries, "");
 
         //set how the graph looks
         dataSet.setColor(Color.rgb(103, 110, 129));
@@ -276,7 +273,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
         if (!pdfDir.exists()) {
-             pdfDir.mkdirs();
+            pdfDir.mkdirs();
         }
 
         // save this bitmap somewhere
@@ -343,7 +340,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
             //final graphs
 
             // iterate through all bitmaps or file location and call this
-            for(int question : testResult.keySet()){
+            for (int question : testResult.keySet()) {
                 File imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
                 CLVRQuestion clvrQuestion = testResult.get(question);
 
@@ -364,9 +361,10 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Log.d("zoe-chan", "PDF generated");
 
     }
+
     public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
 
-        document.add(new Paragraph("Question "+counter+ " "+new Date()));
+        document.add(new Paragraph("Question " + counter + " " + new Date()));
         counter++;
 
         //add question and answer from db
@@ -374,7 +372,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
         document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
 
-        if(addImage){
+        if (addImage) {
             Image graph = Image.getInstance(imageFile.getAbsolutePath());
             graph.scaleAbsolute(500, 500);
             document.add(graph);
