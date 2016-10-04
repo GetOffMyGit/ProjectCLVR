@@ -104,6 +104,7 @@ public class TestListActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Intent intent = new Intent(view.getContext(), SpeechAnalyserActivity.class);
                         intent.setAction(Intent.ACTION_SEND);
+                        intent.putExtra("companyName", mCompanyName.getText());
                         intent.putExtra("companyKey", mCompanyKey);
                         intent.putExtra("testKey", itemKey);
                         intent.setType("text/plain");
@@ -174,5 +175,17 @@ public class TestListActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

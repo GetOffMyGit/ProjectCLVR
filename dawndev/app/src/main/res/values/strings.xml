@@ -64,4 +64,6 @@
     <string name="title_activity_personality">PersonalityActivity</string>
     <string name="personality_username">6fd459b8-af75-4eb2-9f30-b0dc4957aa1c</string>
     <string name="personality_password">fTASQUOea0hR</string>
+    <string name="welcome_message">Looks like this is your first time using CLVR!</string>
+    <string name="welcome_info">If a company referred you to CLVR, please state the company name as well as the password provided by them</string>
 </resources>

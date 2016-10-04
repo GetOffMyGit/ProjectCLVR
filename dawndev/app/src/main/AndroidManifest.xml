@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +40,7 @@
             android:name=".SpeechAnalyserActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
         <activity android:name=".ToneAnalyser.ToneTabActivity" />
+        <activity android:name=".GraphGenActivity" />
         <activity
             android:name=".PersonalityInsight.PersonalityTabActivity"
             android:label="@string/title_activity_personality" />
@@ -47,7 +48,8 @@
         <activity android:name=".CompanyMainActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
-        <activity android:name=".TestListActivity"></activity>
+        <activity android:name=".TestListActivity" />
+        <activity android:name=".NewUserActivity"></activity>
     </application>
 
 </manifest>

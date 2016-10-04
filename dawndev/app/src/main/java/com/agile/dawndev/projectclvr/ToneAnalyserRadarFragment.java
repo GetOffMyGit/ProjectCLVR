@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr.ToneAnalyser;
+package com.agile.dawndev.projectclvr;
 
 import android.Manifest;
 import android.app.Activity;
@@ -19,13 +19,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
-import com.agile.dawndev.projectclvr.MainActivity;
-import com.agile.dawndev.projectclvr.R;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -72,10 +71,12 @@ public class ToneAnalyserRadarFragment extends Fragment {
     private JSONArray languageTones;
     private JSONArray socialTones;
 
+    LinearLayoutCompat screenshotArea;
+
     private ProgressBar mProgress;
 
     private Button nextQuestion;
-    ToneTabActivity toneTabActivity;
+    GraphGenActivity graphGenActivity;
 
 
     public ToneAnalyserRadarFragment() {
@@ -96,17 +97,21 @@ public class ToneAnalyserRadarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
         LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
         graphCoverUpLayout.bringToFront();
-        final LinearLayoutCompat  llc = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
+
+        screenshotArea = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
+
+        Log.d("ZOE", screenshotArea.toString());
+
         //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
         //graphScrollView.setVisibility(View.INVISIBLE);
         mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
@@ -125,7 +130,8 @@ public class ToneAnalyserRadarFragment extends Fragment {
                 //for(int i =0; i<10; i++){
 
                     //graphScrollView.setVisibility(View.VISIBLE);
-                    makePDF(llc);
+                    createGraphs();
+                    makePDF(screenshotArea);
                     //graphScrollView.setVisibility(View.INVISIBLE);
                     //nextQuestion.setVisibility(View.VISIBLE);
 
@@ -135,19 +141,29 @@ public class ToneAnalyserRadarFragment extends Fragment {
                 nextQuestion.setVisibility(View.VISIBLE);
             }
         });
+
         return inflatedView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+//        createGraphs();
     }
 
     private void goTo() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
     }
-    public void createGraphs(ToneTabActivity activity) {
+
+    public void createGraphs() {
         JSONObject reader = null;
         try {
-            this.toneTabActivity = activity;
+            this.graphGenActivity = (GraphGenActivity)getActivity();
+            String jsonResult = graphGenActivity.getJsonResult();
 
-            String jsonResult = activity.getJsonResult();
+            Log.d("ZOE", jsonResult);
+
             reader = new JSONObject(jsonResult);
             JSONArray results = reader.getJSONArray("tone_categories");
 
@@ -169,14 +185,13 @@ public class ToneAnalyserRadarFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     /*
         Generates the graph using the given inputs
      */
     public void makeRadar(RadarChart chart, JSONArray array, final String[] labels) {
+
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
         //retrieve the entry values
         for (int i = 0; i < array.length(); i++) {
@@ -251,6 +266,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
     public void makePDF(View rootView) {
         Log.d("screenshot", rootView.toString());
         boolean success = false;
+
         nextQuestion.setVisibility(View.INVISIBLE);
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist

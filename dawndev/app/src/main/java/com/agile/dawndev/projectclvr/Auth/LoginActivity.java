@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.Models.User;
+import com.agile.dawndev.projectclvr.NewUserActivity;
 import com.agile.dawndev.projectclvr.R;
 import com.agile.dawndev.projectclvr.SpeechAnalyserActivity;
 import com.google.android.gms.auth.api.Auth;
@@ -183,6 +184,8 @@ public class LoginActivity extends AppCompatActivity implements
                             User user = new User(fbUser.getDisplayName(), fbUser.getEmail());
                             mDatabase.child("users").child(fbUser.getUid()).setValue(user);
                         }
+
+                        checkIfExists();
                     }
 
                     @Override
@@ -191,6 +194,29 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 }
         );
+    }
+
+    private void checkIfExists() {
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists() != true) {
+                            goToNewUser();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
+    }
+
+    private void goToNewUser() {
+        startActivity(new Intent(this, NewUserActivity.class));
+        finish();
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -266,7 +292,6 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
@@ -278,8 +303,6 @@ public class LoginActivity extends AppCompatActivity implements
         int i = v.getId();
         if (i == R.id.sign_in_button) {
             signIn();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
         } else if (i == R.id.sign_out_button) {
             signOut();
         } else if (i == R.id.disconnect_button) {
