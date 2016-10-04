@@ -128,6 +128,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 //                    makePDF(false, "transcript");
                     GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult");
                     generatePDF.execute();
+                //THIS WAS DONE WITH ELIZA
                 GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript");
                 generateTranscript.execute();
                 //TODO call it again with false
