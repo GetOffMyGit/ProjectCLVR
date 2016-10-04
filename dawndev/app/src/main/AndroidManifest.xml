@@ -51,7 +51,6 @@
         <activity android:name=".TestListActivity" />
         <activity android:name=".NewUserActivity" />
         <activity android:name=".TestInformationActivity" />
-        <activity android:name=".PrivacyPolicyActivity" />
         <activity android:name=".AddCompanyActivity"></activity>
     </application>
 
