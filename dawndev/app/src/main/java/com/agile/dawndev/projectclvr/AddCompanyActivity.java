@@ -71,11 +71,21 @@ public class AddCompanyActivity extends AppCompatActivity {
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
-                                addCompany();
-                            } else {
+                            if (dataSnapshot.exists()) {
+                                if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
+                                    addCompany();
+                                } else {
+                                    Context context = getApplicationContext();
+                                    CharSequence text = "The password you entered is incorrect";
+                                    int duration = Toast.LENGTH_SHORT;
+
+                                    Toast toast = Toast.makeText(context, text, duration);
+                                    toast.show();
+                                }
+                            }
+                            else {
                                 Context context = getApplicationContext();
-                                CharSequence text = "The password you entered is incorrect";
+                                CharSequence text = "Please enter a valid company!";
                                 int duration = Toast.LENGTH_SHORT;
 
                                 Toast toast = Toast.makeText(context, text, duration);
