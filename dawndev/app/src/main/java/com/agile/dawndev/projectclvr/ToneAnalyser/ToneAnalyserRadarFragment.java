@@ -306,6 +306,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
             document.open();
 
             //for each question, call this method and pass the right imageFile to get the graphs
+            //TODO this for loop needs to be the number of questions, with the correct imageFile
             for(int i =0; i<5; i++) {
                 addQuestionAnswerAndGraph(document, imageFile);
             }
@@ -335,6 +336,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
         document.add(new Paragraph("How are you feeling today?"));
         document.add(new Paragraph("answer: like shit"));
         document.add(graph);
+        document.newPage();
     }
 
 
@@ -358,22 +360,7 @@ public class ToneAnalyserRadarFragment extends Fragment {
 //
 //        });
     }
-
-//    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth)
-//    {
-//        int width = bm.getWidth();
-//        int height = bm.getHeight();
-//        float scaleWidth = ((float) newWidth) / width;
-//        float scaleHeight = ((float) newHeight) / height;
-//        // create a matrix for the manipulation
-//        Matrix matrix = new Matrix();
-//        // resize the bit map
-//        matrix.postScale(scaleWidth, scaleHeight);
-//        // recreate the new Bitmap
-//        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
-//        return resizedBitmap;
-//    }
-
+    
 
     private static void addImage(Document document, Bitmap bitmap) {
         try {
