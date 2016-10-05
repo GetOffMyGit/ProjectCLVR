@@ -11,9 +11,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Zoe on 3/10/16.
- */
+
 public class GraphGenActivity extends AppCompatActivity {
     RadarGraphFragment radarGraphFragment;
 
