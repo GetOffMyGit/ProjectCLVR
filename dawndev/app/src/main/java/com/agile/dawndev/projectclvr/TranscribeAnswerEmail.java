@@ -31,8 +31,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
         //Set content for email from constructor.
         mSendTo = CLVRResults.getInstance().getmUserEmail();
-        //mSendTo = "ccha504@aucklanduni.ac.nz";
-        mSentFrom = CLVRResults.getInstance().getmUserEmail();
+        mSentFrom = "clvrapplication@gmail.com";
         mSubject = "Your transcript";
         mBody = "Please see the attached PDF for your transcript.";
     }

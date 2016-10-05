@@ -1,7 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -84,11 +86,6 @@ public class SpeechAnalyserActivity extends Activity {
     private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
-
-    private static final int PERMISSION_ALL = 1;
-    private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
     private String mFileName;
     private int numOfTasks;
     private int totalNumTasks;
@@ -109,6 +106,7 @@ public class SpeechAnalyserActivity extends Activity {
     private String mAllTextAnswers = "";
     private HashMap<Integer, CLVRQuestion> mQuestionResults = new HashMap<Integer, CLVRQuestion>();
     private String[] mQuestionTitles;
+    private boolean mErrorOccurred = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,8 +152,8 @@ public class SpeechAnalyserActivity extends Activity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        //Log.d("cj", mTestKey);
-        //Log.d("cj", mCompanyKey);
+        Log.d("cj", mTestKey);
+        Log.d("cj", mCompanyKey);
 
         populateMap();
 
@@ -165,22 +163,6 @@ public class SpeechAnalyserActivity extends Activity {
         mUsername = mAuth.getCurrentUser().getDisplayName();
         mUserEmail = mAuth.getCurrentUser().getEmail();
         //updateText();
-
-        // Check appropriate permissions
-        if (!hasPermissions(this, PERMISSIONS)) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[2])) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-            }
-        }
-
         //Check for connection with IBM Watson API
         if (!isNetworkAvailable()) {
             Log.d(TAG, "Please, check internet connection.");
@@ -197,10 +179,10 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
+        mToneAnalyzerService.setUsernameAndPassword("8079d59a-3f9d-445f-ab62-05a278b36a79", "WNVh4LVVeEYh");
 
         mPersonalityInsightsService = new PersonalityInsights();
-        mPersonalityInsightsService.setUsernameAndPassword("08370735-0a92-4d70-aa80-dc10e80c70a7", "gYZ48Vlbj6xT");
+        mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
     }
 
     public void recordAudio() {
@@ -222,17 +204,6 @@ public class SpeechAnalyserActivity extends Activity {
         } else {
             finishRecording();
         }
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private void speechRecognition(final File recordedResponse, final int questionNum) {
@@ -280,7 +251,6 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             protected String doInBackground(Object... input) {
                 ToneAnalyzer service = (ToneAnalyzer) input[0];
-                //String text = (String) input[1];
 
                 ToneAnalysis tone = service.getTone(stringInput, null).execute();
                 return tone.getDocumentTone().toString();
@@ -315,12 +285,8 @@ public class SpeechAnalyserActivity extends Activity {
                 super.onPostExecute(result);
                 if (result != null) {
                     mPersonalityAnalysis = result;
-                    Log.d("zoe-chan", "lel " + result);
                     doDoneDone();
-                } else {
-                    Log.d("zoe-chan", "null personality");
                 }
-
             }
         }.execute(mPersonalityInsightsService);
     }
@@ -392,8 +358,6 @@ public class SpeechAnalyserActivity extends Activity {
         mRecorder.stop();
         mRecorder.reset();
         textviewtimer.setVisibility(View.INVISIBLE);
-        //speechRecognition();
-        //uploadRecording();
 
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
@@ -472,10 +436,6 @@ public class SpeechAnalyserActivity extends Activity {
                     Log.d(TAG, "Deleted file");
                 }
             }
-
-            mProgressBar.setVisibility(View.INVISIBLE);
-            //Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-            //startActivity(intent);
         }
     }
 
@@ -483,7 +443,6 @@ public class SpeechAnalyserActivity extends Activity {
         int num = totalCompleted.getAndIncrement();
         if(num == totalNumTasks - 2) {
             //Order the maps by key
-
             //Get and concatenate all transcribed answers
             //At the same time prepare a map of results per question for pdf generation
             for (int i = 0; i < mTranscriptionMap.size(); i++) {
@@ -495,17 +454,45 @@ public class SpeechAnalyserActivity extends Activity {
 
             // execute tone analysis and personality analysis on combined text
             toneAnalysis(mAllTextAnswers, -1, true);
-            String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
-                    "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
-                    "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
-                    "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
-                    "promise I'll fight just as hard in a second term. \n"
-                    + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
-                    "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
-                    "had frozen up.";
-            personalityInsight(test);
+            String[] textArray = mAllTextAnswers.split(" ");
+            Log.d("Swamp monster", " " + textArray.length);
+            if(textArray.length < 100) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
+                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dialogBuilder.setNegativeButton("WOT", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dialogBuilder.setTitle("Insufficient dialogue").setMessage("Combined length of all your answers did not reach sufficient length for accurate analysis.");
+                dialogBuilder.create().show();
+                //signal that an error has occurred so that execution will not continue
+                mErrorOccurred = true;
+            } else {
+                // otherwise if there are enough words to carry out personality analysis, continue with execution
+                String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
+                        "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
+                        "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
+                        "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
+                        "promise I'll fight just as hard in a second term. \n"
+                        + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
+                        "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
+                        "had frozen up.";
+                personalityInsight(test);
+            }
         }
-        if(num == totalNumTasks) {
+        Log.d("Swamp", "Error: " + mErrorOccurred + ", NumTasks= " + num);
+        if(num == totalNumTasks && !mErrorOccurred) {
 
             //Send all data for PDF generation in encapsulating object
             CLVRResults finalResults = CLVRResults.getInstance();
@@ -518,8 +505,10 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
 
+            mProgressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
