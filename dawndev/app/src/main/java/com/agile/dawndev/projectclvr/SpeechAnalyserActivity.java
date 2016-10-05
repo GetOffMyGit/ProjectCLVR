@@ -453,9 +453,6 @@ public class SpeechAnalyserActivity extends Activity {
         if(isBadQuestionRun) {
             //If the last question on the bad run has been reached, reset the bad question flags and start computation.
             if(mBadRunCounter == mBadQuestionNumbers.size() - 1) {
-                Log.d("Swamp monster", "LAST ARRAY: " + mBadQuestionNumbers.toString());
-                Log.d("Swamp monster", "LAST INDEX: " + mBadRunCounter);
-                Log.d("Swamp monster", "LAST FILE NUMBER: " + mBadQuestionNumbers.get(mBadRunCounter));
                 mFileMap.put(mBadQuestionNumbers.get(mBadRunCounter), mFileName);
                 isBadQuestionRun = false;
                 mBadQuestionNumbers = new ArrayList<Integer>();
@@ -470,9 +467,6 @@ public class SpeechAnalyserActivity extends Activity {
                 mButtonRecord.setEnabled(true);
                 mButtonRecord.setTextColor(Color.WHITE);
 
-                Log.d("Swamp monster", "ARRAY: " + mBadQuestionNumbers.toString());
-                Log.d("Swamp monster", "INDEX: " + mBadRunCounter);
-                Log.d("Swamp monster", "FILE NUMBER: " + mBadQuestionNumbers.get(mBadRunCounter));
                 mFileMap.put(mBadQuestionNumbers.get(mBadRunCounter), mFileName);
                 mBadRunCounter++;
                 updateText();
@@ -534,7 +528,6 @@ public class SpeechAnalyserActivity extends Activity {
     private void doUploadingAndRecognition() {
         mProgressBar.setVisibility(View.VISIBLE);
         for(int questionNum : mFileMap.keySet()) {
-            Log.d("Swamp monster", " " + questionNum);
             File theFile = new File(mFileMap.get(questionNum));
             speechRecognition(theFile, questionNum);
             uploadRecording(theFile, questionNum);
@@ -625,7 +618,6 @@ public class SpeechAnalyserActivity extends Activity {
             // execute tone analysis and personality analysis on combined text
             toneAnalysis(mAllTextAnswers, -1, true);
             String[] textArray = mAllTextAnswers.split(" ");
-            Log.d("Swamp monster", " " + textArray.length);
             //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the ShowTestsActivity.
             //If there are 100 or more words progress with personality insights.
             if(textArray.length < 100) {
@@ -646,7 +638,6 @@ public class SpeechAnalyserActivity extends Activity {
                 personalityInsight(mAllTextAnswers);
             }
         }
-        Log.d("Swamp", "Error: " + mErrorOccurred + ", NumTasks= " + num);
         if(num == totalNumTasks && !mErrorOccurred) {
 
             //Send all data for PDF generation in encapsulating object
