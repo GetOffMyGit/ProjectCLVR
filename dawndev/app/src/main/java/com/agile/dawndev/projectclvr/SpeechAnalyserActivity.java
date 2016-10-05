@@ -320,8 +320,12 @@ public class SpeechAnalyserActivity extends Activity {
                 super.onPostExecute(result);
                 if (result != null) {
                     mPersonalityAnalysis = result;
+                    Log.d("zoe-chan", "lel " + result);
                     doDoneDone();
+                } else {
+                    Log.d("zoe-chan", "null personality");
                 }
+
             }
         }.execute(mPersonalityInsightsService);
     }
