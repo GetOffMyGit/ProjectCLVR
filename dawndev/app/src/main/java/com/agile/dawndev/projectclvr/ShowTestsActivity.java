@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,7 +42,9 @@ public class ShowTestsActivity extends AppCompatActivity {
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
     private TextView mWelcome;
+    private TextView mName;
     private static final int PERMISSION_ALL = 1;
+    private FloatingActionButton mFab;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -73,7 +76,7 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        mName = (TextView) findViewById(R.id.name);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -84,6 +87,16 @@ public class ShowTestsActivity extends AppCompatActivity {
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
         mWelcome = (TextView) findViewById(R.id.welcome);
         mWelcome.setTypeface(custom_font);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mName.setText(mAuth.getCurrentUser().getDisplayName().toString());
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShowTestsActivity.this, AddCompanyActivity.class);
+                startActivity(intent);
+            }
+        });
         attachRecyclerViewAdapter();
 
 
@@ -213,6 +226,7 @@ public class ShowTestsActivity extends AppCompatActivity {
     public static class CompanyHolder extends RecyclerView.ViewHolder {
         View mView;
         DatabaseReference db;
+        String name;
 
 
         public CompanyHolder(View itemView) {
@@ -240,7 +254,6 @@ public class ShowTestsActivity extends AppCompatActivity {
                 }
 
             });
-
         }
 
         public void setImage(String key) {
