@@ -13,10 +13,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
@@ -58,8 +61,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
 
-    private TextView mText;
     private ProgressBar mProgressBar;
+
+    private RelativeLayout mCoverUp;
 
     private CountDownTimer countdowntimer;
     private TextView textviewtimer;
@@ -68,10 +72,13 @@ public class SpeechAnalyserActivity extends Activity {
     private long timerLimit = 6000;
     private TextView mTitle;
     private TextView mInstruction;
+    private TextView mContinueText;
+    private ScrollView mScroll;
+
 
     private WavAudioRecorder mRecorder;
     private Button mButtonRecord = null;
-    private Button mContinueButton = null;
+    private FloatingActionButton mContinueButton = null;
 
     private DatabaseReference mDatabase;
     private String mCompanyName;
@@ -88,7 +95,6 @@ public class SpeechAnalyserActivity extends Activity {
     private int totalNumTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
     private AtomicInteger totalCompleted = new AtomicInteger(1);
-    private File audioFile;
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
@@ -127,25 +133,26 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-        audioFile = new File(mFileName);
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mContinueButton = (Button) findViewById(R.id.continue_button);
+        mContinueButton = (FloatingActionButton) findViewById(R.id.continue_button);
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 continueButtonOnClick(v);
             }
         });
-
-        mText = (TextView) findViewById(R.id.isThisRight);
+        mContinueText = (TextView) findViewById(R.id.continue_text);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
+        mScroll = (ScrollView) findViewById(R.id.scroll);
+
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
         mRecorder = WavAudioRecorder.getInstanse();
         mRecorder.setOutputFile(mFileName);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mCoverUp = (RelativeLayout) findViewById(R.id.cover_layout);
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
@@ -180,6 +187,11 @@ public class SpeechAnalyserActivity extends Activity {
 
         mPersonalityInsightsService = new PersonalityInsights();
         mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     public void recordAudio() {
@@ -187,6 +199,7 @@ public class SpeechAnalyserActivity extends Activity {
             mRecorder.prepare();
             mRecorder.start();
             mButtonRecord.setText("Stop Recording");
+            mButtonRecord.setAlpha(1.0f);
 
             //Start the timer
             countdowntimer = new CountDownTimerClass(timerLimit, 1000);
@@ -365,8 +378,9 @@ public class SpeechAnalyserActivity extends Activity {
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
         // set the text color to grey
-        mButtonRecord.setTextColor(Color.parseColor("#737373"));
+        mButtonRecord.setAlpha(.5f);
         mContinueButton.setVisibility(View.VISIBLE);
+        mContinueText.setVisibility(View.VISIBLE);
     }
 
     public void updateText() {
@@ -384,9 +398,19 @@ public class SpeechAnalyserActivity extends Activity {
         if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
             mInstructionCounter++;
             mFileMap.put(mInstructionCounter, mFileName);
+
+            mCoverUp.setVisibility(View.VISIBLE);
+            mTitle.setVisibility(View.GONE);
+            mInstruction.setVisibility(View.GONE);
+            mButtonRecord.setVisibility(View.GONE);
+            mContinueButton.setVisibility(View.GONE);
+            mContinueText.setVisibility(View.GONE);
+            mScroll.setVisibility(View.GONE);
+
             doUploadingAndRecognition();
         } else {
             mContinueButton.setVisibility(View.INVISIBLE);
+            mContinueText.setVisibility(View.INVISIBLE);
 
             // show next question for user and allow recording again
             mInstructionCounter++;
@@ -395,12 +419,12 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setText("Start Recording");
             mButtonRecord.setEnabled(true);
             mButtonRecord.setTextColor(Color.WHITE);
+            mButtonRecord.setAlpha(1.0f);
 
             mFileMap.put(mInstructionCounter, mFileName);
 
             // prepare for recording next question
             mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-            audioFile = new File(mFileName);
             mRecorder.setOutputFile(mFileName);
         }
     }
@@ -429,8 +453,6 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setText("Start Recording");
             mButtonRecord.setEnabled(true);
             mButtonRecord.setTextColor(Color.WHITE);
-            mContinueButton.setVisibility(View.VISIBLE);
-            mText.setVisibility(View.VISIBLE);
 
             for(int questionNum : mFileMap.keySet()) {
                 File theFile = new File(mFileMap.get(questionNum));
@@ -469,14 +491,6 @@ public class SpeechAnalyserActivity extends Activity {
                         finish();
                     }
                 });
-                dialogBuilder.setNegativeButton("WOT", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
                 dialogBuilder.setTitle("Insufficient dialogue").setMessage("Combined length of all your answers did not reach sufficient length for accurate analysis.");
                 dialogBuilder.create().show();
                 //signal that an error has occurred so that execution will not continue
@@ -508,7 +522,6 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
 
-            mProgressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
             finish();
@@ -536,6 +549,16 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 

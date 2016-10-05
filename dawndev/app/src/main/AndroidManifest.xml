@@ -40,7 +40,6 @@
             android:name=".SpeechAnalyserActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
         <activity android:name=".GraphGenActivity" />
-        <activity android:name=".SendEmailActivity" />
         <activity android:name=".CompanyMainActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ShowTestsActivity" />
