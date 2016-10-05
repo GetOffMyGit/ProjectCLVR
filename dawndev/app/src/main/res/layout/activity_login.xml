@@ -1,82 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_layout"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical"
-    android:weightSum="4">
-
+    android:layout_width="match_parent"
+    >
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/clvr_interview_image"
+        android:scaleType="centerCrop"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="@color/clvrGrey"
-        android:gravity=""
+        android:layout_height="match_parent"
         android:orientation="vertical">
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/clvr_logo_cube"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="150dp"
-            >
-
-        </ImageView>
-
-    </LinearLayout>
-
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/clvrGrey">
-
-        <Button
-            android:id="@+id/sign_in_button"
+            android:id="@+id/clvr_welcome"
+            android:text="@string/welcome_to"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginTop="100dp"
+            android:textSize="24sp"
+            />
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="@color/clvrGrey"
-            android:background="#FFFFFF"
-            android:text="@string/common_signin_button_text_long" />
+            android:id="@+id/clvr_title"
+            android:text="@string/clvr_title"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginTop="5dp"
+            android:textSize="50sp"
+            />
 
-        <!--<com.google.android.gms.common.SignInButton-->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <!--<Button-->
             <!--android:id="@+id/sign_in_button"-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"-->
             <!--android:layout_centerInParent="true"-->
-            <!--android:visibility="visible"-->
-            <!--tools:visibility="gone" />-->
-
-        <LinearLayout
-            android:id="@+id/sign_out_and_disconnect"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <Button
-                android:id="@+id/sign_out_button"
-                android:layout_width="0dp"
+            <!--android:textColor="@color/clvrGrey"-->
+            <!--android:background="#FFFFFF"-->
+            <!--android:text="@string/common_signin_button_text_long" />-->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="sign out" />
-
-            <Button
-                android:id="@+id/disconnect_button"
-                android:layout_width="0dp"
+                android:text="Currently logged in as:"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:id="@+id/currently_logged"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="60dp" />
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="disconnect" />
-        </LinearLayout>
+                android:text="Ceejay Park"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:id="@+id/current_user"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/currently_logged"/>
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Not you?"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:id="@+id/not_you"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/current_user"/>
 
-</LinearLayout>
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible" />
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+
+
+</FrameLayout>
+
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/main_layout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="#FFFFFF"-->
+    <!--android:orientation="vertical"-->
+    <!--android:weightSum="4">-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="3"-->
+        <!--android:background="@color/grey400"-->
+        <!--android:gravity=""-->
+        <!--android:orientation="vertical">-->
+        <!--<ImageView-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@drawable/clvr_interview_photo"-->
+            <!--android:scaleType="centerCrop"-->
+            <!--android:adjustViewBounds="true"-->
+            <!--&gt;-->
+
+        <!--</ImageView>-->
+
+    <!--</LinearLayout>-->
+
+
+
+<!--</LinearLayout>-->
