@@ -8,7 +8,7 @@ HOW TO GET STARTED
 
 1) Clone the repository using https://github.com/unit02/Project-CLVR.git
 
-2) Checkout the 'Prototype' branch
+2) Checkout the 'Master' branch
 
 3) Open Android Studio 
 
@@ -21,6 +21,9 @@ HOW TO GET STARTED
 7) Run the application by clicking 'Run' > 'Run App'
  
 To view the prototype feature descriptions and results, visit [Prototype Description and Features](https://github.com/unit02/Project-CLVR/wiki/Prototype-Description-and-Features) wiki page.
+
+To view the final application feature descriptions, visit [Final Application Features]
+(https://github.com/unit02/Project-CLVR/wiki/Final-Application-Features) wiki page.
 
 ---- 
 
@@ -41,6 +44,8 @@ All Sprint related documentation (user stories, acceptance tests, velocity, meet
 [Sprint #1](https://github.com/unit02/Project-CLVR/wiki/Sprint-%231)<br>
 [Sprint #2](https://github.com/unit02/Project-CLVR/wiki/Sprint-%232)<br>
 [Sprint #3](https://github.com/unit02/Project-CLVR/wiki/Sprint-%233)<br>
+[Sprint #4](https://github.com/unit02/Project-CLVR/wiki/Sprint-%234)<br>
+[Sprint #5](https://github.com/unit02/Project-CLVR/wiki/Sprint-%235)<br>
 
 To view the project management tool, visit [Project Management Tool Details](https://github.com/unit02/Project-CLVR/wiki/Project-Management-Tool-Details)<br>
  wiki page.
