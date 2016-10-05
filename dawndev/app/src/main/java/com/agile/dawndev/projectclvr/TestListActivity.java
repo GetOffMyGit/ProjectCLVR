@@ -119,10 +119,9 @@ public class TestListActivity extends AppCompatActivity {
                 DatabaseReference ref = getRef(position);
                 final String itemKey = ref.getKey();
 
-
                 testView.setName(itemKey, mCompanyKey);
+                final String name = testView.getName();
                 testView.setNumberOfQuestions(itemKey, mCompanyKey);
-
                 testView.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -132,9 +131,9 @@ public class TestListActivity extends AppCompatActivity {
                         intent.putExtra("companyKey", mCompanyKey);
                         intent.putExtra("companyEmail", mCompanyEmail);
                         intent.putExtra("testKey", itemKey);
+                        intent.putExtra("testName", name);
                         intent.setType("text/plain");
                         startActivity(intent);
-                        finish();
                     }
                 });
             }
@@ -156,11 +155,16 @@ public class TestListActivity extends AppCompatActivity {
     public static class TestHolder extends RecyclerView.ViewHolder {
         View mView;
         DatabaseReference db;
+        String name;
 
 
         public TestHolder(View itemView) {
             super(itemView);
             mView = itemView;
+        }
+
+        public String getName() {
+            return this.name;
         }
 
         public void setName(String key, String companyKey) {
@@ -173,6 +177,7 @@ public class TestListActivity extends AppCompatActivity {
                     Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
                     field.setText(dataSnapshot.getValue().toString());
                     field.setTypeface(custom_font);
+                    name = dataSnapshot.getValue().toString();
                 }
 
                 @Override

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,8 @@ public class AddCompanyActivity extends AppCompatActivity {
     private EditText mPassword;
     private TextView mWelcome;
     private TextView mWelcomeInfo;
-
+    private Button mDoneButton;
+    private Button mBackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,8 @@ public class AddCompanyActivity extends AppCompatActivity {
         mPassword = (EditText) findViewById(R.id.companyPassword);
         mWelcome = (TextView) findViewById(R.id.welcome_message);
         mWelcomeInfo = (TextView) findViewById(R.id.welcome_info);
-
+        mDoneButton = (Button) findViewById(R.id.done_button);
+        mBackButton = (Button) findViewById(R.id.back_button);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -57,6 +60,8 @@ public class AddCompanyActivity extends AppCompatActivity {
         mWelcomeInfo.setTypeface(custom_font);
         mPassword.setTypeface(custom_font);
         mEdit.setTypeface(custom_font);
+        mDoneButton.setTypeface(custom_font);
+        mBackButton.setTypeface(custom_font);
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
 
         mDatabase.child("companies").addValueEventListener(
