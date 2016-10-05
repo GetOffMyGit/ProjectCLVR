@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Creates the fragment that contains the radar graph which displays the results from the
@@ -47,6 +49,8 @@ public class RadarGraphFragment extends Fragment {
     private RadarChart firstChart;
     private RadarChart secondChart;
     private RadarChart thirdChart;
+    public AtomicInteger pdfcounter = new AtomicInteger();
+
 
     LinearLayoutCompat screenshotArea;
 
@@ -100,6 +104,7 @@ public class RadarGraphFragment extends Fragment {
         nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
 //        graphScrollView.setVisibility(View.INVISIBLE);
 
+
         nextQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,11 +117,52 @@ public class RadarGraphFragment extends Fragment {
                 createToneGraph(overallTone, -2);
 
                 nextQuestion.setVisibility(View.INVISIBLE);
-                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext());
+
+                //Generate PDF for company - with graphs
+                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()){
+                    @Override
+                    protected void onPostExecute(Long result) {
+
+
+                        //Create SendGridSendEmail object for company pdf. Send context and email content.
+                        SendGridSendEmail task = new SendGridSendEmail(getActivity()){
+                            @Override
+                            protected void onPostExecute(Void result) {
+                                //When both PDFs are sent, delete the files from device
+                                whenDone();
+                            }
+
+                        };
+                        //Execute async task.
+                        task.execute();
+
+                    }
+
+                };
                 generatePDFAsyncTask.execute();
-                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext());
+
+                //Generate PDF for user - only transcription
+                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext()){
+                    @Override
+                    protected void onPostExecute(Long result) {
+
+                        //Create SendGridSendEmail object for user pdf. Send context and email content.
+                        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(getActivity()){
+                            @Override
+                            protected void onPostExecute(Void result) {
+                                //When both PDFs are sent, delete the files from device
+                                whenDone();
+                            }
+
+                        };
+                        //Execute async task.
+                        task2.execute();
+
+                    }
+
+                };
                 generateTranscript.execute();
-                //TODO call it again with false
+
 
                 mProgress.setVisibility(View.GONE);
                 nextQuestion.setVisibility(View.VISIBLE);
@@ -126,6 +172,8 @@ public class RadarGraphFragment extends Fragment {
 
         return inflatedView;
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -313,5 +361,32 @@ public class RadarGraphFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void whenDone(){
+
+        Log.d("chahat", "Deleted file");
+        int count = pdfcounter.incrementAndGet();
+
+
+        if (count == 2){
+            File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+
+            if (pdfDir.isDirectory())
+            {
+                String[] children = pdfDir.list();
+                for (int i = 0; i < children.length; i++)
+                {
+                    new File(pdfDir, children[i]).delete();
+                }
+            }
+
+
+
+
+
+        }
+
+
     }
 }

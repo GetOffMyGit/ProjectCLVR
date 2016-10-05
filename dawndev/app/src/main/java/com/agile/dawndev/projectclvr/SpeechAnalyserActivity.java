@@ -154,8 +154,8 @@ public class SpeechAnalyserActivity extends Activity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        Log.d("cj", mTestKey);
-        Log.d("cj", mCompanyKey);
+        //Log.d("cj", mTestKey);
+        //Log.d("cj", mCompanyKey);
 
         populateMap();
 
@@ -474,8 +474,8 @@ public class SpeechAnalyserActivity extends Activity {
             }
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            //startActivity(intent);
         }
     }
 
