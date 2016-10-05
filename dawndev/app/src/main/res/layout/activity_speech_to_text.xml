@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/tab_stt">
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:id="@+id/cover_layout"
+        android:visibility="gone"
+        >
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:id="@+id/progress_bar"
+            android:layout_width="150sp"
+            android:layout_height="150sp"
+            android:indeterminateTint="@color/white"
+            android:layout_marginRight="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="161dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analysing Results"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:layout_below="@+id/progress_bar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
 
+        </RelativeLayout>
 
     <TextView
         android:id="@+id/title"
@@ -59,42 +87,17 @@
         android:paddingBottom="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-
-    <TextView
-        android:id="@+id/isThisRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Is this correct?"
-        android:layout_below="@+id/textViewtimer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="10dp"
-
-        android:visibility="gone"
-        />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Yes! Continue!"
+        android:text="Continue"
         android:id="@+id/continue_button"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
 
         android:layout_gravity="center"
-        android:layout_below="@+id/isThisRight"
+        android:layout_below="@+id/textViewtimer"
         android:visibility="gone"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="50sp"
-        android:layout_height="50sp"
-        android:layout_marginTop="-50sp"
-        android:layout_marginRight="40sp"
-        android:id="@+id/progress_bar"
-        android:layout_centerInParent="true"
-        android:indeterminateTint="@color/colorPrimaryDark"
-        android:layout_gravity="right" />
 </RelativeLayout>

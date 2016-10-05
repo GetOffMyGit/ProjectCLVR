@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
@@ -61,8 +62,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
 
-    private TextView mText;
     private ProgressBar mProgressBar;
+
+    private RelativeLayout mCoverUp;
 
     private CountDownTimer countdowntimer;
     private TextView textviewtimer;
@@ -91,7 +93,6 @@ public class SpeechAnalyserActivity extends Activity {
     private int totalNumTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
     private AtomicInteger totalCompleted = new AtomicInteger(1);
-    private File audioFile;
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
@@ -130,7 +131,6 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-        audioFile = new File(mFileName);
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -142,13 +142,13 @@ public class SpeechAnalyserActivity extends Activity {
             }
         });
 
-        mText = (TextView) findViewById(R.id.isThisRight);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
         mRecorder = WavAudioRecorder.getInstanse();
         mRecorder.setOutputFile(mFileName);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mCoverUp = (RelativeLayout) findViewById(R.id.cover_layout);
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
@@ -183,6 +183,11 @@ public class SpeechAnalyserActivity extends Activity {
 
         mPersonalityInsightsService = new PersonalityInsights();
         mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     public void recordAudio() {
@@ -381,6 +386,14 @@ public class SpeechAnalyserActivity extends Activity {
         if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
             mInstructionCounter++;
             mFileMap.put(mInstructionCounter, mFileName);
+
+            mCoverUp.setVisibility(View.VISIBLE);
+            mTitle.setVisibility(View.GONE);
+            mInstruction.setVisibility(View.GONE);
+            mButtonRecord.setVisibility(View.GONE);
+            mContinueButton.setVisibility(view.GONE);
+            mContinueButton.setText("");
+
             doUploadingAndRecognition();
         } else {
             mContinueButton.setVisibility(View.INVISIBLE);
@@ -397,7 +410,6 @@ public class SpeechAnalyserActivity extends Activity {
 
             // prepare for recording next question
             mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-            audioFile = new File(mFileName);
             mRecorder.setOutputFile(mFileName);
         }
     }
@@ -426,9 +438,9 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setText("Start Recording");
             mButtonRecord.setEnabled(true);
             mButtonRecord.setTextColor(Color.WHITE);
-            mContinueButton.setVisibility(View.VISIBLE);
-            mText.setVisibility(View.VISIBLE);
-
+            if (mInstructionCounter != (mInstructionAndAnswerMap.size() - 1)) {
+                mContinueButton.setVisibility(View.VISIBLE);
+            }
             for(int questionNum : mFileMap.keySet()) {
                 File theFile = new File(mFileMap.get(questionNum));
                 boolean deleted = theFile.delete();
@@ -459,14 +471,6 @@ public class SpeechAnalyserActivity extends Activity {
             if(textArray.length < 100) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-                dialogBuilder.setNegativeButton("WOT", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
@@ -505,7 +509,6 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
 
-            mProgressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
             finish();
@@ -533,6 +536,16 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 
