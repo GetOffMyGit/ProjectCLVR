@@ -8,7 +8,7 @@ HOW TO GET STARTED
 
 1) Clone the repository using https://github.com/unit02/Project-CLVR.git
 
-2) Checkout the 'Prototype' branch
+2) Checkout the 'Master' branch
 
 3) Open Android Studio 
 
@@ -21,6 +21,9 @@ HOW TO GET STARTED
 7) Run the application by clicking 'Run' > 'Run App'
  
 To view the prototype feature descriptions and results, visit [Prototype Description and Features](https://github.com/unit02/Project-CLVR/wiki/Prototype-Description-and-Features) wiki page.
+
+To view the final application feature descriptions, visit [Final Application Features]
+(https://github.com/unit02/Project-CLVR/wiki/Final-Application-Features) wiki page.
 
 ---- 
 
