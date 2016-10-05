@@ -15,12 +15,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
@@ -73,10 +75,13 @@ public class SpeechAnalyserActivity extends Activity {
     private long timerLimit = 6000;
     private TextView mTitle;
     private TextView mInstruction;
+    private TextView mContinueText;
+    private ScrollView mScroll;
+
 
     private WavAudioRecorder mRecorder;
     private Button mButtonRecord = null;
-    private Button mContinueButton = null;
+    private FloatingActionButton mContinueButton = null;
 
     private DatabaseReference mDatabase;
     private String mCompanyName;
@@ -134,15 +139,17 @@ public class SpeechAnalyserActivity extends Activity {
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mContinueButton = (Button) findViewById(R.id.continue_button);
+        mContinueButton = (FloatingActionButton) findViewById(R.id.continue_button);
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 continueButtonOnClick(v);
             }
         });
-
+        mContinueText = (TextView) findViewById(R.id.continue_text);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
+        mScroll = (ScrollView) findViewById(R.id.scroll);
+
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
         mRecorder = WavAudioRecorder.getInstanse();
@@ -195,6 +202,7 @@ public class SpeechAnalyserActivity extends Activity {
             mRecorder.prepare();
             mRecorder.start();
             mButtonRecord.setText("Stop Recording");
+            mButtonRecord.setAlpha(1.0f);
 
             //Start the timer
             countdowntimer = new CountDownTimerClass(timerLimit, 1000);
@@ -367,8 +375,9 @@ public class SpeechAnalyserActivity extends Activity {
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
         // set the text color to grey
-        mButtonRecord.setTextColor(Color.parseColor("#737373"));
+        mButtonRecord.setAlpha(.5f);
         mContinueButton.setVisibility(View.VISIBLE);
+        mContinueText.setVisibility(View.VISIBLE);
     }
 
     public void updateText() {
@@ -391,12 +400,14 @@ public class SpeechAnalyserActivity extends Activity {
             mTitle.setVisibility(View.GONE);
             mInstruction.setVisibility(View.GONE);
             mButtonRecord.setVisibility(View.GONE);
-            mContinueButton.setVisibility(view.GONE);
-            mContinueButton.setText("");
+            mContinueButton.setVisibility(View.GONE);
+            mContinueText.setVisibility(View.GONE);
+            mScroll.setVisibility(View.GONE);
 
             doUploadingAndRecognition();
         } else {
             mContinueButton.setVisibility(View.INVISIBLE);
+            mContinueText.setVisibility(View.INVISIBLE);
 
             // show next question for user and allow recording again
             mInstructionCounter++;
@@ -405,6 +416,7 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setText("Start Recording");
             mButtonRecord.setEnabled(true);
             mButtonRecord.setTextColor(Color.WHITE);
+            mButtonRecord.setAlpha(1.0f);
 
             mFileMap.put(mInstructionCounter, mFileName);
 
@@ -438,9 +450,7 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setText("Start Recording");
             mButtonRecord.setEnabled(true);
             mButtonRecord.setTextColor(Color.WHITE);
-            if (mInstructionCounter != (mInstructionAndAnswerMap.size() - 1)) {
-                mContinueButton.setVisibility(View.VISIBLE);
-            }
+
             for(int questionNum : mFileMap.keySet()) {
                 File theFile = new File(mFileMap.get(questionNum));
                 boolean deleted = theFile.delete();
