@@ -3,7 +3,7 @@ package com.agile.dawndev.projectclvr.Models;
 import java.util.HashMap;
 
 /**
- * Created by Paul Joo on 3/10/2016.
+ * This model holds all the result related data fetched from FireBase
  */
 
 public class CLVRResults {

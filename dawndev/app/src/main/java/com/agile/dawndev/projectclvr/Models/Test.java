@@ -1,9 +1,12 @@
 package com.agile.dawndev.projectclvr.Models;
 
-import java.util.HashMap;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.HashMap;
 
+/**
+ * This model holds all the test related data fetched from FireBase
+ */
 @IgnoreExtraProperties
 public class Test {
     private HashMap<String,Object> questions;
