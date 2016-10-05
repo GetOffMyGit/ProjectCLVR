@@ -643,16 +643,7 @@ public class SpeechAnalyserActivity extends Activity {
                 //signal that an error has occurred so that execution will not continue
                 mErrorOccurred = true;
             } else {
-                // otherwise if there are enough words to carry out personality analysis, continue with execution
-                String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
-                        "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
-                        "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
-                        "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
-                        "promise I'll fight just as hard in a second term. \n"
-                        + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
-                        "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
-                        "had frozen up.";
-                personalityInsight(test);
+                personalityInsight(mAllTextAnswers);
             }
         }
         Log.d("Swamp", "Error: " + mErrorOccurred + ", NumTasks= " + num);
