@@ -5,17 +5,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -237,6 +234,12 @@ public class SpeechAnalyserActivity extends Activity {
                     String trans = t.getAlternatives().get(0).getTranscript();
                     finalTranscript += trans;
                 }
+
+                //Replace ASCII to apostrophe
+                finalTranscript.replace("\u0027", "'");
+                Log.d("TRANSCRIPT", finalTranscript);
+
+                
                 mTranscriptionMap.put(questionNum, finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
