@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 
+import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.sendgrid.SendGrid;
 import com.sendgrid.SendGridException;
 
@@ -24,15 +25,15 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     private String mBody;
 
     //Constructor providing context and content for the email.
-    public SendGridSendEmail(Context context, String sentTo, String sentFrom, String subject, String body) {
+    public SendGridSendEmail(Context context) {
         this.mContext = context;
 
         //Set content for email from constructor.
-        mSendTo = sentTo;
+        mSendTo = CLVRResults.getInstance().getmCompanyEmail();
         //mSendTo = "ccha504@aucklanduni.ac.nz";
-        mSentFrom = sentFrom;
-        mSubject = subject;
-        mBody = body;
+        mSentFrom = CLVRResults.getInstance().getmUserEmail();
+        mSubject = "Results from "+ CLVRResults.getInstance().getmUsername()+"'s test";
+        mBody = "Please review attached PDF.";
     }
 
     //Async task
