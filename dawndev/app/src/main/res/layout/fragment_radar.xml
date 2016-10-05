@@ -47,14 +47,8 @@
                 android:layout_weight="1.7"
                 android:layout_below="@id/secondChart"
                 android:id="@+id/thirdChart"/>
-        </android.support.v7.widget.LinearLayoutCompat>
-ew>
+        </android.support.v7.widget.LinearLayoutCompat>>
 
-    <Button
-        android:id="@+id/getResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next Question >"/>
 
 
 </RelativeLayout>

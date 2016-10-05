@@ -474,8 +474,6 @@ public class SpeechAnalyserActivity extends Activity {
             }
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-            startActivity(intent);
         }
     }
 

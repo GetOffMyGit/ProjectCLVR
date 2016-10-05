@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +55,6 @@ public class RadarGraphFragment extends Fragment {
     private ProgressBar mProgress;
 
     private Button nextQuestion;
-    GraphGenActivity graphGenActivity;
 
     HashMap<Integer, CLVRQuestion> testResult;
 
@@ -61,15 +62,6 @@ public class RadarGraphFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Creates the radar fragment
-     */
-    public static RadarGraphFragment newInstance() {
-        RadarGraphFragment fragment = new RadarGraphFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     //called when the fragment is created
     @Override
@@ -98,20 +90,36 @@ public class RadarGraphFragment extends Fragment {
         secondChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         thirdChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
         nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
-//        graphScrollView.setVisibility(View.INVISIBLE);
 
-        nextQuestion.setOnClickListener(new View.OnClickListener() {
+        Log.d("TAG", "after oncreateView");
+        return inflatedView;
+    }
+
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        new AsyncTask<Void, Void, String> () {
             @Override
-            public void onClick(View v) {
-                //nextQuestion.setVisibility(View.INVISIBLE);
+            protected String doInBackground(Void... params) {
+                Log.d("TAG", " inside onActivityCreated");
+                return null;
+            }
 
-                //graphScrollView.setVisibility(View.VISIBLE);
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d("TAG", " inside HELLO");
+
                 createAllToneGraphs();
-                createPersonalityGraphs();
-                String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
-                createToneGraph(overallTone, -2);
 
-                nextQuestion.setVisibility(View.INVISIBLE);
+                createPersonalityGraphs();
+
+                String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
+
+                createToneGraph(overallTone, -2);
+                //                nextQuestion.setVisibility(View.INVISIBLE);
                 GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext());
                 generatePDFAsyncTask.execute();
                 GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext());
@@ -122,14 +130,7 @@ public class RadarGraphFragment extends Fragment {
                 nextQuestion.setVisibility(View.VISIBLE);
 
             }
-        });
-
-        return inflatedView;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        }.execute();
     }
 
     public void createToneGraph(String jsonResult, int question) {
