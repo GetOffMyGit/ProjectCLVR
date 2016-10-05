@@ -1,9 +1,7 @@
 package com.agile.dawndev.projectclvr.Models;
 
-import android.graphics.Bitmap;
-
 /**
- * Created by Paul Joo on 3/10/2016.
+ * This model holds all the question related data fetched from FireBase
  */
 
 public class CLVRQuestion {

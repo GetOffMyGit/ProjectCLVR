@@ -3,7 +3,7 @@ package com.agile.dawndev.projectclvr.Models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
- * Created by cjpark and Nikhil on 26/08/16.
+ * This model holds all the question related data fetched from FireBase
  */
 @IgnoreExtraProperties
 public class Question {

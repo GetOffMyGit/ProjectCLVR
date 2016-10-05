@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by cjpark on 21/09/16.
+ * This model holds all the company related data fetched from FireBase
  */
 public class Company {
     private long id;
