@@ -618,14 +618,14 @@ public class SpeechAnalyserActivity extends Activity {
             // execute tone analysis and personality analysis on combined text
             toneAnalysis(mAllTextAnswers, -1, true);
             String[] textArray = mAllTextAnswers.split(" ");
-            //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the ShowTestsActivity.
+            //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the CompanyListActivity.
             //If there are 100 or more words progress with personality insights.
             if(textArray.length < 100) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, CompanyListActivity.class);
                         startActivity(intent);
                         finish();
                     }

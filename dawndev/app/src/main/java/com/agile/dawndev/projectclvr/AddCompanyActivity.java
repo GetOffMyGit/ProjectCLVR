@@ -43,6 +43,7 @@ public class AddCompanyActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
+        // Custom fonts for all the text
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
 
 
@@ -53,6 +54,7 @@ public class AddCompanyActivity extends AppCompatActivity {
         mDoneButton = (Button) findViewById(R.id.done_button);
         mBackButton = (Button) findViewById(R.id.back_button);
 
+        // Getting instances of firebase auth and firebase database
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -64,14 +66,14 @@ public class AddCompanyActivity extends AppCompatActivity {
         mBackButton.setTypeface(custom_font);
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
 
+
+        // Adding the list of companies into the autocomplete arrayadapter
         mDatabase.child("companies").addValueEventListener(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot companySnapshot : dataSnapshot.getChildren()){
-                            //Get the suggestion by childing the key of the string you want to get.
                             String company = companySnapshot.child("name").getValue(String.class);
-                            //Add the retrieved string to the list
                             autoComplete.add(company);
                         }
                     }
@@ -86,16 +88,22 @@ public class AddCompanyActivity extends AppCompatActivity {
         mEdit.setAdapter(autoComplete);
     }
 
+    // Called when adding more companies to the user account
     public void assignCompany(View view) {
+        // Checks for no input for either text fields
         if (mEdit.getText().toString().length() > 0 && mPassword.getText().toString().length() > 0) {
+            // grabs the password from database
             mDatabase.child("company_names").child(mEdit.getText().toString()).child("password").addListenerForSingleValueEvent(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
+                                // verifies password is correct
                                 if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
                                     addCompany();
-                                } else {
+                                }
+                                else {
+                                    // if not, then show a quick message
                                     Context context = getApplicationContext();
                                     CharSequence text = "The password you entered is incorrect";
                                     int duration = Toast.LENGTH_SHORT;
@@ -104,11 +112,11 @@ public class AddCompanyActivity extends AppCompatActivity {
                                     toast.show();
                                 }
                             }
+                            // if company name doesn't exist, show a quick message
                             else {
                                 Context context = getApplicationContext();
                                 CharSequence text = "Please enter a valid company!";
                                 int duration = Toast.LENGTH_SHORT;
-
                                 Toast toast = Toast.makeText(context, text, duration);
                                 toast.show();
                             }
@@ -122,6 +130,7 @@ public class AddCompanyActivity extends AppCompatActivity {
             );
 
         }
+        // if any input is empty, show a quick message
         else {
             Context context = getApplicationContext();
             CharSequence text = "Please enter all the required fields!";
@@ -134,6 +143,7 @@ public class AddCompanyActivity extends AppCompatActivity {
 
     }
 
+    // Assigns the company to the user account in the firebase database
     private void addCompany() {
         String company = mEdit.getText().toString();
         mDatabase.child("company_names").child(company).addValueEventListener(
@@ -152,10 +162,11 @@ public class AddCompanyActivity extends AppCompatActivity {
                     }
                 }
         );
-        startActivity(new Intent(this, ShowTestsActivity.class));
+        startActivity(new Intent(this, CompanyListActivity.class));
         finish();
     }
 
+    // back button method
     public void goBack(View view) {
         finish();
     }

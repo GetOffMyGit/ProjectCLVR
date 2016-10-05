@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +21,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
+/*
+    Activity that contains the list of tests for a company
+ */
 public class TestListActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private RecyclerView mRecyclerView;
@@ -48,6 +51,7 @@ public class TestListActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
 
 
+        // grabs the company id relevant to the cards to be displayed
         if(savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
@@ -58,8 +62,6 @@ public class TestListActivity extends AppCompatActivity {
         }
 
         mLogo = (ImageView) findViewById(R.id.logo);
-
-
         mAuth = FirebaseAuth.getInstance();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_tests);
@@ -152,6 +154,7 @@ public class TestListActivity extends AppCompatActivity {
 
 
 
+    // Class for the cards containing each test
     public static class TestHolder extends RecyclerView.ViewHolder {
         View mView;
         DatabaseReference db;
@@ -167,6 +170,7 @@ public class TestListActivity extends AppCompatActivity {
             return this.name;
         }
 
+        // Sets the name of the test into the cards
         public void setName(String key, String companyKey) {
             db = FirebaseDatabase.getInstance().getReference();
             db.child("companies").child(companyKey).child("tests").child(key).child("name").addValueEventListener(new ValueEventListener() {
@@ -191,6 +195,7 @@ public class TestListActivity extends AppCompatActivity {
         }
 
 
+        // Sets the number of questions in the test into the cards
         public void setNumberOfQuestions(String key, String companyKey) {
 
             db = FirebaseDatabase.getInstance().getReference();

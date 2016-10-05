@@ -6,12 +6,9 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +40,7 @@ public class NewUserActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
+        // custom font for all the text in the activity
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
 
         mEdit = (AutoCompleteTextView) findViewById(R.id.editText);
@@ -55,11 +53,13 @@ public class NewUserActivity extends AppCompatActivity {
         mPassword.setTypeface(custom_font);
         mEdit.setTypeface(custom_font);
 
+        // getting instances of the firebase auth and firebase database
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
 
+        // adding all the company names to the autocomplete arrayadapter
         mDatabase.child("companies").addValueEventListener(
                 new ValueEventListener() {
                     @Override
@@ -83,17 +83,21 @@ public class NewUserActivity extends AppCompatActivity {
 
     }
 
-
+    // Called when adding more companies to the user account
     public void assignCompany(View view) {
+        // Checks for no input for either text fields
         if (mEdit.getText().toString().length() > 0 && mPassword.getText().toString().length() > 0) {
+            // grabs the password from database
             mDatabase.child("company_names").child(mEdit.getText().toString()).child("password").addListenerForSingleValueEvent(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
+                                // verifies password is correct
                                 if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
                                     addCompany();
                                 } else {
+                                    // if not, then show a quick message
                                     Context context = getApplicationContext();
                                     CharSequence text = "The password you entered is incorrect";
                                     int duration = Toast.LENGTH_SHORT;
@@ -102,6 +106,7 @@ public class NewUserActivity extends AppCompatActivity {
                                     toast.show();
                                 }
                             }
+                            // if company name doesn't exist, show a quick message
                             else {
                                 Context context = getApplicationContext();
                                 CharSequence text = "Please enter a valid company!";
@@ -120,6 +125,7 @@ public class NewUserActivity extends AppCompatActivity {
             );
 
         }
+        // if any input is empty, show a quick message
         else {
             Context context = getApplicationContext();
             CharSequence text = "Please enter all the required fields!";
@@ -131,7 +137,7 @@ public class NewUserActivity extends AppCompatActivity {
 
     }
 
-
+    // Assigns the company to the user account in the firebase database
     private void addCompany() {
             String company = mEdit.getText().toString();
             mDatabase.child("company_names").child(company).addValueEventListener(
@@ -150,7 +156,7 @@ public class NewUserActivity extends AppCompatActivity {
                         }
                     }
             );
-            startActivity(new Intent(this, ShowTestsActivity.class));
+            startActivity(new Intent(this, CompanyListActivity.class));
             finish();
 
     }
