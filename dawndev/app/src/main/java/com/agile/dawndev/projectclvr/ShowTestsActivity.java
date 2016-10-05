@@ -36,11 +36,13 @@ public class ShowTestsActivity extends AppCompatActivity {
     private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
+    private TextView mWelcome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_tests2);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -58,7 +60,8 @@ public class ShowTestsActivity extends AppCompatActivity {
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
-
+        mWelcome = (TextView) findViewById(R.id.welcome);
+        mWelcome.setTypeface(custom_font);
         attachRecyclerViewAdapter();
 
 
