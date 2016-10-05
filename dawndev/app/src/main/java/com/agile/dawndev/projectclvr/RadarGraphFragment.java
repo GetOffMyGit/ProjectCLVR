@@ -52,7 +52,7 @@ public class RadarGraphFragment extends Fragment {
     private RadarChart secondChart;
     private RadarChart thirdChart;
     public AtomicInteger pdfcounter = new AtomicInteger();
-
+private String TAG = "RadarGraphFragment";
 
     LinearLayoutCompat screenshotArea;
 
@@ -86,7 +86,6 @@ public class RadarGraphFragment extends Fragment {
         secondChart.setNoDataText("");
         thirdChart.setNoDataText("");
 
-        Log.d("TAG", "after oncreateView");
         return inflatedView;
     }
 
@@ -98,25 +97,23 @@ public class RadarGraphFragment extends Fragment {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                Log.d("TAG", " inside onActivityCreated");
                 return null;
             }
 
             @Override
             protected void onPostExecute(String result) {
-                Log.d("TAG", " inside HELLO");
-
+//create the graphs
                 createAllToneGraphs();
                 createPersonalityGraphs();
                 String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
 
                 createToneGraph(overallTone, -2);
-
+//hide the graphs so the user cannot view the graphs
                 firstChart.setVisibility(View.GONE);
                 secondChart.setVisibility(View.GONE);
                 thirdChart.setVisibility(View.GONE);
 
-                Log.d("zoe-chan", "finish screenshots");
+                Log.d(TAG, "finished screenshots");
 
                 //Generate PDF for company - with graphs
                 GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()) {
@@ -168,7 +165,9 @@ public class RadarGraphFragment extends Fragment {
         }.execute();
 
     }
-
+/*
+Create graphs showing the results recieved from tone analysing the users answers
+ */
     public void createToneGraph(String jsonResult, int question) {
         JSONObject reader = null;
         try {
@@ -205,7 +204,9 @@ public class RadarGraphFragment extends Fragment {
             createToneGraph(jsonResult, question);
         }
     }
-
+    /*
+    Create graphs showing the results recieved from analysing the users answers regarding personality
+     */
     public void createPersonalityGraphs() {
         JSONObject reader = null;
         try {
@@ -264,7 +265,8 @@ public class RadarGraphFragment extends Fragment {
         // add entries to dataset
         RadarDataSet dataSet = new RadarDataSet(entries, "");
 
-        // set how the graph looks
+        // change the appearance of the resultant graph
+
         dataSet.setColor(Color.rgb(103, 110, 129));
         dataSet.setFillColor(Color.rgb(103, 110, 129));
         dataSet.setDrawFilled(true);
@@ -272,7 +274,6 @@ public class RadarGraphFragment extends Fragment {
         dataSet.setLineWidth(2f);
         dataSet.setDrawHighlightCircleEnabled(true);
         dataSet.setDrawHighlightIndicators(false);
-
 
         RadarData radarData = new RadarData(dataSet);
         XAxis xAxis = chart.getXAxis();
@@ -355,10 +356,7 @@ public class RadarGraphFragment extends Fragment {
 
     public void whenDone() {
 
-        Log.d("chahat", "Deleted file");
         int count = pdfcounter.incrementAndGet();
-
-
         if (count == 2) {
             File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 

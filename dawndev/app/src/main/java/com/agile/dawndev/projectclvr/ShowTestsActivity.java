@@ -310,7 +310,6 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
         }
 
         public void setName(String key) {
-            Log.d("cjKey", key);
             db = FirebaseDatabase.getInstance().getReference();
             db.child("companies").child(key).child("name").addValueEventListener(new ValueEventListener() {
 
