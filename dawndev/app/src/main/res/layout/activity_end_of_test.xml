@@ -19,7 +19,8 @@
         android:textSize="50sp"
         android:id="@+id/textView3"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"/>
     <TextView
         android:layout_width="250sp"
         android:layout_height="wrap_content"
@@ -29,7 +30,8 @@
         android:gravity="center"
         android:layout_marginTop="42dp"
         android:layout_below="@+id/textView3"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"/>
 
     <Button
         android:layout_width="wrap_content"

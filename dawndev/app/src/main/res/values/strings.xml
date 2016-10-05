@@ -28,9 +28,9 @@
 
     <!-- STT default credentials -->
 
-    <string name="STTdefaultUsername">cb93d862-473f-42dc-a9b9-e8acf0a3eda8</string>
+    <string name="STTdefaultUsername">73adb5da-1998-4a51-9f1d-89790aa50cbc</string>
 
-    <string name="STTdefaultPassword">Ne6WKA0ByvQJ</string>
+    <string name="STTdefaultPassword">JRaGoem8AUDH</string>
 
     <string name="STTdefaultTokenFactory">https://stream.watsonplatform.net/speech-to-text/api</string>
 
@@ -38,12 +38,8 @@
     <!-- TTS default credentials -->
 
     <string name="TTSdefaultUsername">e3f65a6a-c3b2-472c-aa12-1a1b25cda716</string>
-
     <string name="TTSdefaultPassword">SlL5HXiUwbUE</string>
-
     <string name="TTSdefaultTokenFactory">https://stream.watsonplatform.net/text-to-speech/api</string>
-
-
     <string name="defaultTokenFactory">&lt;token-factory-url&gt;</string>
 
     <!-- TTS default prompts -->
@@ -54,12 +50,8 @@
     <string name="ttsGermanPrompt">In dem Bewusstsein ihres geistig-religiösen und sittlichen Erbes gründet sich die Union auf die unteilbaren und universellen Werte der Würde des Menschen, der Freiheit, der Gleichheit und der Solidarität. Sie beruht auf den Grundsätzen der Demokratie und der Rechtsstaatlichkeit. Sie stellt den Menschen in den Mittelpunkt ihres Handelns, indem sie die Unionsbürgerschaft und einen Raum der Freiheit, der Sicherheit und des Rechts begründet.</string>
     <string name="ttsJapanesePrompt">精神的、そして道徳的な遺産を意識的に受け継いで、人間の尊厳、自由、平等、連帯の不可分で普遍的な価値を大前提として連合は設立される。すなわち、連合は民主主義と法治の原則に立脚する。連合は市民権を確立し、自由と安全、正義が確保された地域を創造することによって、その組織活動の中心に個人を置く。</string>
 
-
     <string name="web_client_id">913319935028-k4r8mrh3poon7p03lcicog178q1bgm31.apps.googleusercontent.com</string>
     <string name="common_signin_button_text_long">Sign In</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="title_activity_personality">PersonalityActivity</string>
     <string name="personality_username">6fd459b8-af75-4eb2-9f30-b0dc4957aa1c</string>
@@ -77,6 +69,8 @@
     <string name="add_company_message">Add a Company</string>
     <string name="add_company_info">If a company has referred you to use CLVR, specify their name along with the password they have provided</string>
 
+    <string name="clvr_title">C L V R</string>
+    <string name="welcome_to">WELCOME TO</string>
 
 </resources>
 

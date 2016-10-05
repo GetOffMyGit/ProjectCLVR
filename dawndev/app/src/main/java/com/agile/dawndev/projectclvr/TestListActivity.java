@@ -1,15 +1,18 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.Test;
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,11 +32,14 @@ public class TestListActivity extends AppCompatActivity {
     private FirebaseRecyclerAdapter<Test, TestHolder> mRecyclerViewAdapter;
     private TextView mCompanyName;
     private String mCompanyEmail;
+    private ImageView mLogo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_list);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
 
 
         View decorView = getWindow().getDecorView();
@@ -51,6 +57,8 @@ public class TestListActivity extends AppCompatActivity {
             mCompanyKey = (String) savedInstanceState.getSerializable("id");
         }
 
+        mLogo = (ImageView) findViewById(R.id.logo);
+
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -61,7 +69,25 @@ public class TestListActivity extends AppCompatActivity {
 
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
+        mRef.child("companies").child(mCompanyKey).child("logo").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String URL = dataSnapshot.getValue(String.class);
+                Glide.with(TestListActivity.this.getApplicationContext()).load(URL).into(mLogo);
+                mLogo.setAlpha(0.5f);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
         mCompanyName = (TextView) findViewById(R.id.company_name);
+        mCompanyName.setTypeface(custom_font);
         mCompanyRef = mRef.child("companies").child(mCompanyKey).child("tests");
         mRef.child("companies").child(mCompanyKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -108,6 +134,7 @@ public class TestListActivity extends AppCompatActivity {
                         intent.putExtra("testKey", itemKey);
                         intent.setType("text/plain");
                         startActivity(intent);
+                        finish();
                     }
                 });
             }
@@ -143,7 +170,9 @@ public class TestListActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.test_name);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
                     field.setText(dataSnapshot.getValue().toString());
+                    field.setTypeface(custom_font);
                 }
 
                 @Override
@@ -164,7 +193,9 @@ public class TestListActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.number_of_questions);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
                     field.setText(Long.toString(dataSnapshot.getChildrenCount()) + " Questions");
+                    field.setTypeface(custom_font);
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {

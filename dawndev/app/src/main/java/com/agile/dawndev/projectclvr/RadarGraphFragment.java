@@ -2,6 +2,7 @@ package com.agile.dawndev.projectclvr;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -39,6 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Creates the fragment that contains the radar graph which displays the results from the
@@ -49,6 +51,8 @@ public class RadarGraphFragment extends Fragment {
     private RadarChart firstChart;
     private RadarChart secondChart;
     private RadarChart thirdChart;
+    public AtomicInteger pdfcounter = new AtomicInteger();
+
 
     LinearLayoutCompat screenshotArea;
 
@@ -87,12 +91,11 @@ public class RadarGraphFragment extends Fragment {
     }
 
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        new AsyncTask<Void, Void, String> () {
+        new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
                 Log.d("TAG", " inside onActivityCreated");
@@ -115,12 +118,55 @@ public class RadarGraphFragment extends Fragment {
 
                 Log.d("zoe-chan", "finish screenshots");
 
-                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext());
+                //Generate PDF for company - with graphs
+                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()) {
+                    @Override
+                    protected void onPostExecute(Long result) {
+
+
+                        //Create SendGridSendEmail object for company pdf. Send context and email content.
+                        SendGridSendEmail task = new SendGridSendEmail(getActivity()) {
+                            @Override
+                            protected void onPostExecute(Void result) {
+                                //When both PDFs are sent, delete the files from device
+                                whenDone();
+                            }
+
+                        };
+                        //Execute async task.
+                        task.execute();
+
+                    }
+
+                };
                 generatePDFAsyncTask.execute();
-                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext());
+
+
+                //Generate PDF for user - only transcription
+                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext()) {
+                    @Override
+                    protected void onPostExecute(Long result) {
+
+                        //Create SendGridSendEmail object for user pdf. Send context and email content.
+                        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(getActivity()) {
+                            @Override
+                            protected void onPostExecute(Void result) {
+                                //When both PDFs are sent, delete the files from device
+                                whenDone();
+                            }
+
+                        };
+                        //Execute async task.
+                        task2.execute();
+
+                    }
+
+                };
                 generateTranscript.execute();
+
             }
         }.execute();
+
     }
 
     public void createToneGraph(String jsonResult, int question) {
@@ -168,7 +214,7 @@ public class RadarGraphFragment extends Fragment {
             JSONArray results = reader.getJSONObject("tree").getJSONArray("children");
 
             // Personality Graph
-                String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
+            String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
             JSONArray personalityCategories = results.getJSONObject(0).getJSONArray("children").getJSONObject(0).getJSONArray("children");
             makeRadar(firstChart, personalityCategories, personalityLabels, false);
 
@@ -305,5 +351,29 @@ public class RadarGraphFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void whenDone() {
+
+        Log.d("chahat", "Deleted file");
+        int count = pdfcounter.incrementAndGet();
+
+
+        if (count == 2) {
+            File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+
+            if (pdfDir.isDirectory()) {
+                String[] children = pdfDir.list();
+                for (int i = 0; i < children.length; i++) {
+                    new File(pdfDir, children[i]).delete();
+                }
+            }
+
+            Intent intent = new Intent(getActivity(), EndOfTestActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
+
+
     }
 }

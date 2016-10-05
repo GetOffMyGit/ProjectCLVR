@@ -15,7 +15,7 @@ public class EndOfTestActivity extends Activity {
 
     }
 
-    public void moveToTests(View view) {
+    public void goToHome(View view) {
         Intent intent = new Intent(EndOfTestActivity.this, MainActivity.class);
         startActivity(intent);
     }

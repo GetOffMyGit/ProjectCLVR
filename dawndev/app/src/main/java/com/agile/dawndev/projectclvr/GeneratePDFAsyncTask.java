@@ -28,13 +28,14 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
     private String fileName;
     private int counter = 1;
     private Document document;
-    private Context context;
+
+
 
     public GeneratePDFAsyncTask(boolean haveImage, String fileName, Context context){
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();
-        this.context = context;
+
     }
     @Override
     protected Long doInBackground(Void... params) {
@@ -144,18 +145,5 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
     }
 
-    protected void onPostExecute() {
-//Start the async task for personality insights
 
-        //Create SendGridSendEmail object for company pdf. Send context and email content.
-        SendGridSendEmail task = new SendGridSendEmail(context);
-        //Execute async task.
-        task.execute();
-
-        //Create SendGridSendEmail object for user pdf. Send context and email content.
-        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(context);
-        //Execute async task.
-        task2.execute();
-
-    }
 }

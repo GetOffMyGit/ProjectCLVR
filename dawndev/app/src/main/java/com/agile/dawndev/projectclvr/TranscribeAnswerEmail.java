@@ -3,6 +3,7 @@ package com.agile.dawndev.projectclvr;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.sendgrid.SendGrid;
@@ -30,8 +31,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
         //Set content for email from constructor.
         mSendTo = CLVRResults.getInstance().getmUserEmail();
-        //mSendTo = "ccha504@aucklanduni.ac.nz";
-        mSentFrom = CLVRResults.getInstance().getmUserEmail();
+        mSentFrom = "clvrapplication@gmail.com";
         mSubject = "Your transcript";
         mBody = "Please see the attached PDF for your transcript.";
     }
@@ -41,7 +41,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         //Create SendGrid object from SendGrid API key.
         SendGrid sendGrid = new SendGrid(mContext.getResources().getString((R.string.sendGrid_apiKey)));
-
+        Log.d("chahat", "start email");
         //Create a SendGrid email.
         SendGrid.Email email = new SendGrid.Email();
 
@@ -51,7 +51,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
         email.setSubject(mSubject);
         email.setText(mBody);
 
-        //add attachment with only the transcrip answers
+        //add attachment with only the transcript answers
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
             email.addAttachment("transcript.pdf", new File(pdfDir + "/transcript.pdf"));
@@ -68,4 +68,5 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
         return null;
     }
+
 }

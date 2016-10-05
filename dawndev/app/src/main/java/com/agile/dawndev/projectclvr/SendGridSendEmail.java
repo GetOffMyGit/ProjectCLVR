@@ -3,6 +3,7 @@ package com.agile.dawndev.projectclvr;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
 import com.sendgrid.SendGrid;
@@ -30,8 +31,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
 
         //Set content for email from constructor.
         mSendTo = CLVRResults.getInstance().getmCompanyEmail();
-        //mSendTo = "ccha504@aucklanduni.ac.nz";
-        mSentFrom = CLVRResults.getInstance().getmUserEmail();
+        mSentFrom = "clvrapplication@gmail.com";
         mSubject = "Results from "+ CLVRResults.getInstance().getmUsername()+"'s test";
         mBody = "Please review attached PDF.";
     }
@@ -41,7 +41,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         //Create SendGrid object from SendGrid API key.
         SendGrid sendGrid = new SendGrid(mContext.getResources().getString((R.string.sendGrid_apiKey)));
-
+        Log.d("chahat", "start email");
         //Create a SendGrid email.
         SendGrid.Email email = new SendGrid.Email();
 
@@ -54,6 +54,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         //add attachment with graphs
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
+            Log.d("chahat", "pdf");
             email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,16 +1,23 @@
 package com.agile.dawndev.projectclvr;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.UsersCompany;
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -33,11 +40,31 @@ public class ShowTestsActivity extends AppCompatActivity {
     private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
+    private TextView mWelcome;
+    private static final int PERMISSION_ALL = 1;
+    private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_tests2);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
+
+        // Check appropriate permissions
+        if (!hasPermissions(this, PERMISSIONS)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[2])) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+            }
+        }
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -55,7 +82,8 @@ public class ShowTestsActivity extends AppCompatActivity {
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
-
+        mWelcome = (TextView) findViewById(R.id.welcome);
+        mWelcome.setTypeface(custom_font);
         attachRecyclerViewAdapter();
 
 
@@ -110,6 +138,17 @@ public class ShowTestsActivity extends AppCompatActivity {
 
     }
 
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     private void attachRecyclerViewAdapter() {
 
@@ -129,6 +168,7 @@ public class ShowTestsActivity extends AppCompatActivity {
 
                 companyView.setName(itemKey);
                 companyView.setAvailable(itemKey);
+                companyView.setImage(itemKey);
 
                 Log.d("cj", itemKey);
                 companyView.mView.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +228,8 @@ public class ShowTestsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.company_name);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
+                    field.setTypeface(custom_font);
                     field.setText(dataSnapshot.getValue().toString());
                     Log.d(TAG, "STEP 3: " + dataSnapshot.getValue().toString());
                 }
@@ -201,6 +243,25 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         }
 
+        public void setImage(String key) {
+            db = FirebaseDatabase.getInstance().getReference();
+            db.child("companies").child(key).child("logo").addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String URL = dataSnapshot.getValue(String.class);
+                    ImageView imageView = (ImageView) mView.findViewById(R.id.company_logo);
+                    Glide.with(mView.getContext()).load(URL).into(imageView);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });
+        }
+
 
         public void setAvailable(String key) {
 
@@ -209,6 +270,8 @@ public class ShowTestsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.number_of_tests);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
+                    field.setTypeface(custom_font);
                     field.setText(Long.toString(dataSnapshot.getChildrenCount()) + " Tests Available");
                     Log.d("cjavailable", Long.toString(dataSnapshot.getChildrenCount()));
                 }
@@ -218,6 +281,8 @@ public class ShowTestsActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
 
     public void nameCompanies() {
