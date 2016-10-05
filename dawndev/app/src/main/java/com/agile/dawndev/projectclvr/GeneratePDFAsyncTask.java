@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
-public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
+public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
     private boolean haveImage;
     private String fileName;
@@ -30,7 +30,7 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
     private Document document;
     private Context context;
 
-    public GeneratePDF(boolean haveImage, String fileName,Context context){
+    public GeneratePDFAsyncTask(boolean haveImage, String fileName, Context context){
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();
@@ -73,8 +73,22 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
             document.add(new Paragraph("Company Name: "+results.getmCompanyName()));
             document.add(new Paragraph("Candidate Name: "+results.getmUsername()));
             document.add(new Paragraph("Candidate Email: "+results.getmUserEmail()));
+            document.add(new Paragraph("Date: " + new Date()));
 
             document.add(new Paragraph("-------------------------------"));
+
+
+            if (this.haveImage) {
+                File imageFile = new File(pdfDir + "/graphScreenShot" + -1 + ".png");
+                document.add(new Paragraph("Overall Personality Result"));
+
+                addGraph(document, imageFile);
+
+                imageFile = new File(pdfDir + "/graphScreenShot" + -2 + ".png");
+                document.add(new Paragraph("Overall Tone Analyser Result"));
+
+                addGraph(document, imageFile);
+            }
 
 
             //final graphs
@@ -104,6 +118,14 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
         return null;
     }
 
+    private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
+        Image graph = Image.getInstance(imageFile.getAbsolutePath());
+        graph.scaleAbsolute(500, 500);
+        document.add(graph);
+        Log.d("zoe-chan", "new page added");
+        document.newPage();
+    }
+
     public void addQuestionAnswerAndGraph(File imageFile, CLVRQuestion clvrQuestion,
                                           boolean addImage) throws DocumentException, IOException {
 
@@ -117,11 +139,7 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
         Log.d("zoe-chan", "before");
 
         if(addImage){
-            Image graph = Image.getInstance(imageFile.getAbsolutePath());
-            graph.scaleAbsolute(500, 500);
-            document.add(graph);
-            Log.d("zoe-chan", "new page added");
-            document.newPage();
+            addGraph(document, imageFile);
         }
 
     }

@@ -7,49 +7,31 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
-import com.agile.dawndev.projectclvr.Models.CLVRResults;
-import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Zoe on 3/10/16.
  */
 public class GraphGenActivity extends AppCompatActivity {
-    ToneAnalyserRadarFragment toneAnalyserRadarFragment;
+    RadarGraphFragment radarGraphFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ToneAnalyzer toneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        toneAnalyzerService.setUsernameAndPassword("345d437c-b0d0-4f07-8b0e-3a5bb21a4931", "qsWAYzFipvWy");
-
         setContentView(R.layout.activity_graph_gen);
 
-//        LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-//        rootLayout.setupWithViewPager(viewPager);
-
-        // Get bundle from previous activity with question jsonResults, store in field
-        CLVRResults results = CLVRResults.getInstance();
-        this.toneResults = results.getClvrQuestionHashMap();
     }
 
-    //output -> bundle list of json results, need to change in the tone ana fragment
-    public HashMap<Integer, CLVRQuestion> getJsonResult() {
-        return this.toneResults;
-    }
 
     private void setupViewPager(ViewPager viewPager) {
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
 
-        toneAnalyserRadarFragment = new ToneAnalyserRadarFragment();
-        adapter.addFragment(toneAnalyserRadarFragment, "Radar");
+        radarGraphFragment = new RadarGraphFragment();
+        adapter.addFragment(radarGraphFragment, "Radar");
 
         viewPager.setAdapter(adapter);
     }
@@ -83,94 +65,4 @@ public class GraphGenActivity extends AppCompatActivity {
             mFragmentTitleList.add(title);
         }
     }
-
-    HashMap<Integer, CLVRQuestion> toneResults;
-
-    String output = "{\n" +
-            "   \"tone_categories\": [\n" +
-            "     {\n" +
-            "       \"category_id\": \"emotion_tone\",\n" +
-            "       \"category_name\": \"Emotion Tone\",\n" +
-            "       \"tones\": [\n" +
-            "         {\n" +
-            "           \"tone_id\": \"anger\",\n" +
-            "           \"tone_name\": \"Anger\",\n" +
-            "           \"score\": 0.83414\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"disgust\",\n" +
-            "           \"tone_name\": \"Disgust\",\n" +
-            "           \"score\": 0.229384\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"fear\",\n" +
-            "           \"tone_name\": \"Fear\",\n" +
-            "           \"score\": 0.263215\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"joy\",\n" +
-            "           \"tone_name\": \"Joy\",\n" +
-            "           \"score\": 0.018623\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"sadness\",\n" +
-            "           \"tone_name\": \"Sadness\",\n" +
-            "           \"score\": 0.153338\n" +
-            "         }\n" +
-            "       ]\n" +
-            "     },\n" +
-            "     {\n" +
-            "       \"category_id\": \"language_tone\",\n" +
-            "       \"category_name\": \"Language Tone\",\n" +
-            "       \"tones\": [\n" +
-            "         {\n" +
-            "           \"tone_id\": \"analytical\",\n" +
-            "           \"tone_name\": \"Analytical\",\n" +
-            "           \"score\": 0.665\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"confident\",\n" +
-            "           \"tone_name\": \"Confident\",\n" +
-            "           \"score\": 0.0\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"tentative\",\n" +
-            "           \"tone_name\": \"Tentative\",\n" +
-            "           \"score\": 0.0\n" +
-            "         }\n" +
-            "       ]\n" +
-            "     },\n" +
-            "     {\n" +
-            "       \"category_id\": \"social_tone\",\n" +
-            "       \"category_name\": \"Social Tone\",\n" +
-            "       \"tones\": [\n" +
-            "         {\n" +
-            "           \"tone_id\": \"openness_big5\",\n" +
-            "           \"tone_name\": \"Openness\",\n" +
-            "           \"score\": 0.04\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"conscientiousness_big5\",\n" +
-            "           \"tone_name\": \"Conscientiousness\",\n" +
-            "           \"score\": 0.076\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"extraversion_big5\",\n" +
-            "           \"tone_name\": \"Extraversion\",\n" +
-            "           \"score\": 0.648\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"agreeableness_big5\",\n" +
-            "           \"tone_name\": \"Agreeableness\",\n" +
-            "           \"score\": 0.869\n" +
-            "         },\n" +
-            "         {\n" +
-            "           \"tone_id\": \"emotional_range_big5\",\n" +
-            "           \"tone_name\": \"Emotional Range\",\n" +
-            "           \"score\": 0.966\n" +
-            "         }\n" +
-            "       ]\n" +
-            "     }\n" +
-            "   ]\n" +
-            " }\n";
 }
