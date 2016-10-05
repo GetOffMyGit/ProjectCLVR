@@ -1,7 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -115,6 +117,7 @@ public class SpeechAnalyserActivity extends Activity {
     private String mAllTextAnswers = "";
     private HashMap<Integer, CLVRQuestion> mQuestionResults = new HashMap<Integer, CLVRQuestion>();
     private String[] mQuestionTitles;
+    private boolean mErrorOccurred = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -474,10 +477,6 @@ public class SpeechAnalyserActivity extends Activity {
                     Log.d(TAG, "Deleted file");
                 }
             }
-
-            mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-            startActivity(intent);
         }
     }
 
@@ -485,7 +484,6 @@ public class SpeechAnalyserActivity extends Activity {
         int num = totalCompleted.getAndIncrement();
         if(num == totalNumTasks - 2) {
             //Order the maps by key
-
             //Get and concatenate all transcribed answers
             //At the same time prepare a map of results per question for pdf generation
             for (int i = 0; i < mTranscriptionMap.size(); i++) {
@@ -497,17 +495,45 @@ public class SpeechAnalyserActivity extends Activity {
 
             // execute tone analysis and personality analysis on combined text
             toneAnalysis(mAllTextAnswers, -1, true);
-            String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
-                    "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
-                    "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
-                    "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
-                    "promise I'll fight just as hard in a second term. \n"
-                    + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
-                    "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
-                    "had frozen up.";
-            personalityInsight(test);
+            String[] textArray = mAllTextAnswers.split(" ");
+            Log.d("Swamp monster", " " + textArray.length);
+            if(textArray.length < 100) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
+                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dialogBuilder.setNegativeButton("WOT", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dialogBuilder.setTitle("Insufficient dialogue").setMessage("Combined length of all your answers did not reach sufficient length for accurate analysis.");
+                dialogBuilder.create().show();
+                //signal that an error has occurred so that execution will not continue
+                mErrorOccurred = true;
+            } else {
+                // otherwise if there are enough words to carry out personality analysis, continue with execution
+                String test = "You know, four years ago, I said that I'm not a perfect man and I wouldn't be a perfect president.\n" +
+                        "And that's probably a promise that Governor Romney thinks I've kept. But I also promised that\n" +
+                        "I'd fight every single day on behalf of the American people, the middle class, and all those who\n" +
+                        "were striving to get into the middle class. I've kept that promise and if you'll vote for me, then I\n" +
+                        "promise I'll fight just as hard in a second term. \n"
+                        + "You know, four years ago we went through the worst financial crisis since the Great Depression.\n" +
+                        "Millions of jobs were lost, the auto industry was on the brink of collapse. The financial system\n" +
+                        "had frozen up.";
+                personalityInsight(test);
+            }
         }
-        if(num == totalNumTasks) {
+        Log.d("Swamp", "Error: " + mErrorOccurred + ", NumTasks= " + num);
+        if(num == totalNumTasks && !mErrorOccurred) {
 
             //Send all data for PDF generation in encapsulating object
             CLVRResults finalResults = CLVRResults.getInstance();
@@ -520,8 +546,10 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
 
+            mProgressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
