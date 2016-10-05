@@ -154,8 +154,8 @@ public class SpeechAnalyserActivity extends Activity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        Log.d("cj", mTestKey);
-        Log.d("cj", mCompanyKey);
+        //Log.d("cj", mTestKey);
+        //Log.d("cj", mCompanyKey);
 
         populateMap();
 
@@ -315,8 +315,12 @@ public class SpeechAnalyserActivity extends Activity {
                 super.onPostExecute(result);
                 if (result != null) {
                     mPersonalityAnalysis = result;
+                    Log.d("zoe-chan", "lel " + result);
                     doDoneDone();
+                } else {
+                    Log.d("zoe-chan", "null personality");
                 }
+
             }
         }.execute(mPersonalityInsightsService);
     }
@@ -470,8 +474,8 @@ public class SpeechAnalyserActivity extends Activity {
             }
 
             mProgressBar.setVisibility(View.INVISIBLE);
-            Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
+            //startActivity(intent);
         }
     }
 

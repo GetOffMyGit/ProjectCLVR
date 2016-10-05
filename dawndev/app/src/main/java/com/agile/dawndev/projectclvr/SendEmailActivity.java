@@ -8,8 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.agile.dawndev.projectclvr.Models.CLVRResults;
-
 
 /*
     Activity that contains sending email functionality. Currently has mock data for prototype
@@ -37,12 +35,12 @@ public class SendEmailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Create SendGridSendEmail object for company pdf. Send context and email content.
-                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this, CLVRResults.getInstance().getmCompanyEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                SendGridSendEmail task = new SendGridSendEmail(SendEmailActivity.this);
                 //Execute async task.
                 task.execute();
 
                 //Create SendGridSendEmail object for user pdf. Send context and email content.
-                TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(SendEmailActivity.this, CLVRResults.getInstance().getmUserEmail(), mFromText.getText().toString(), mSubjectText.getText().toString(), mBodyText.getText().toString());
+                TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(SendEmailActivity.this);
                 //Execute async task.
                 task2.execute();
 
