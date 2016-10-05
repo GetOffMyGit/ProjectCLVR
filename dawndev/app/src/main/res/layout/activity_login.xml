@@ -49,36 +49,6 @@
             <!--android:textColor="@color/clvrGrey"-->
             <!--android:background="#FFFFFF"-->
             <!--android:text="@string/common_signin_button_text_long" />-->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Currently logged in as:"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:id="@+id/currently_logged"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="60dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ceejay Park"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:id="@+id/current_user"
-                android:layout_marginTop="10dp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/currently_logged"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Not you?"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:id="@+id/not_you"
-                android:layout_marginTop="10dp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/current_user"/>
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/sign_in_button"
@@ -86,6 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:visibility="visible" />
+
+
 
 
         </RelativeLayout>

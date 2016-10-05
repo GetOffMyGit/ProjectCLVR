@@ -282,7 +282,6 @@ public class LoginActivity extends AppCompatActivity implements
     private void updateUI() {
         if (mAuth.getCurrentUser() != null) {
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-
         } else {
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
         }

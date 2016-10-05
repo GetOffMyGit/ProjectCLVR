@@ -2,12 +2,14 @@ package com.agile.dawndev.projectclvr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +25,9 @@ public class AddCompanyActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private EditText mPassword;
+    private TextView mWelcome;
+    private TextView mWelcomeInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +40,23 @@ public class AddCompanyActivity extends AppCompatActivity {
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-        mEdit = (AutoCompleteTextView) findViewById(R.id.editText);
 
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
+
+
+        mEdit = (AutoCompleteTextView) findViewById(R.id.editText);
         mPassword = (EditText) findViewById(R.id.companyPassword);
+        mWelcome = (TextView) findViewById(R.id.welcome_message);
+        mWelcomeInfo = (TextView) findViewById(R.id.welcome_info);
+
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        mWelcome.setTypeface(custom_font);
+        mWelcomeInfo.setTypeface(custom_font);
+        mPassword.setTypeface(custom_font);
+        mEdit.setTypeface(custom_font);
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
 
         mDatabase.child("companies").addValueEventListener(
