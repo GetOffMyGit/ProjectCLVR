@@ -2,8 +2,10 @@ package com.agile.dawndev.projectclvr;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -54,26 +56,12 @@ public class RadarGraphFragment extends Fragment {
 
     LinearLayoutCompat screenshotArea;
 
-    private ProgressBar mProgress;
-
-    private Button nextQuestion;
-    GraphGenActivity graphGenActivity;
-
     HashMap<Integer, CLVRQuestion> testResult;
 
     public RadarGraphFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Creates the radar fragment
-     */
-    public static RadarGraphFragment newInstance() {
-        RadarGraphFragment fragment = new RadarGraphFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     //called when the fragment is created
     @Override
@@ -87,45 +75,57 @@ public class RadarGraphFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
-        LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
-        graphCoverUpLayout.bringToFront();
-
         screenshotArea = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
 
-        //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
-        //graphScrollView.setVisibility(View.INVISIBLE);
-        mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
-
         //find the graphs in the fragment
-
         firstChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         secondChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         thirdChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
-        nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
-//        graphScrollView.setVisibility(View.INVISIBLE);
+
+        firstChart.setNoDataText("");
+        secondChart.setNoDataText("");
+        thirdChart.setNoDataText("");
+
+        Log.d("TAG", "after oncreateView");
+        return inflatedView;
+    }
 
 
-        nextQuestion.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        new AsyncTask<Void, Void, String>() {
             @Override
-            public void onClick(View v) {
-                //nextQuestion.setVisibility(View.INVISIBLE);
+            protected String doInBackground(Void... params) {
+                Log.d("TAG", " inside onActivityCreated");
+                return null;
+            }
 
-                //graphScrollView.setVisibility(View.VISIBLE);
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d("TAG", " inside HELLO");
+
                 createAllToneGraphs();
                 createPersonalityGraphs();
                 String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
+
                 createToneGraph(overallTone, -2);
 
-                nextQuestion.setVisibility(View.INVISIBLE);
+                firstChart.setVisibility(View.GONE);
+                secondChart.setVisibility(View.GONE);
+                thirdChart.setVisibility(View.GONE);
+
+                Log.d("zoe-chan", "finish screenshots");
 
                 //Generate PDF for company - with graphs
-                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()){
+                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()) {
                     @Override
                     protected void onPostExecute(Long result) {
 
 
                         //Create SendGridSendEmail object for company pdf. Send context and email content.
-                        SendGridSendEmail task = new SendGridSendEmail(getActivity()){
+                        SendGridSendEmail task = new SendGridSendEmail(getActivity()) {
                             @Override
                             protected void onPostExecute(Void result) {
                                 //When both PDFs are sent, delete the files from device
@@ -141,13 +141,14 @@ public class RadarGraphFragment extends Fragment {
                 };
                 generatePDFAsyncTask.execute();
 
+
                 //Generate PDF for user - only transcription
-                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext()){
+                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext()) {
                     @Override
                     protected void onPostExecute(Long result) {
 
                         //Create SendGridSendEmail object for user pdf. Send context and email content.
-                        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(getActivity()){
+                        TranscribeAnswerEmail task2 = new TranscribeAnswerEmail(getActivity()) {
                             @Override
                             protected void onPostExecute(Void result) {
                                 //When both PDFs are sent, delete the files from device
@@ -163,21 +164,9 @@ public class RadarGraphFragment extends Fragment {
                 };
                 generateTranscript.execute();
 
-
-                mProgress.setVisibility(View.GONE);
-                nextQuestion.setVisibility(View.VISIBLE);
-
             }
-        });
+        }.execute();
 
-        return inflatedView;
-    }
-
-
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     public void createToneGraph(String jsonResult, int question) {
@@ -225,7 +214,7 @@ public class RadarGraphFragment extends Fragment {
             JSONArray results = reader.getJSONObject("tree").getJSONArray("children");
 
             // Personality Graph
-                String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
+            String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
             JSONArray personalityCategories = results.getJSONObject(0).getJSONArray("children").getJSONObject(0).getJSONArray("children");
             makeRadar(firstChart, personalityCategories, personalityLabels, false);
 
@@ -283,6 +272,7 @@ public class RadarGraphFragment extends Fragment {
         dataSet.setLineWidth(2f);
         dataSet.setDrawHighlightCircleEnabled(true);
         dataSet.setDrawHighlightIndicators(false);
+
 
         RadarData radarData = new RadarData(dataSet);
         XAxis xAxis = chart.getXAxis();
@@ -363,28 +353,25 @@ public class RadarGraphFragment extends Fragment {
         }
     }
 
-    public void whenDone(){
+    public void whenDone() {
 
         Log.d("chahat", "Deleted file");
         int count = pdfcounter.incrementAndGet();
 
 
-        if (count == 2){
+        if (count == 2) {
             File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
-            if (pdfDir.isDirectory())
-            {
+            if (pdfDir.isDirectory()) {
                 String[] children = pdfDir.list();
-                for (int i = 0; i < children.length; i++)
-                {
+                for (int i = 0; i < children.length; i++) {
                     new File(pdfDir, children[i]).delete();
                 }
             }
 
-
-
-
-
+            Intent intent = new Intent(getActivity(), EndOfTestActivity.class);
+            startActivity(intent);
+            getActivity().finish();
         }
 
 

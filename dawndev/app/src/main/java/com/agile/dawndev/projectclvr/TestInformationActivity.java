@@ -1,6 +1,9 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -8,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -20,17 +24,24 @@ public class TestInformationActivity extends AppCompatActivity {
     private String mCompanyKey;
     private String mCompanyEmail;
     private String mTestKey;
+    private String mTestString;
     private TextView mPrivacyPolicy;
     private TextView mTermsghggghg;
     private LayoutInflater mLayoutInflater;
     private PopupWindow mPopupWindow;
     private RelativeLayout mLayout;
-    private FrameLayout layout_MainMenu;
+    private TextView mTitle;
+    private TextView mInformation;
+    private TextView mExtraInfo;
+    private TextView mTestName;
+    private Button mAccept;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_information);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
@@ -45,20 +56,37 @@ public class TestInformationActivity extends AppCompatActivity {
                 mTestKey = extras.getString("testKey");
                 mCompanyName = extras.getString("companyName");
                 mCompanyEmail = extras.getString("companyEmail");
+                mTestString = extras.getString("testName");
             }
         } else {
             mCompanyKey = (String) savedInstanceState.getSerializable("companyKey");
             mTestKey = (String) savedInstanceState.getSerializable("testKey");
             mCompanyName = (String) savedInstanceState.getSerializable("companyName");
             mCompanyEmail = (String) savedInstanceState.getSerializable("companyEmail");
+            mTestString = (String) savedInstanceState.getSerializable("testName");
+
         }
 
+        mTestName = (TextView) findViewById(R.id.test_name);
+        mInformation = (TextView) findViewById(R.id.testInformation);
+        mExtraInfo = (TextView) findViewById(R.id.extraInformation);
+        mTitle = (TextView) findViewById(R.id.textView2);
         mTermsghggghg = (TextView) findViewById(R.id.viewTermsAndConditions);
         mPrivacyPolicy = (TextView) findViewById(R.id.viewPrivacyPolicy);
         mLayout = (RelativeLayout) findViewById(R.id.layout);
-        layout_MainMenu = (FrameLayout) findViewById( R.id.frameLayout);
-        layout_MainMenu.getForeground().setAlpha( 0); // restore
+        mAccept = (Button) findViewById(R.id.accept);
+//        layout_MainMenu.getForeground().setAlpha( 0); // restore
 
+
+        mTestName.setTypeface(custom_font);
+        mInformation.setTypeface(custom_font);
+        mExtraInfo.setTypeface(custom_font);
+        mTitle.setTypeface(custom_font);
+        mTermsghggghg.setTypeface(custom_font);
+        mPrivacyPolicy.setTypeface(custom_font);
+        mAccept.setTypeface(custom_font);
+
+        mTestName.setText(mTestString);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -76,8 +104,11 @@ public class TestInformationActivity extends AppCompatActivity {
 
                 mPopupWindow = new PopupWindow(container, (int) (width * 0.8), (int) (height * 0.9), true);
                 mPopupWindow.showAtLocation(mLayout, Gravity.CENTER, 0, 0);
+                mPopupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+                mPopupWindow.setOutsideTouchable(true);
             }
         });
+
 
 
         mPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
@@ -90,8 +121,8 @@ public class TestInformationActivity extends AppCompatActivity {
 
                 mPopupWindow = new PopupWindow(container, (int) (width * 0.8), (int) (height * 0.9), true);
                 mPopupWindow.showAtLocation(mLayout, Gravity.CENTER, 0, 0);
-
-
+                mPopupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+                mPopupWindow.setOutsideTouchable(true);
             }
         });
 

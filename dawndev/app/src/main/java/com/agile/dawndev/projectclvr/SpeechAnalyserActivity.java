@@ -5,21 +5,21 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
@@ -65,8 +65,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpeechAnalyserActivity extends Activity {
     private static final String TAG = "SpeechToTextActivity";
 
-    private TextView mText;
     private ProgressBar mProgressBar;
+
+    private RelativeLayout mCoverUp;
 
     private CountDownTimer countdowntimer;
     private TextView textviewtimer;
@@ -75,10 +76,13 @@ public class SpeechAnalyserActivity extends Activity {
     private long timerLimit = 6000;
     private TextView mTitle;
     private TextView mInstruction;
+    private TextView mContinueText;
+    private ScrollView mScroll;
+
 
     private WavAudioRecorder mRecorder;
     private Button mButtonRecord = null;
-    private Button mContinueButton = null;
+    private FloatingActionButton mContinueButton = null;
 
     private DatabaseReference mDatabase;
     private String mCompanyName;
@@ -95,7 +99,6 @@ public class SpeechAnalyserActivity extends Activity {
     private int totalNumTasks;
     private AtomicInteger numCompleted = new AtomicInteger();
     private AtomicInteger totalCompleted = new AtomicInteger(1);
-    private File audioFile;
 
     private HashMap<Integer, String> mFileMap = new HashMap<Integer, String>();
     private HashMap<Integer, String> mTranscriptionMap = new HashMap<Integer, String>();
@@ -139,25 +142,26 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-        audioFile = new File(mFileName);
         Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mContinueButton = (Button) findViewById(R.id.continue_button);
+        mContinueButton = (FloatingActionButton) findViewById(R.id.continue_button);
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 continueButtonOnClick(v);
             }
         });
-
-        mText = (TextView) findViewById(R.id.isThisRight);
+        mContinueText = (TextView) findViewById(R.id.continue_text);
         textviewtimer = (TextView) findViewById(R.id.textViewtimer);
+        mScroll = (ScrollView) findViewById(R.id.scroll);
+
         mTitle = (TextView) findViewById(R.id.title);
         mInstruction = (TextView) findViewById(R.id.instructions);
         mRecorder = WavAudioRecorder.getInstanse();
         mRecorder.setOutputFile(mFileName);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mCoverUp = (RelativeLayout) findViewById(R.id.cover_layout);
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
@@ -192,6 +196,11 @@ public class SpeechAnalyserActivity extends Activity {
 
         mPersonalityInsightsService = new PersonalityInsights();
         mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     public void recordAudio() {
@@ -199,6 +208,7 @@ public class SpeechAnalyserActivity extends Activity {
             mRecorder.prepare();
             mRecorder.start();
             mButtonRecord.setText("Stop Recording");
+            mButtonRecord.setAlpha(1.0f);
 
             //Start the timer
             countdowntimer = new CountDownTimerClass(timerLimit, 1000);
@@ -253,6 +263,12 @@ public class SpeechAnalyserActivity extends Activity {
                     String trans = t.getAlternatives().get(0).getTranscript();
                     finalTranscript += trans;
                 }
+
+                //Replace ASCII to apostrophe
+                finalTranscript.replace("\u0027", "'");
+                Log.d("TRANSCRIPT", finalTranscript);
+
+                
                 mTranscriptionMap.put(questionNum, finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
@@ -314,7 +330,7 @@ public class SpeechAnalyserActivity extends Activity {
         }.execute(mPersonalityInsightsService);
     }
 
-    public void uploadRecording(File recordedResponse, int questionNum) {
+    public void uploadRecording(File recordedResponse, final int questionNum) {
         Log.d(TAG, " start uploading");
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -324,7 +340,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         StorageReference recordingRef = companyRef.child("Question" + questionNum + ".wav");
         //store location of recording
-        mRecordingURLs.put(questionNum, recordingRef.toString());
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
@@ -344,6 +359,7 @@ public class SpeechAnalyserActivity extends Activity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     Log.d(TAG, " Recording download " + downloadUrl);
+                    mRecordingURLs.put(questionNum, downloadUrl.toString());
 
                     whenDone();
                 }
@@ -385,8 +401,9 @@ public class SpeechAnalyserActivity extends Activity {
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
         // set the text color to grey
-        mButtonRecord.setTextColor(Color.parseColor("#737373"));
+        mButtonRecord.setAlpha(.5f);
         mContinueButton.setVisibility(View.VISIBLE);
+        mContinueText.setVisibility(View.VISIBLE);
     }
 
     public void updateText() {
@@ -398,6 +415,10 @@ public class SpeechAnalyserActivity extends Activity {
 
             // change recording time for this question
             timerLimit = mqTimes.get(instructionKey) * 1000;
+
+            mButtonRecord.setAlpha(1.0f);
+            mContinueText.setVisibility(View.INVISIBLE);
+
         } else {
             String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
             String instructionKey = instructionSet[mInstructionCounter];
@@ -421,6 +442,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mBadQuestionNumbers = new ArrayList<Integer>();
                 mBadQuestions = new ConcurrentHashMap<Integer, Integer>();
                 mBadRunCounter = 0;
+                showLoadingDisplay();
                 doUploadingAndRecognition();
             } else {
                 mContinueButton.setVisibility(View.INVISIBLE);
@@ -436,16 +458,18 @@ public class SpeechAnalyserActivity extends Activity {
                 mBadRunCounter++;
                 updateText();
                 mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mBadQuestionNumbers.get(mBadRunCounter) + ".wav";
-                audioFile = new File(mFileName);
                 mRecorder.setOutputFile(mFileName);
             }
         } else {
             if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
                 mInstructionCounter++;
                 mFileMap.put(mInstructionCounter, mFileName);
+
+                showLoadingDisplay();
                 doUploadingAndRecognition();
             } else {
                 mContinueButton.setVisibility(View.INVISIBLE);
+            mContinueText.setVisibility(View.INVISIBLE);
 
                 // show next question for user and allow recording again
                 mInstructionCounter++;
@@ -454,15 +478,34 @@ public class SpeechAnalyserActivity extends Activity {
                 mButtonRecord.setText("Start Recording");
                 mButtonRecord.setEnabled(true);
                 mButtonRecord.setTextColor(Color.WHITE);
+            mButtonRecord.setAlpha(1.0f);
 
                 mFileMap.put(mInstructionCounter, mFileName);
 
                 // prepare for recording next question
                 mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-                audioFile = new File(mFileName);
                 mRecorder.setOutputFile(mFileName);
             }
         }
+    }
+
+    private void showLoadingDisplay() {
+        mCoverUp.setVisibility(View.VISIBLE);
+        mTitle.setVisibility(View.GONE);
+        mInstruction.setVisibility(View.GONE);
+        mButtonRecord.setVisibility(View.GONE);
+        mContinueButton.setVisibility(View.GONE);
+        mContinueText.setVisibility(View.GONE);
+        mScroll.setVisibility(View.GONE);
+    }
+
+    private void undoLoadingDisplay() {
+        mCoverUp.setVisibility(View.GONE);
+        mTitle.setVisibility(View.VISIBLE);
+        mInstruction.setVisibility(View.VISIBLE);
+        mButtonRecord.setVisibility(View.VISIBLE);
+        mButtonRecord.setAlpha(1.0f);
+        mScroll.setVisibility(View.VISIBLE);
     }
 
     private void doUploadingAndRecognition() {
@@ -487,6 +530,7 @@ public class SpeechAnalyserActivity extends Activity {
         int num = numCompleted.incrementAndGet();
         if (num >= numOfTasks) {
             if(isBadQuestionRun) {
+                undoLoadingDisplay();
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -503,7 +547,6 @@ public class SpeechAnalyserActivity extends Activity {
                 mButtonRecord.setEnabled(true);
                 mButtonRecord.setTextColor(Color.WHITE);
                 mContinueButton.setVisibility(View.VISIBLE);
-                mText.setVisibility(View.VISIBLE);
 
                 for(int questionNum : mFileMap.keySet()) {
                     File theFile = new File(mFileMap.get(questionNum));
@@ -522,7 +565,6 @@ public class SpeechAnalyserActivity extends Activity {
         mButtonRecord.setEnabled(true);
         mButtonRecord.setTextColor(Color.WHITE);
         mContinueButton.setVisibility(View.INVISIBLE);
-        mText.setVisibility(View.VISIBLE);
 
         for(Integer question : mBadQuestions.keySet()) {
             mBadQuestionNumbers.add(question);
@@ -532,7 +574,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         // prepare for recording next question
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mBadQuestionNumbers.get(0) + ".wav";
-        audioFile = new File(mFileName);
         mRecorder.setOutputFile(mFileName);
 
         updateText();
@@ -596,7 +637,6 @@ public class SpeechAnalyserActivity extends Activity {
             finalResults.setmOverallPersonalityInsights(mPersonalityAnalysis);
             finalResults.setClvrQuestionHashMap(mQuestionResults);
 
-            mProgressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(SpeechAnalyserActivity.this, GraphGenActivity.class);
             startActivity(intent);
             finish();
@@ -624,6 +664,16 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 
