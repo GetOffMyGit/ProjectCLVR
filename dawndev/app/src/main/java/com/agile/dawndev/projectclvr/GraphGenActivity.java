@@ -32,7 +32,7 @@ public class GraphGenActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-//Adds the radar gaph fragment
+    //Adds the radar gaph fragment
     private void setupViewPager(ViewPager viewPager) {
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
 

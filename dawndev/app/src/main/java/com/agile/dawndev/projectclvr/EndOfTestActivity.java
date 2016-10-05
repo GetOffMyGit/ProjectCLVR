@@ -23,6 +23,7 @@ public class EndOfTestActivity extends Activity {
     }
 
     public void goToHome(View view) {
+        // return back to home screen
         Intent intent = new Intent(EndOfTestActivity.this, ShowTestsActivity.class);
         startActivity(intent);
     }
