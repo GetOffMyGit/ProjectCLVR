@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -124,6 +125,7 @@ public class SpeechAnalyserActivity extends Activity {
         super.onCreate(savedInstanceState);
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
         //Get the key for the test in the database from the sent intent.
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -165,8 +167,11 @@ public class SpeechAnalyserActivity extends Activity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        Log.d("cj", mTestKey);
-        Log.d("cj", mCompanyKey);
+        mContinueText.setTypeface(custom_font);
+        textviewtimer.setTypeface(custom_font);
+        mTitle.setTypeface(custom_font);
+        mInstruction.setTypeface(custom_font);
+
 
         populateMap();
 
@@ -190,6 +195,7 @@ public class SpeechAnalyserActivity extends Activity {
                 recordAudio();
             }
         });
+        mButtonRecord.setTypeface(custom_font);
 
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
         mToneAnalyzerService.setUsernameAndPassword("8079d59a-3f9d-445f-ab62-05a278b36a79", "WNVh4LVVeEYh");
@@ -531,14 +537,14 @@ public class SpeechAnalyserActivity extends Activity {
         if (num >= numOfTasks) {
             if(isBadQuestionRun) {
                 undoLoadingDisplay();
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
-                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                dialogBuilder.setTitle("Insufficient Dialogue at Question(s)").setMessage("Length of some questions are insufficient. Please redo.");
-                dialogBuilder.create().show();
+                new android.support.v7.app.AlertDialog.Builder(SpeechAnalyserActivity.this)
+                        .setTitle("Insufficient Dialogue at Question(s)")
+                        .setMessage("Length of some questions are insufficient. Please redo.")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
                 numCompleted = new AtomicInteger(0);
                 badQuestionRun();
             } else {

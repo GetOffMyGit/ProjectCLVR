@@ -150,7 +150,7 @@ public class NewUserActivity extends AppCompatActivity {
                         }
                     }
             );
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, ShowTestsActivity.class));
             finish();
 
     }
