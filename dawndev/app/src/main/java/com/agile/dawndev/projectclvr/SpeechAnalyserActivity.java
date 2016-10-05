@@ -291,7 +291,7 @@ public class SpeechAnalyserActivity extends Activity {
         }.execute(mPersonalityInsightsService);
     }
 
-    public void uploadRecording(File recordedResponse, int questionNum) {
+    public void uploadRecording(File recordedResponse, final int questionNum) {
         Log.d(TAG, " start uploading");
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -301,7 +301,6 @@ public class SpeechAnalyserActivity extends Activity {
 
         StorageReference recordingRef = companyRef.child("Question" + questionNum + ".wav");
         //store location of recording
-        mRecordingURLs.put(questionNum, recordingRef.toString());
         // Create file metadata including the content type
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("audio/wav").build();
 
@@ -321,6 +320,7 @@ public class SpeechAnalyserActivity extends Activity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     Log.d(TAG, " Recording download " + downloadUrl);
+                    mRecordingURLs.put(questionNum, downloadUrl.toString());
 
                     whenDone();
                 }

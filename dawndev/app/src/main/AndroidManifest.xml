@@ -39,11 +39,7 @@
         <activity
             android:name=".SpeechAnalyserActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
-        <activity android:name=".ToneAnalyser.ToneTabActivity" />
         <activity android:name=".GraphGenActivity" />
-        <activity
-            android:name=".PersonalityInsight.PersonalityTabActivity"
-            android:label="@string/title_activity_personality" />
         <activity android:name=".SendEmailActivity" />
         <activity android:name=".CompanyMainActivity" />
         <activity android:name=".TestActivity" />
@@ -51,7 +47,8 @@
         <activity android:name=".TestListActivity" />
         <activity android:name=".NewUserActivity" />
         <activity android:name=".TestInformationActivity" />
-        <activity android:name=".AddCompanyActivity"></activity>
+        <activity android:name=".AddCompanyActivity" />
+        <activity android:name=".EndOfTestActivity"></activity>
     </application>
 
 </manifest>
