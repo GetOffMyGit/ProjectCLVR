@@ -419,6 +419,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mFileMap.put(mBadQuestionNumbers.get(mBadRunCounter), mFileName);
                 isBadQuestionRun = false;
                 mBadQuestionNumbers = new ArrayList<Integer>();
+                mBadQuestions = new ConcurrentHashMap<Integer, Integer>();
                 mBadRunCounter = 0;
                 doUploadingAndRecognition();
             } else {
@@ -484,8 +485,16 @@ public class SpeechAnalyserActivity extends Activity {
     // checked that all the results have been retrieved, and if so, moves to the main activity
     private void whenDone() {
         int num = numCompleted.incrementAndGet();
-        if (num == numOfTasks) {
+        if (num >= numOfTasks) {
             if(isBadQuestionRun) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
+                dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dialogBuilder.setTitle("Insufficient Dialogue at Question(s)").setMessage("Length of some questions are insufficient. Please redo.");
+                dialogBuilder.create().show();
                 numCompleted = new AtomicInteger(0);
                 badQuestionRun();
             } else {
@@ -549,14 +558,6 @@ public class SpeechAnalyserActivity extends Activity {
             if(textArray.length < 100) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-                dialogBuilder.setNegativeButton("WOT", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
