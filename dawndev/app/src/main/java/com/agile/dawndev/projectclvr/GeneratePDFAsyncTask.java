@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
-
+    private String TAG = "GeneratePDFAsyncTask";
     private boolean haveImage;
     private String fileName;
     private int counter = 1;
@@ -33,13 +33,15 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();
-
     }
+
+    /*
+    Performed asynchronously and creates the PDF file containing informtation regarding the questions, answwers, and resultant graphs
+     */
     @Override
     protected Long doInBackground(Void... params) {
 
         boolean success = false;
-
 
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
@@ -103,7 +105,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
             e.printStackTrace();
         }
 
-        Log.d("zoe-chan", "PDF generated");
+        Log.d(TAG, "PDF generated");
 
         return null;
     }
@@ -112,7 +114,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         Image graph = Image.getInstance(imageFile.getAbsolutePath());
         graph.scaleAbsolute(500, 500);
         document.add(graph);
-        Log.d("zoe-chan", "new page added");
+        Log.d(TAG, "new page added");
         document.newPage();
     }
 
@@ -126,7 +128,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
         document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
         document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
-        Log.d("zoe-chan", "before");
+        Log.d(TAG, "before");
 
         if(addImage){
             addGraph(document, imageFile);
