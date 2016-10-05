@@ -17,7 +17,6 @@
     card_view:cardElevation="3dp"
     card_view:contentPadding="0dp"
     >
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +28,7 @@
             android:layout_height="match_parent"
             android:id="@+id/test_name"
             android:textSize="16sp"
-            android:text="Developer Test"
+            android:text=""
             android:layout_marginLeft="25dp"
             android:gravity="center"
             />
@@ -39,10 +38,11 @@
             android:layout_height="match_parent"
             android:id="@+id/number_of_questions"
             android:textSize="16sp"
-            android:text="8 Questions"
-            android:layout_marginLeft="70dp"
+            android:text=""
             android:gravity="center"
-            android:layout_toEndOf="@id/test_name"/>
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right"
+            android:layout_marginRight="25dp"/>
 
 
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Created by Paul Joo on 13/09/2016.
  */
-public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
+public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
     private Context mContext;
 
@@ -26,14 +26,14 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     private String mBody;
 
     //Constructor providing context and content for the email.
-    public SendGridSendEmail(Context context) {
+    public TranscribeAnswerEmail(Context context) {
         this.mContext = context;
 
         //Set content for email from constructor.
-        mSendTo = CLVRResults.getInstance().getmCompanyEmail();
+        mSendTo = CLVRResults.getInstance().getmUserEmail();
         mSentFrom = "clvrapplication@gmail.com";
-        mSubject = "Results from "+ CLVRResults.getInstance().getmUsername()+"'s test";
-        mBody = "Please review attached PDF.";
+        mSubject = "Your transcript";
+        mBody = "Please see the attached PDF for your transcript.";
     }
 
     //Async task
@@ -51,11 +51,10 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         email.setSubject(mSubject);
         email.setText(mBody);
 
-        //add attachment with graphs
+        //add attachment with only the transcript answers
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            Log.d("chahat", "pdf");
-            email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
+            email.addAttachment("transcript.pdf", new File(pdfDir + "/transcript.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,4 +68,5 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
 
         return null;
     }
+
 }

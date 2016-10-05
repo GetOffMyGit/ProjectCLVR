@@ -2,6 +2,7 @@ package com.agile.dawndev.projectclvr.Auth;
 
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -51,16 +52,31 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
     private GoogleApiClient mGoogleApiClient;
+    private TextView mWelcomeText;
+    private TextView mTitleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mWelcomeText = (TextView) findViewById(R.id.clvr_welcome);
+        mTitleText = (TextView) findViewById(R.id.clvr_title);
+
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
+
+        mWelcomeText.setTypeface(custom_font);
+        mTitleText.setTypeface(custom_font);
+
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
+
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -77,6 +93,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Gets instance of Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
+        // Checks on startup of users that are logged in.
         if (mAuth.getCurrentUser() != null) {
             writeNewUser();
             startActivity(new Intent(this, MainActivity.class));
@@ -90,36 +107,15 @@ public class LoginActivity extends AppCompatActivity implements
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    // If there is a user, go to the MainActivity
-//                    mDatabase.child("users").child(user.getUid()).child("type").addValueEventListener(
-//                            new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    // Get user value
-//                                    String type = (String) dataSnapshot.getValue();
-//                                    if (type.equals("company")) {
-//                                        writeNewUser();
-//                                        goToCompanyMain();
-//                                    }
-//                                    else if (type.equals("company") != true){
                     writeNewUser();
                     goToMain();
-//                                    }
-
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//                                    Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-//                                    // ...
-//                                }
-//                            });
                 } else {
                     // User is signed out
+                    //goToMain();
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
                 // Constantly Updates the UI depending on the state of the user
-                updateUI(user);
+//                updateUI(user);
             }
         };
     }
@@ -144,6 +140,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
+        Log.d("gotomain", "inside method");
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
@@ -168,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements
 
             } else {
                 // Google Sign In failed, update UI appropriately
-                updateUI(null);
+//                updateUI(null);
             }
         }
     }
@@ -258,7 +255,7 @@ public class LoginActivity extends AppCompatActivity implements
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        updateUI(null);
+//                        updateUI(null);
                     }
                 });
     }
@@ -275,20 +272,18 @@ public class LoginActivity extends AppCompatActivity implements
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        updateUI(null);
+//                        updateUI(null);
                     }
                 });
     }
 
 
     // Updates UI (Called from the mAuth lstener)
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
+    private void updateUI() {
+        if (mAuth.getCurrentUser() != null) {
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 
@@ -303,10 +298,15 @@ public class LoginActivity extends AppCompatActivity implements
         int i = v.getId();
         if (i == R.id.sign_in_button) {
             signIn();
-        } else if (i == R.id.sign_out_button) {
-            signOut();
-        } else if (i == R.id.disconnect_button) {
-            revokeAccess();
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 }

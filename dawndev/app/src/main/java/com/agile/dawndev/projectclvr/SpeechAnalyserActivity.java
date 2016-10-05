@@ -45,18 +45,12 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.ToneAnalyzer;
 import com.ibm.watson.developer_cloud.tone_analyzer.v3.model.ToneAnalysis;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -206,10 +200,10 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
+        mToneAnalyzerService.setUsernameAndPassword("8079d59a-3f9d-445f-ab62-05a278b36a79", "WNVh4LVVeEYh");
 
         mPersonalityInsightsService = new PersonalityInsights();
-        mPersonalityInsightsService.setUsernameAndPassword("08370735-0a92-4d70-aa80-dc10e80c70a7", "gYZ48Vlbj6xT");
+        mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
     }
 
     public void recordAudio() {
