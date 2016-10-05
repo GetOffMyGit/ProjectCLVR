@@ -44,7 +44,6 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         //Create SendGrid object from SendGrid API key.
         SendGrid sendGrid = new SendGrid(mContext.getResources().getString((R.string.sendGrid_apiKey)));
-        Log.d(TAG, "start email");
         //Create a SendGrid email.
         SendGrid.Email email = new SendGrid.Email();
 
@@ -57,7 +56,6 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         //add attachment with graphs
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            Log.d(TAG, "add attachment");
             email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
         } catch (IOException e) {
             e.printStackTrace();

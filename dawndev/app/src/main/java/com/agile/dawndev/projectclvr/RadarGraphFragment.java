@@ -52,11 +52,9 @@ public class RadarGraphFragment extends Fragment {
     private RadarChart secondChart;
     private RadarChart thirdChart;
     public AtomicInteger pdfcounter = new AtomicInteger();
-private String TAG = "RadarGraphFragment";
-
-    LinearLayoutCompat screenshotArea;
-
-    HashMap<Integer, CLVRQuestion> testResult;
+    private String TAG = "RadarGraphFragment";
+    private LinearLayoutCompat screenshotArea;
+    private HashMap<Integer, CLVRQuestion> testResult;
 
     public RadarGraphFragment() {
         // Required empty public constructor
@@ -97,23 +95,22 @@ private String TAG = "RadarGraphFragment";
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
+                // empty async task to delay computation with ui view
                 return null;
             }
 
             @Override
             protected void onPostExecute(String result) {
-//create the graphs
+                //create the graphs
                 createAllToneGraphs();
                 createPersonalityGraphs();
                 String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
 
                 createToneGraph(overallTone, -2);
-//hide the graphs so the user cannot view the graphs
+                //hide the graphs so the user cannot view the graphs
                 firstChart.setVisibility(View.GONE);
                 secondChart.setVisibility(View.GONE);
                 thirdChart.setVisibility(View.GONE);
-
-                Log.d(TAG, "finished screenshots");
 
                 //Generate PDF for company - with graphs
                 GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext()) {
@@ -165,9 +162,9 @@ private String TAG = "RadarGraphFragment";
         }.execute();
 
     }
-/*
-Create graphs showing the results recieved from tone analysing the users answers
- */
+    /*
+    Create graphs showing the results recieved from tone analysing the users answers
+     */
     public void createToneGraph(String jsonResult, int question) {
         JSONObject reader = null;
         try {
@@ -196,6 +193,9 @@ Create graphs showing the results recieved from tone analysing the users answers
         }
     }
 
+    /*
+    Create individual tone graphs for each question answered
+    */
     public void createAllToneGraphs() {
         this.testResult = CLVRResults.getInstance().getClvrQuestionHashMap();
 
@@ -266,7 +266,6 @@ Create graphs showing the results recieved from tone analysing the users answers
         RadarDataSet dataSet = new RadarDataSet(entries, "");
 
         // change the appearance of the resultant graph
-
         dataSet.setColor(Color.rgb(103, 110, 129));
         dataSet.setFillColor(Color.rgb(103, 110, 129));
         dataSet.setDrawFilled(true);
@@ -338,7 +337,6 @@ Create graphs showing the results recieved from tone analysing the users answers
         }
 
         // save this bitmap somewhere
-
         File imageFile = new File(pdfDir + "/graphScreenShot" + questionNum + ".png");
         OutputStream foutImage = null;
 
@@ -354,19 +352,28 @@ Create graphs showing the results recieved from tone analysing the users answers
         }
     }
 
+
+    /*
+        When both PDFs are sent, delete the files from device
+     */
     public void whenDone() {
 
         int count = pdfcounter.incrementAndGet();
+
+        // both tasks are done
         if (count == 2) {
             File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
             if (pdfDir.isDirectory()) {
                 String[] children = pdfDir.list();
+
+                // delete each file in the directory
                 for (int i = 0; i < children.length; i++) {
                     new File(pdfDir, children[i]).delete();
                 }
             }
 
+            // go to end of test activity
             Intent intent = new Intent(getActivity(), EndOfTestActivity.class);
             startActivity(intent);
             getActivity().finish();
