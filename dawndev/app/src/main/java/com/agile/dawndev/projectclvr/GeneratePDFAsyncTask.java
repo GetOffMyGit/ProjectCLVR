@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
-public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
+public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
     private boolean haveImage;
     private String fileName;
@@ -30,7 +30,7 @@ public class GeneratePDF extends AsyncTask<Void, Integer, Long> {
     private Document document;
     private Context context;
 
-    public GeneratePDF(boolean haveImage, String fileName,Context context){
+    public GeneratePDFAsyncTask(boolean haveImage, String fileName, Context context){
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();

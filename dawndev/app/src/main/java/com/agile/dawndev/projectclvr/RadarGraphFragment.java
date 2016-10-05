@@ -8,14 +8,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
@@ -26,12 +24,6 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,18 +42,11 @@ import java.util.List;
  * Creates the fragment that contains the radar graph which displays the results from the
  * tone analyzer activity
  */
-public class ToneAnalyserRadarFragment extends Fragment {
+public class RadarGraphFragment extends Fragment {
 
     private RadarChart firstChart;
     private RadarChart secondChart;
     private RadarChart thirdChart;
-    private int counter = 1;
-
-    private ScrollView graphScrollView;
-
-    private JSONArray emotionTones;
-    private JSONArray languageTones;
-    private JSONArray socialTones;
 
     LinearLayoutCompat screenshotArea;
 
@@ -73,15 +57,15 @@ public class ToneAnalyserRadarFragment extends Fragment {
 
     HashMap<Integer, CLVRQuestion> testResult;
 
-    public ToneAnalyserRadarFragment() {
+    public RadarGraphFragment() {
         // Required empty public constructor
     }
 
     /**
      * Creates the radar fragment
      */
-    public static ToneAnalyserRadarFragment newInstance() {
-        ToneAnalyserRadarFragment fragment = new ToneAnalyserRadarFragment();
+    public static RadarGraphFragment newInstance() {
+        RadarGraphFragment fragment = new RadarGraphFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -121,19 +105,16 @@ public class ToneAnalyserRadarFragment extends Fragment {
             public void onClick(View v) {
                 //nextQuestion.setVisibility(View.INVISIBLE);
 
-                    //graphScrollView.setVisibility(View.VISIBLE);
-                    createAllToneGraphs();
-                    createPersonalityGraphs();
-                    String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
-                    createToneGraph(overallTone, -2);
+                //graphScrollView.setVisibility(View.VISIBLE);
+                createAllToneGraphs();
+                createPersonalityGraphs();
+                String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
+                createToneGraph(overallTone, -2);
 
-                    nextQuestion.setVisibility(View.INVISIBLE);
-//                    makePDF(true, "graphResult");
-//                    makePDF(false, "transcript");
-                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult",getContext());
-                    generatePDF.execute();
-                //THIS WAS DONE WITH ELIZA <3
-                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript",getContext());
+                nextQuestion.setVisibility(View.INVISIBLE);
+                GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext());
+                generatePDFAsyncTask.execute();
+                GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext());
                 generateTranscript.execute();
                 //TODO call it again with false
 
@@ -149,33 +130,30 @@ public class ToneAnalyserRadarFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        createToneGraph();
     }
 
     public void createToneGraph(String jsonResult, int question) {
         JSONObject reader = null;
         try {
-                Log.d("zoe-chan", question + " result" + jsonResult);
+            reader = new JSONObject(jsonResult);
+            JSONArray results = reader.getJSONArray("tone_categories");
 
-                reader = new JSONObject(jsonResult);
-                JSONArray results = reader.getJSONArray("tone_categories");
+            // Emotion Tone Graph
+            String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
+            JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(firstChart, emotionToneCategories, emotionLabels, true);
 
-                // Emotion Tone Graph
-                String[] emotionLabels = new String[]{"Anger", "Disgust", "Fear", "Joy", "Sadness"};
-                JSONArray emotionToneCategories = results.getJSONObject(0).getJSONArray("tones");
-                makeRadar(firstChart, emotionToneCategories, emotionLabels, true);
+            // language Tone Graph
+            String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
+            JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(secondChart, languageToneCategories, languageToneLabels, true);
 
-                // language Tone Graph
-                String[] languageToneLabels = new String[]{"Analytical", "Confident", "Tentative"};
-                JSONArray languageToneCategories = results.getJSONObject(0).getJSONArray("tones");
-                makeRadar(secondChart, languageToneCategories, languageToneLabels, true);
+            // Social Tone Graph
+            String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
+            JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
+            makeRadar(thirdChart, socialToneCategories, socialToneLabels, true);
 
-                // Social Tone Graph
-                String[] socialToneLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Emotional Range"};
-                JSONArray socialToneCategories = results.getJSONObject(0).getJSONArray("tones");
-                makeRadar(thirdChart, socialToneCategories, socialToneLabels, true);
-
-                takeScreenShot(screenshotArea, question);
+            takeScreenShot(screenshotArea, question);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -183,41 +161,34 @@ public class ToneAnalyserRadarFragment extends Fragment {
     }
 
     public void createAllToneGraphs() {
-        this.graphGenActivity = (GraphGenActivity) getActivity();
-        this.testResult = graphGenActivity.getJsonResult();
+        this.testResult = CLVRResults.getInstance().getClvrQuestionHashMap();
 
         for (int question : testResult.keySet()) {
             String jsonResult = testResult.get(question).getmToneAnalysis();
             createToneGraph(jsonResult, question);
-
-
         }
     }
 
-    public void createPersonalityGraphs(){
+    public void createPersonalityGraphs() {
         JSONObject reader = null;
         try {
             String jsonResult = CLVRResults.getInstance().getmOverallPersonalityInsights();
-            Log.d("ZOEPERSONALITY", jsonResult);
             reader = new JSONObject(jsonResult);
             JSONArray results = reader.getJSONObject("tree").getJSONArray("children");
 
             // Personality Graph
-            String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
+                String[] personalityLabels = new String[]{"Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"};
             JSONArray personalityCategories = results.getJSONObject(0).getJSONArray("children").getJSONObject(0).getJSONArray("children");
-            Log.d("ZOE-category", personalityCategories.toString());
             makeRadar(firstChart, personalityCategories, personalityLabels, false);
 
             // Personality Graph
             String[] needsLabels = new String[]{"Challenge", "Closeness", "Curiosity", "Excitement", "Harmony", "Ideal", "Liberty", "Love", "Practicality", "Self-expression", "Stability", "Structure"};
             JSONArray needsCategories = results.getJSONObject(1).getJSONArray("children").getJSONObject(0).getJSONArray("children");
-            System.out.println(needsCategories);
             makeRadar(secondChart, needsCategories, needsLabels, false);
 
             // Values Graph
             String[] valuesLabels = new String[]{"Conservation", "Openness to change", "Hedonism", "Self-enhancement", "Self-transcendence"};
             JSONArray valuesCategories = results.getJSONObject(2).getJSONArray("children").getJSONObject(0).getJSONArray("children");
-            System.out.println(valuesCategories);
             makeRadar(thirdChart, valuesCategories, valuesLabels, false);
 
             takeScreenShot(screenshotArea, -1);
@@ -233,9 +204,9 @@ public class ToneAnalyserRadarFragment extends Fragment {
     public void makeRadar(RadarChart chart, JSONArray array, final String[] labels, boolean isTone) {
 
         List<RadarEntry> entries = new ArrayList<RadarEntry>();
-        //retrieve the entry values
 
-        if(isTone){
+        //retrieve the entry values
+        if (isTone) {
             for (int i = 0; i < array.length(); i++) {
                 try {
                     entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("score").toString()), array.getJSONObject(0).get("tone_name")));
@@ -244,20 +215,19 @@ public class ToneAnalyserRadarFragment extends Fragment {
                 }
             }
         } else {
-            for ( int i = 0; i<array.length();i++){
+            for (int i = 0; i < array.length(); i++) {
                 try {
-                    entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("percentage").toString()) ,array.getJSONObject(0).get("name")));
+                    entries.add(new RadarEntry(Float.parseFloat(array.getJSONObject(i).get("percentage").toString()), array.getJSONObject(0).get("name")));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-
         // add entries to dataset
         RadarDataSet dataSet = new RadarDataSet(entries, "");
 
-        //set how the graph looks
+        // set how the graph looks
         dataSet.setColor(Color.rgb(103, 110, 129));
         dataSet.setFillColor(Color.rgb(103, 110, 129));
         dataSet.setDrawFilled(true);
@@ -303,7 +273,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
     }
 
     public void takeScreenShot(View rootView, int questionNum) {
@@ -318,8 +287,6 @@ public class ToneAnalyserRadarFragment extends Fragment {
         v1.buildDrawingCache(true);
 
         screen = Bitmap.createBitmap(v1.getDrawingCache());
-
-        Log.d("screenshot", screen.toString());
 
         v1.setDrawingCacheEnabled(false);
 
@@ -346,108 +313,5 @@ public class ToneAnalyserRadarFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Log.d("zoe chan", imageFile.getAbsolutePath() + " downloaded");
-
-
     }
-    /*
-        Screenshot taking for emailing graph results
-     */
-
-//    public void makePDF(boolean haveImage, String fileName) {
-//        boolean success = false;
-//
-//        nextQuestion.setVisibility(View.INVISIBLE);
-//        //Create a directory for your PDF
-//        //make a new clvr directory if it doesnt already exist
-//        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
-//
-//        if (!pdfDir.exists()) {
-//            success = pdfDir.mkdirs();
-//        }
-//
-//        if (!success) {
-//            Log.d("screesnhot", "folder not created");
-//        } else {
-//            Log.d("screenshot", "folder created");
-//        }
-//
-//        // Log.d("screenshot", rootView.toString() );
-//
-//        OutputStream foutPdf = null;
-//
-//        try {
-//            foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
-//
-//            Document document = new Document();
-//            PdfWriter.getInstance(document, foutPdf);
-//            document.open();
-//
-//            CLVRResults results = CLVRResults.getInstance();
-//            HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
-//
-//            document.add(new Chunk(""));
-//            document.add(new Paragraph("Company: " + results.getmCompanyName()));
-//            document.add(new Paragraph("Candidate: " + results.getmUsername()));
-//            document.add(new Paragraph("Candidate Email: " + results.getmUserEmail()));
-////            document.add(new Paragraph("Date: " + new Date()));
-////
-////            File imageFile = new File(pdfDir + "/graphScreenShot" + -1 + ".png");
-////            document.add(new Paragraph("Overall Personality Result"));
-////
-////            addGraph(document, imageFile);
-////
-////            imageFile = new File(pdfDir + "/graphScreenShot" + -2 + ".png");
-////            document.add(new Paragraph("Overall Tone Analyser Result"));
-////
-////            addGraph(document, imageFile);
-//
-//
-//            // iterate through all bitmaps or file location and call this
-//            for (int question : testResult.keySet()) {
-//                imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
-//                CLVRQuestion clvrQuestion = testResult.get(question);
-//
-//                addQuestionAnswerAndGraph(document, imageFile, clvrQuestion, haveImage);
-//            }
-//
-//            document.close();
-//            foutPdf.close();
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (DocumentException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Log.d("zoe-chan", "PDF generated");
-//
-//    }
-
-//    public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
-//
-//        document.add(new Paragraph("Question " + counter));
-//        counter++;
-//
-//        //add question and answer from db
-//        document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
-//        document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
-//        document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
-//
-//        if (addImage) {
-//            addGraph(document, imageFile);
-//        }
-//
-//    }
-
-//    private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
-//        Image graph = Image.getInstance(imageFile.getAbsolutePath());
-//        graph.scaleAbsolute(500, 500);
-//        document.add(graph);
-//        Log.d("zoe-chan", "new page added");
-//        document.newPage();
-//    }
 }
