@@ -289,7 +289,6 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             protected String doInBackground(Object... input) {
                 ToneAnalyzer service = (ToneAnalyzer) input[0];
-                //String text = (String) input[1];
 
                 ToneAnalysis tone = service.getTone(stringInput, null).execute();
                 return tone.getDocumentTone().toString();
@@ -397,8 +396,6 @@ public class SpeechAnalyserActivity extends Activity {
         mRecorder.stop();
         mRecorder.reset();
         textviewtimer.setVisibility(View.INVISIBLE);
-        //speechRecognition();
-        //uploadRecording();
 
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);

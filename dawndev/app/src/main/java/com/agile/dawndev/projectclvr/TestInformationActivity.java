@@ -109,6 +109,7 @@ public class TestInformationActivity extends AppCompatActivity {
         intent.putExtra("testKey", mTestKey);
         intent.setType("text/plain");
         startActivity(intent);
+        finish();
     }
 
 
