@@ -71,54 +71,74 @@ public class NewUserActivity extends AppCompatActivity {
 
 
     public void assignCompany(View view) {
+        if (mEdit.getText().toString().length() > 0 && mPassword.getText().toString().length() > 0) {
+            mDatabase.child("company_names").child(mEdit.getText().toString()).child("password").addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
+                                    addCompany();
+                                } else {
+                                    Context context = getApplicationContext();
+                                    CharSequence text = "The password you entered is incorrect";
+                                    int duration = Toast.LENGTH_SHORT;
 
-        mDatabase.child("company_names").child(mEdit.getText().toString()).child("password").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue().equals(mPassword.getText().toString())) {
-                            addCompany();
+                                    Toast toast = Toast.makeText(context, text, duration);
+                                    toast.show();
+                                }
+                            }
+                            else {
+                                Context context = getApplicationContext();
+                                CharSequence text = "Please enter a valid company!";
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, text, duration);
+                                toast.show();
+                            }
                         }
-                        else {
-                            Context context = getApplicationContext();
-                            CharSequence text = "The password you entered is incorrect";
-                            int duration = Toast.LENGTH_SHORT;
 
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
                         }
                     }
+            );
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+        }
+        else {
+            Context context = getApplicationContext();
+            CharSequence text = "Please enter all the required fields!";
+            int duration = Toast.LENGTH_SHORT;
 
-                    }
-                }
-        );
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
 
     }
 
 
     private void addCompany() {
-        String company = mEdit.getText().toString();
-        mDatabase.child("company_names").child(company).addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Long id = dataSnapshot.child("id").getValue(Long.class);
-                        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("companies").child(id.toString()).setValue(true);
-                        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").setValue(true);
+            String company = mEdit.getText().toString();
+            mDatabase.child("company_names").child(company).addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Long id = dataSnapshot.child("id").getValue(Long.class);
+                            mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("companies").child(id.toString()).setValue(true);
+                            mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").setValue(true);
 
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
                     }
+            );
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                }
-        );
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
     }
 
 

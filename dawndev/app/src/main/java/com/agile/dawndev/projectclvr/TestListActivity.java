@@ -97,7 +97,6 @@ public class TestListActivity extends AppCompatActivity {
                 testView.setName(itemKey, mCompanyKey);
                 testView.setNumberOfQuestions(itemKey, mCompanyKey);
 
-                Log.d("cj", itemKey);
                 testView.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -138,7 +137,6 @@ public class TestListActivity extends AppCompatActivity {
         }
 
         public void setName(String key, String companyKey) {
-            Log.d("cjKey", key);
             db = FirebaseDatabase.getInstance().getReference();
             db.child("companies").child(companyKey).child("tests").child(key).child("name").addValueEventListener(new ValueEventListener() {
 
@@ -146,7 +144,6 @@ public class TestListActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.test_name);
                     field.setText(dataSnapshot.getValue().toString());
-                    Log.d("cjsetName", dataSnapshot.getValue().toString());
                 }
 
                 @Override
@@ -168,7 +165,6 @@ public class TestListActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.number_of_questions);
                     field.setText(Long.toString(dataSnapshot.getChildrenCount()) + " Questions");
-                    Log.d("cjavailable", Long.toString(dataSnapshot.getChildrenCount()));
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -180,9 +176,6 @@ public class TestListActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-
-
-
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;

@@ -121,20 +121,24 @@ public class ToneAnalyserRadarFragment extends Fragment {
             public void onClick(View v) {
                 //nextQuestion.setVisibility(View.INVISIBLE);
 
-                //for(int i =0; i<10; i++){
+                    //graphScrollView.setVisibility(View.VISIBLE);
+                    createAllToneGraphs();
+                    createPersonalityGraphs();
+                    String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
+                    createToneGraph(overallTone, -2);
 
-                //graphScrollView.setVisibility(View.VISIBLE);
-                createAllToneGraphs();
-                createPersonalityGraphs();
-                String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
-                createToneGraph(overallTone, -2);
-                makePDF(true, "withImage");
-                //graphScrollView.setVisibility(View.INVISIBLE);
+                    nextQuestion.setVisibility(View.INVISIBLE);
+//                    makePDF(true, "graphResult");
+//                    makePDF(false, "transcript");
+                    GeneratePDF generatePDF =  new GeneratePDF(true, "graphResult",getContext());
+                    generatePDF.execute();
+                //THIS WAS DONE WITH ELIZA <3
+                GeneratePDF generateTranscript =  new GeneratePDF(false, "transcript",getContext());
+                generateTranscript.execute();
+                //TODO call it again with false
 
-                //}
                 mProgress.setVisibility(View.GONE);
                 nextQuestion.setVisibility(View.VISIBLE);
-
 
             }
         });
@@ -351,99 +355,99 @@ public class ToneAnalyserRadarFragment extends Fragment {
         Screenshot taking for emailing graph results
      */
 
-    public void makePDF(boolean haveImage, String fileName) {
-        boolean success = false;
+//    public void makePDF(boolean haveImage, String fileName) {
+//        boolean success = false;
+//
+//        nextQuestion.setVisibility(View.INVISIBLE);
+//        //Create a directory for your PDF
+//        //make a new clvr directory if it doesnt already exist
+//        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+//
+//        if (!pdfDir.exists()) {
+//            success = pdfDir.mkdirs();
+//        }
+//
+//        if (!success) {
+//            Log.d("screesnhot", "folder not created");
+//        } else {
+//            Log.d("screenshot", "folder created");
+//        }
+//
+//        // Log.d("screenshot", rootView.toString() );
+//
+//        OutputStream foutPdf = null;
+//
+//        try {
+//            foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
+//
+//            Document document = new Document();
+//            PdfWriter.getInstance(document, foutPdf);
+//            document.open();
+//
+//            CLVRResults results = CLVRResults.getInstance();
+//            HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
+//
+//            document.add(new Chunk(""));
+//            document.add(new Paragraph("Company: " + results.getmCompanyName()));
+//            document.add(new Paragraph("Candidate: " + results.getmUsername()));
+//            document.add(new Paragraph("Candidate Email: " + results.getmUserEmail()));
+////            document.add(new Paragraph("Date: " + new Date()));
+////
+////            File imageFile = new File(pdfDir + "/graphScreenShot" + -1 + ".png");
+////            document.add(new Paragraph("Overall Personality Result"));
+////
+////            addGraph(document, imageFile);
+////
+////            imageFile = new File(pdfDir + "/graphScreenShot" + -2 + ".png");
+////            document.add(new Paragraph("Overall Tone Analyser Result"));
+////
+////            addGraph(document, imageFile);
+//
+//
+//            // iterate through all bitmaps or file location and call this
+//            for (int question : testResult.keySet()) {
+//                imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
+//                CLVRQuestion clvrQuestion = testResult.get(question);
+//
+//                addQuestionAnswerAndGraph(document, imageFile, clvrQuestion, haveImage);
+//            }
+//
+//            document.close();
+//            foutPdf.close();
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (DocumentException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Log.d("zoe-chan", "PDF generated");
+//
+//    }
 
-        nextQuestion.setVisibility(View.INVISIBLE);
-        //Create a directory for your PDF
-        //make a new clvr directory if it doesnt already exist
-        File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
+//    public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
+//
+//        document.add(new Paragraph("Question " + counter));
+//        counter++;
+//
+//        //add question and answer from db
+//        document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
+//        document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
+//        document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
+//
+//        if (addImage) {
+//            addGraph(document, imageFile);
+//        }
+//
+//    }
 
-        if (!pdfDir.exists()) {
-            success = pdfDir.mkdirs();
-        }
-
-        if (!success) {
-            Log.d("screesnhot", "folder not created");
-        } else {
-            Log.d("screenshot", "folder created");
-        }
-
-        // Log.d("screenshot", rootView.toString() );
-
-        OutputStream foutPdf = null;
-
-        try {
-            foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
-
-            Document document = new Document();
-            PdfWriter.getInstance(document, foutPdf);
-            document.open();
-
-            CLVRResults results = CLVRResults.getInstance();
-            HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
-
-            document.add(new Chunk(""));
-            document.add(new Paragraph("Company: " + results.getmCompanyName()));
-            document.add(new Paragraph("Candidate: " + results.getmUsername()));
-            document.add(new Paragraph("Candidate Email: " + results.getmUserEmail()));
-            document.add(new Paragraph("Date: " + new Date()));
-
-            File imageFile = new File(pdfDir + "/graphScreenShot" + -1 + ".png");
-            document.add(new Paragraph("Overall Personality Result"));
-
-            addGraph(document, imageFile);
-
-            imageFile = new File(pdfDir + "/graphScreenShot" + -2 + ".png");
-            document.add(new Paragraph("Overall Tone Analyser Result"));
-
-            addGraph(document, imageFile);
-
-
-            // iterate through all bitmaps or file location and call this
-            for (int question : testResult.keySet()) {
-                imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
-                CLVRQuestion clvrQuestion = testResult.get(question);
-
-                addQuestionAnswerAndGraph(document, imageFile, clvrQuestion, haveImage);
-            }
-
-            document.close();
-            foutPdf.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("zoe-chan", "PDF generated");
-
-    }
-
-    public void addQuestionAnswerAndGraph(Document document, File imageFile, CLVRQuestion clvrQuestion, boolean addImage) throws DocumentException, IOException {
-
-        document.add(new Paragraph("Question " + counter));
-        counter++;
-
-        //add question and answer from db
-        document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
-        document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
-        document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
-
-        if (addImage) {
-            addGraph(document, imageFile);
-        }
-
-    }
-
-    private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
-        Image graph = Image.getInstance(imageFile.getAbsolutePath());
-        graph.scaleAbsolute(500, 500);
-        document.add(graph);
-        Log.d("zoe-chan", "new page added");
-        document.newPage();
-    }
+//    private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
+//        Image graph = Image.getInstance(imageFile.getAbsolutePath());
+//        graph.scaleAbsolute(500, 500);
+//        document.add(graph);
+//        Log.d("zoe-chan", "new page added");
+//        document.newPage();
+//    }
 }
