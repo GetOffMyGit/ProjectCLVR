@@ -22,8 +22,11 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Asynctask which generates the PDF containing the results that is sent to the company and the transcript which is sent to the user.
+ */
 public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
-
+    private String TAG = "GeneratePDFAsyncTask";
     private boolean haveImage;
     private String fileName;
     private int counter = 1;
@@ -33,13 +36,15 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         this.haveImage = haveImage;
         this.fileName = fileName;
         this.document = new Document();
-
     }
+
+    /*
+    Performed asynchronously and creates the PDF file containing informtation regarding the questions, answwers, and the resultant graphs
+     */
     @Override
     protected Long doInBackground(Void... params) {
 
         boolean success = false;
-
 
         //Create a directory for your PDF
         //make a new clvr directory if it doesnt already exist
@@ -52,6 +57,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         OutputStream foutPdf = null;
 
         try {
+            //create the PDF file
             foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
             PdfWriter.getInstance(document, foutPdf);
             document.open();
@@ -61,6 +67,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
             CLVRResults results = CLVRResults.getInstance();
             HashMap<Integer, CLVRQuestion> testResult = results.getClvrQuestionHashMap();
 
+            //add the company and candidate details
             document.add(new Paragraph("Company Name: "+results.getmCompanyName()));
             document.add(new Paragraph("Candidate Name: "+results.getmUsername()));
             document.add(new Paragraph("Candidate Email: "+results.getmUserEmail()));
@@ -68,7 +75,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
             document.add(new Paragraph("-------------------------------"));
 
-
+            //retrieve the image of the graphs
             if (this.haveImage) {
                 File imageFile = new File(pdfDir + "/graphScreenShot" + -1 + ".png");
                 document.add(new Paragraph("Overall Personality Result"));
@@ -81,9 +88,6 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
                 addGraph(document, imageFile);
             }
 
-
-            //final graphs
-
             // iterate through all bitmaps or file location and call this
             for(int question : testResult.keySet()){
                 File imageFile = new File(pdfDir + "/graphScreenShot" + question + ".png");
@@ -91,7 +95,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
                 addQuestionAnswerAndGraph( imageFile, clvrQuestion, this.haveImage);
             }
-
+            //close the PDF, which generates it and makes it readble by the user
             document.close();
             foutPdf.close();
 
@@ -103,16 +107,17 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
             e.printStackTrace();
         }
 
-        Log.d("zoe-chan", "PDF generated");
+        Log.d(TAG, "PDF generated");
 
         return null;
     }
 
+    //Used to add additional graphs to the PDF. Called for each quesiton.
     private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
         Image graph = Image.getInstance(imageFile.getAbsolutePath());
         graph.scaleAbsolute(500, 500);
         document.add(graph);
-        Log.d("zoe-chan", "new page added");
+        Log.d(TAG, "new page added");
         document.newPage();
     }
 
@@ -126,13 +131,10 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         document.add(new Paragraph("Question: " + clvrQuestion.getmQuestion()));
         document.add(new Paragraph("Answer: " + clvrQuestion.getmAnswer()));
         document.add(new Paragraph("Voice Note: " + clvrQuestion.getmMediaURL()));
-        Log.d("zoe-chan", "before");
+        Log.d(TAG, "before");
 
         if(addImage){
             addGraph(document, imageFile);
         }
-
     }
-
-
 }

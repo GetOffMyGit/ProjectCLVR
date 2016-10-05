@@ -141,7 +141,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
-        Log.d("gotomain", "inside method");
         startActivity(new Intent(this, ShowTestsActivity.class));
         finish();
     }

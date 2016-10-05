@@ -4,8 +4,9 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// Class used for creating candidate users
+/**
+ * This model holds all the candidate/user related data fetched from FireBase
+ */
  @IgnoreExtraProperties
 public class User {
      private String id;

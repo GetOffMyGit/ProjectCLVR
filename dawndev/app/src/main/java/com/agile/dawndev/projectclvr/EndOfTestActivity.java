@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+
+/**
+ * This activity handles all the functionality related to the end of test screen
+ */
 
 public class EndOfTestActivity extends Activity {
 
