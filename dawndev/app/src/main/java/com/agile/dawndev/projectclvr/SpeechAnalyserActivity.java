@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.personality_insights.v2.PersonalityInsights;
+import com.ibm.watson.developer_cloud.service.exception.BadRequestException;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
@@ -49,9 +50,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -107,6 +111,11 @@ public class SpeechAnalyserActivity extends Activity {
     private HashMap<Integer, CLVRQuestion> mQuestionResults = new HashMap<Integer, CLVRQuestion>();
     private String[] mQuestionTitles;
     private boolean mErrorOccurred = false;
+
+    private ConcurrentHashMap<Integer, Integer> mBadQuestions = new ConcurrentHashMap<Integer, Integer>();
+    private boolean isBadQuestionRun = false;
+    private ArrayList<Integer> mBadQuestionNumbers = new ArrayList<Integer>();
+    private int mBadRunCounter = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,8 +231,12 @@ public class SpeechAnalyserActivity extends Activity {
                         .model("en-US_BroadbandModel").build();
 
                 // recognize audio file
-                SpeechResults transcript = service.recognize(recordedResponse, options).execute();
-
+                SpeechResults transcript = null;
+                try {
+                    transcript = service.recognize(recordedResponse, options).execute();
+                } catch(BadRequestException e) {
+                    cancel(false);
+                }
                 return transcript;
             }
 
@@ -231,6 +244,9 @@ public class SpeechAnalyserActivity extends Activity {
             protected void onPostExecute(SpeechResults result) {
                 String finalTranscript = "";
                 if (result.getResults().size() == 0) {
+                    mBadQuestions.put(questionNum, questionNum);
+                    isBadQuestionRun = true;
+                    whenDone();
                     return;
                 }
                 for (Transcript t : result.getResults()) {
@@ -240,6 +256,13 @@ public class SpeechAnalyserActivity extends Activity {
                 mTranscriptionMap.put(questionNum, finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
+                whenDone();
+            }
+
+            @Override
+            protected void onCancelled() {
+                mBadQuestions.put(questionNum, questionNum);
+                isBadQuestionRun = true;
                 whenDone();
             }
         }.execute();
@@ -367,44 +390,84 @@ public class SpeechAnalyserActivity extends Activity {
     }
 
     public void updateText() {
-        String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
-        String instructionKey = instructionSet[mInstructionCounter];
-        mTitle.setText(instructionKey);
-        mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
+        if(isBadQuestionRun) {
+            String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
+            String instructionKey = instructionSet[mBadQuestionNumbers.get(mBadRunCounter) - 1];
+            mTitle.setText(instructionKey);
+            mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
 
-        // change recording time for this question
-        timerLimit = mqTimes.get(instructionKey) * 1000;
+            // change recording time for this question
+            timerLimit = mqTimes.get(instructionKey) * 1000;
+        } else {
+            String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
+            String instructionKey = instructionSet[mInstructionCounter];
+            mTitle.setText(instructionKey);
+            mInstruction.setText(mInstructionAndAnswerMap.get(instructionKey));
+
+            // change recording time for this question
+            timerLimit = mqTimes.get(instructionKey) * 1000;
+        }
     }
 
     public void continueButtonOnClick(View view) {
         // if there are no questions left
-        if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
-            mInstructionCounter++;
-            mFileMap.put(mInstructionCounter, mFileName);
-            doUploadingAndRecognition();
+        if(isBadQuestionRun) {
+            if(mBadRunCounter == mBadQuestionNumbers.size() - 1) {
+                Log.d("Swamp monster", "LAST ARRAY: " + mBadQuestionNumbers.toString());
+                Log.d("Swamp monster", "LAST INDEX: " + mBadRunCounter);
+                Log.d("Swamp monster", "LAST FILE NUMBER: " + mBadQuestionNumbers.get(mBadRunCounter));
+                mFileMap.put(mBadQuestionNumbers.get(mBadRunCounter), mFileName);
+                isBadQuestionRun = false;
+                mBadQuestionNumbers = new ArrayList<Integer>();
+                mBadRunCounter = 0;
+                doUploadingAndRecognition();
+            } else {
+                mContinueButton.setVisibility(View.INVISIBLE);
+
+                mButtonRecord.setText("Start Recording");
+                mButtonRecord.setEnabled(true);
+                mButtonRecord.setTextColor(Color.WHITE);
+
+                Log.d("Swamp monster", "ARRAY: " + mBadQuestionNumbers.toString());
+                Log.d("Swamp monster", "INDEX: " + mBadRunCounter);
+                Log.d("Swamp monster", "FILE NUMBER: " + mBadQuestionNumbers.get(mBadRunCounter));
+                mFileMap.put(mBadQuestionNumbers.get(mBadRunCounter), mFileName);
+                mBadRunCounter++;
+                updateText();
+                mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mBadQuestionNumbers.get(mBadRunCounter) + ".wav";
+                audioFile = new File(mFileName);
+                mRecorder.setOutputFile(mFileName);
+            }
         } else {
-            mContinueButton.setVisibility(View.INVISIBLE);
+            if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
+                mInstructionCounter++;
+                mFileMap.put(mInstructionCounter, mFileName);
+                doUploadingAndRecognition();
+            } else {
+                mContinueButton.setVisibility(View.INVISIBLE);
 
-            // show next question for user and allow recording again
-            mInstructionCounter++;
-            mQuestionNum++;
-            updateText();
-            mButtonRecord.setText("Start Recording");
-            mButtonRecord.setEnabled(true);
-            mButtonRecord.setTextColor(Color.WHITE);
+                // show next question for user and allow recording again
+                mInstructionCounter++;
+                mQuestionNum++;
+                updateText();
+                mButtonRecord.setText("Start Recording");
+                mButtonRecord.setEnabled(true);
+                mButtonRecord.setTextColor(Color.WHITE);
 
-            mFileMap.put(mInstructionCounter, mFileName);
+                mFileMap.put(mInstructionCounter, mFileName);
 
-            // prepare for recording next question
-            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-            audioFile = new File(mFileName);
-            mRecorder.setOutputFile(mFileName);
+                // prepare for recording next question
+                mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
+                audioFile = new File(mFileName);
+                mRecorder.setOutputFile(mFileName);
+            }
         }
     }
 
     private void doUploadingAndRecognition() {
         mProgressBar.setVisibility(View.VISIBLE);
         for(int questionNum : mFileMap.keySet()) {
+            Log.d("Swamp monster", " " + questionNum);
             File theFile = new File(mFileMap.get(questionNum));
             speechRecognition(theFile, questionNum);
             uploadRecording(theFile, questionNum);
@@ -422,21 +485,48 @@ public class SpeechAnalyserActivity extends Activity {
     private void whenDone() {
         int num = numCompleted.incrementAndGet();
         if (num == numOfTasks) {
-            // when only tasks done, set button to enable
-            mButtonRecord.setText("Start Recording");
-            mButtonRecord.setEnabled(true);
-            mButtonRecord.setTextColor(Color.WHITE);
-            mContinueButton.setVisibility(View.VISIBLE);
-            mText.setVisibility(View.VISIBLE);
+            if(isBadQuestionRun) {
+                numCompleted = new AtomicInteger(0);
+                badQuestionRun();
+            } else {
+                // when only tasks done, set button to enable
+                mButtonRecord.setText("Start Recording");
+                mButtonRecord.setEnabled(true);
+                mButtonRecord.setTextColor(Color.WHITE);
+                mContinueButton.setVisibility(View.VISIBLE);
+                mText.setVisibility(View.VISIBLE);
 
-            for(int questionNum : mFileMap.keySet()) {
-                File theFile = new File(mFileMap.get(questionNum));
-                boolean deleted = theFile.delete();
-                if (deleted) {
-                    Log.d(TAG, "Deleted file");
+                for(int questionNum : mFileMap.keySet()) {
+                    File theFile = new File(mFileMap.get(questionNum));
+                    boolean deleted = theFile.delete();
+                    if (deleted) {
+                        Log.d(TAG, "Deleted file");
+                    }
                 }
             }
         }
+    }
+
+    private void badQuestionRun() {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mButtonRecord.setText("Start Recording");
+        mButtonRecord.setEnabled(true);
+        mButtonRecord.setTextColor(Color.WHITE);
+        mContinueButton.setVisibility(View.INVISIBLE);
+        mText.setVisibility(View.VISIBLE);
+
+        for(Integer question : mBadQuestions.keySet()) {
+            mBadQuestionNumbers.add(question);
+        }
+
+        Collections.sort(mBadQuestionNumbers);
+
+        // prepare for recording next question
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mBadQuestionNumbers.get(0) + ".wav";
+        audioFile = new File(mFileName);
+        mRecorder.setOutputFile(mFileName);
+
+        updateText();
     }
 
     private void doDoneDone() {
