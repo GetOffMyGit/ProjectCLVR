@@ -13,11 +13,14 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by Paul Joo on 13/09/2016.
+ * This is the async task that handles the email functionality.
+ * This email is sent to the user/candidate by CLVR.
+ * The attachment includes the questions and answers.
  */
 public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
     private Context mContext;
+    private String TAG = "TranscribeAnswerEmail";
 
     //Fields for content to put into the email.
     private String mSendTo;
@@ -41,7 +44,7 @@ public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         //Create SendGrid object from SendGrid API key.
         SendGrid sendGrid = new SendGrid(mContext.getResources().getString((R.string.sendGrid_apiKey)));
-        Log.d("chahat", "start email");
+        Log.d(TAG, "start email");
         //Create a SendGrid email.
         SendGrid.Email email = new SendGrid.Email();
 

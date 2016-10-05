@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Zoe on 3/10/16.
+ * Activity which holds the radar graph fragment
  */
 public class GraphGenActivity extends AppCompatActivity {
     RadarGraphFragment radarGraphFragment;
@@ -32,7 +32,7 @@ public class GraphGenActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-
+//Adds the radar gaph fragment
     private void setupViewPager(ViewPager viewPager) {
         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
 
@@ -74,8 +74,7 @@ public class GraphGenActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
-
+        super.onResume();
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;

@@ -9,7 +9,13 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
 import android.util.Log;
-// https://github.com/roman10/roman10-android-tutorial/tree/master/AndroidWaveRecorder
+
+/**
+ * This activity converts the voice recording to a wav format.
+ * https://github.com/roman10/roman10-android-tutorial/tree/master/AndroidWaveRecorder
+ */
+
+
 
 public class WavAudioRecorder {
 	private final static int[] sampleRates = {44100, 22050, 11025, 8000};
