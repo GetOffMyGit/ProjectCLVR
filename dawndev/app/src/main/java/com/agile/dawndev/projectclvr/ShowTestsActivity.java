@@ -42,6 +42,7 @@ public class ShowTestsActivity extends AppCompatActivity {
     private static final String TAG = "ShowTestsActivity";
     private ProgressBar mProgressBar;
     private TextView mWelcome;
+    private TextView mName;
     private static final int PERMISSION_ALL = 1;
     private FloatingActionButton mFab;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
@@ -75,7 +76,7 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        mName = (TextView) findViewById(R.id.name);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -87,6 +88,7 @@ public class ShowTestsActivity extends AppCompatActivity {
         mWelcome = (TextView) findViewById(R.id.welcome);
         mWelcome.setTypeface(custom_font);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mName.setText(mAuth.getCurrentUser().getDisplayName().toString());
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
