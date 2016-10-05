@@ -231,6 +231,7 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    //Perform speech recognition. Detect whether voice input was sufficient in length.
     private void speechRecognition(final File recordedResponse, final int questionNum) {
         Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
@@ -248,6 +249,7 @@ public class SpeechAnalyserActivity extends Activity {
 
                 // recognize audio file
                 SpeechResults transcript = null;
+                //Attempt to perform speech recognition. If the voice input is less than 100 bytes cancel the operation.
                 try {
                     transcript = service.recognize(recordedResponse, options).execute();
                 } catch(BadRequestException e) {
@@ -259,6 +261,8 @@ public class SpeechAnalyserActivity extends Activity {
             @Override
             protected void onPostExecute(SpeechResults result) {
                 String finalTranscript = "";
+                //If the voice input has no words cancel the operation. Signal that this question has to be redone.
+                //Put the question number in the map that contains all questions that must be redone.
                 if (result.getResults().size() == 0) {
                     mBadQuestions.put(questionNum, questionNum);
                     isBadQuestionRun = true;
@@ -273,14 +277,14 @@ public class SpeechAnalyserActivity extends Activity {
                 //Replace ASCII to apostrophe
                 finalTranscript.replace("\u0027", "'");
                 Log.d("TRANSCRIPT", finalTranscript);
-
-                
+                //Put the question number along with the answer into the map.
                 mTranscriptionMap.put(questionNum, finalTranscript);
                 Log.d(TAG, "TRANSCRIPT " + result);
                 toneAnalysis(finalTranscript, questionNum, false);
                 whenDone();
             }
 
+            //Signal that this question has to be redone. Put the question number in the map that contains all questions that must be redone.
             @Override
             protected void onCancelled() {
                 mBadQuestions.put(questionNum, questionNum);
@@ -291,6 +295,7 @@ public class SpeechAnalyserActivity extends Activity {
 
     }
 
+    //Perform tone analysis.
     private void toneAnalysis(final String stringInput, final int questionNum, final boolean forCombinedText) {
         new AsyncTask<Object, Void, String>() {
             @Override
@@ -317,6 +322,7 @@ public class SpeechAnalyserActivity extends Activity {
         }.execute(mToneAnalyzerService);
     }
 
+    //Performs personality insights.
     private void personalityInsight(final String stringInput) {
         new AsyncTask<Object, Void, String>() {
             @Override
@@ -325,6 +331,7 @@ public class SpeechAnalyserActivity extends Activity {
                 return service.getProfile(stringInput).execute().toString();
             }
 
+            //When completed indicate that results have been received.
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
@@ -336,6 +343,7 @@ public class SpeechAnalyserActivity extends Activity {
         }.execute(mPersonalityInsightsService);
     }
 
+    //Uploads the specified file to the database.
     public void uploadRecording(File recordedResponse, final int questionNum) {
         Log.d(TAG, " start uploading");
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -412,7 +420,9 @@ public class SpeechAnalyserActivity extends Activity {
         mContinueText.setVisibility(View.VISIBLE);
     }
 
+    //Updates the text on the page for a particular question.
     public void updateText() {
+        //If the current run is a bad run, update the page from the array of bad questions.
         if(isBadQuestionRun) {
             String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
             String instructionKey = instructionSet[mBadQuestionNumbers.get(mBadRunCounter) - 1];
@@ -425,7 +435,7 @@ public class SpeechAnalyserActivity extends Activity {
             mButtonRecord.setAlpha(1.0f);
             mContinueText.setVisibility(View.INVISIBLE);
 
-        } else {
+        } else { //If the current run is not a bad run, update the page from the normal array of questions.
             String[] instructionSet = mInstructionAndAnswerMap.keySet().toArray(new String[mInstructionAndAnswerMap.size()]);
             String instructionKey = instructionSet[mInstructionCounter];
             mTitle.setText(instructionKey);
@@ -436,9 +446,12 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    //Called when the continue button is pressed.
+    //Checks whether to continue to the next question or start computation (uploading, speech recognition, tone analysis and personality insights).
     public void continueButtonOnClick(View view) {
         // if there are no questions left
         if(isBadQuestionRun) {
+            //If the last question on the bad run has been reached, reset the bad question flags and start computation.
             if(mBadRunCounter == mBadQuestionNumbers.size() - 1) {
                 Log.d("Swamp monster", "LAST ARRAY: " + mBadQuestionNumbers.toString());
                 Log.d("Swamp monster", "LAST INDEX: " + mBadRunCounter);
@@ -450,7 +463,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mBadRunCounter = 0;
                 showLoadingDisplay();
                 doUploadingAndRecognition();
-            } else {
+            } else { //If the last question on the bad run has not been reached, prepare the page for the next bad question.
                 mContinueButton.setVisibility(View.INVISIBLE);
 
                 mButtonRecord.setText("Start Recording");
@@ -467,15 +480,16 @@ public class SpeechAnalyserActivity extends Activity {
                 mRecorder.setOutputFile(mFileName);
             }
         } else {
+            //Check if the last question for the normal run has been reached. If so start computation.
             if (mInstructionCounter == (mInstructionAndAnswerMap.size() - 1)) {
                 mInstructionCounter++;
                 mFileMap.put(mInstructionCounter, mFileName);
 
                 showLoadingDisplay();
                 doUploadingAndRecognition();
-            } else {
+            } else { //If the last question on the normal run has not been reached, prepare the page for the next question.
                 mContinueButton.setVisibility(View.INVISIBLE);
-            mContinueText.setVisibility(View.INVISIBLE);
+                mContinueText.setVisibility(View.INVISIBLE);
 
                 // show next question for user and allow recording again
                 mInstructionCounter++;
@@ -484,7 +498,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mButtonRecord.setText("Start Recording");
                 mButtonRecord.setEnabled(true);
                 mButtonRecord.setTextColor(Color.WHITE);
-            mButtonRecord.setAlpha(1.0f);
+                mButtonRecord.setAlpha(1.0f);
 
                 mFileMap.put(mInstructionCounter, mFileName);
 
@@ -495,6 +509,7 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    //Show the loading screen when the uploading, speech recognition, tone analysis and personality insights is being completed.
     private void showLoadingDisplay() {
         mCoverUp.setVisibility(View.VISIBLE);
         mTitle.setVisibility(View.GONE);
@@ -505,6 +520,7 @@ public class SpeechAnalyserActivity extends Activity {
         mScroll.setVisibility(View.GONE);
     }
 
+    //Disable the loading screen.
     private void undoLoadingDisplay() {
         mCoverUp.setVisibility(View.GONE);
         mTitle.setVisibility(View.VISIBLE);
@@ -514,6 +530,7 @@ public class SpeechAnalyserActivity extends Activity {
         mScroll.setVisibility(View.VISIBLE);
     }
 
+    //Carry out the uploading and speech recognition on all the files in the file hashmap.
     private void doUploadingAndRecognition() {
         mProgressBar.setVisibility(View.VISIBLE);
         for(int questionNum : mFileMap.keySet()) {
@@ -531,10 +548,13 @@ public class SpeechAnalyserActivity extends Activity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    // checked that all the results have been retrieved, and if so, moves to the main activity
+    // checked that all the results have been retrieved.
     private void whenDone() {
         int num = numCompleted.incrementAndGet();
         if (num >= numOfTasks) {
+            //Check if there are questions that must be redone.
+            //If so show the message indicating that questions must be redone.
+            //Start the redo run where users must redo insufficient questions.
             if(isBadQuestionRun) {
                 undoLoadingDisplay();
                 new android.support.v7.app.AlertDialog.Builder(SpeechAnalyserActivity.this)
@@ -565,6 +585,7 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    //Starts and organises the bad question run.
     private void badQuestionRun() {
         mProgressBar.setVisibility(View.INVISIBLE);
         mButtonRecord.setText("Start Recording");
@@ -572,19 +593,22 @@ public class SpeechAnalyserActivity extends Activity {
         mButtonRecord.setTextColor(Color.WHITE);
         mContinueButton.setVisibility(View.INVISIBLE);
 
+        //Get all the bad questions from the concurrent hashmap and put them in an array.
         for(Integer question : mBadQuestions.keySet()) {
             mBadQuestionNumbers.add(question);
         }
 
+        //Sort the array to order the questions.
         Collections.sort(mBadQuestionNumbers);
 
-        // prepare for recording next question
+        //Prepare for recording for the first bad question.
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mBadQuestionNumbers.get(0) + ".wav";
         mRecorder.setOutputFile(mFileName);
 
         updateText();
     }
 
+    //Checks that all results from the tone analysis and personality insights have been received.
     private void doDoneDone() {
         int num = totalCompleted.getAndIncrement();
         if(num == totalNumTasks - 2) {
@@ -602,6 +626,8 @@ public class SpeechAnalyserActivity extends Activity {
             toneAnalysis(mAllTextAnswers, -1, true);
             String[] textArray = mAllTextAnswers.split(" ");
             Log.d("Swamp monster", " " + textArray.length);
+            //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the ShowTestsActivity.
+            //If there are 100 or more words progress with personality insights.
             if(textArray.length < 100) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -649,6 +675,7 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    //Get question information from the database. But the questions in the question hashmap and record the number of tasks (voice recognition and uploading) that must be completed.
     public void populateMap() {
         mDatabase.child("companies").child(mCompanyKey).child("tests").child(mTestKey).child("Questions").addValueEventListener(new ValueEventListener() {
             @Override
