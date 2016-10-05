@@ -29,8 +29,6 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
     private int counter = 1;
     private Document document;
 
-
-
     public GeneratePDFAsyncTask(boolean haveImage, String fileName, Context context){
         this.haveImage = haveImage;
         this.fileName = fileName;
@@ -48,21 +46,13 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
 
         if (!pdfDir.exists()) {
-            success = pdfDir.mkdirs();
-        }
-
-        if (!success) {
-            Log.d("screenshot", "folder not created");
-        } else {
-            Log.d("screenshot", "folder created");
+            pdfDir.mkdirs();
         }
 
         OutputStream foutPdf = null;
 
         try {
             foutPdf = new FileOutputStream(new File(pdfDir + "/" + fileName + ".pdf"));
-
-
             PdfWriter.getInstance(document, foutPdf);
             document.open();
 
@@ -100,7 +90,6 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
                 CLVRQuestion clvrQuestion = testResult.get(question);
 
                 addQuestionAnswerAndGraph( imageFile, clvrQuestion, this.haveImage);
-               // addQuestionAnswerAndGraph(document, imageFile, clvrQuestion, false);
             }
 
             document.close();
