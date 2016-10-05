@@ -52,10 +52,6 @@ public class RadarGraphFragment extends Fragment {
 
     LinearLayoutCompat screenshotArea;
 
-    private ProgressBar mProgress;
-
-    private Button nextQuestion;
-
     HashMap<Integer, CLVRQuestion> testResult;
 
     public RadarGraphFragment() {
@@ -75,21 +71,16 @@ public class RadarGraphFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_radar, container, false);
-        LinearLayout graphCoverUpLayout = (LinearLayout) inflatedView.findViewById(R.id.graphCoverUpLayout);
-        graphCoverUpLayout.bringToFront();
-
         screenshotArea = (LinearLayoutCompat) inflatedView.findViewById(R.id.linearLayoutGraphs);
 
-        //graphScrollView = (ScrollView) inflatedView.findViewById(R.id.graphScrollView);
-        //graphScrollView.setVisibility(View.INVISIBLE);
-        mProgress = (ProgressBar) inflatedView.findViewById(R.id.progress_bar);
-
         //find the graphs in the fragment
-
         firstChart = (RadarChart) inflatedView.findViewById(R.id.firstChart);
         secondChart = (RadarChart) inflatedView.findViewById(R.id.secondChart);
         thirdChart = (RadarChart) inflatedView.findViewById(R.id.thirdChart);
-        nextQuestion = (Button) inflatedView.findViewById(R.id.getResult);
+
+        firstChart.setNoDataText("");
+        secondChart.setNoDataText("");
+        thirdChart.setNoDataText("");
 
         Log.d("TAG", "after oncreateView");
         return inflatedView;
@@ -113,22 +104,21 @@ public class RadarGraphFragment extends Fragment {
                 Log.d("TAG", " inside HELLO");
 
                 createAllToneGraphs();
-
                 createPersonalityGraphs();
-
                 String overallTone = CLVRResults.getInstance().getmOverallToneAnalysis();
 
                 createToneGraph(overallTone, -2);
-                //                nextQuestion.setVisibility(View.INVISIBLE);
+
+                firstChart.setVisibility(View.GONE);
+                secondChart.setVisibility(View.GONE);
+                thirdChart.setVisibility(View.GONE);
+
+                Log.d("zoe-chan", "finish screenshots");
+
                 GeneratePDFAsyncTask generatePDFAsyncTask = new GeneratePDFAsyncTask(true, "graphResult", getContext());
                 generatePDFAsyncTask.execute();
                 GeneratePDFAsyncTask generateTranscript = new GeneratePDFAsyncTask(false, "transcript", getContext());
                 generateTranscript.execute();
-                //TODO call it again with false
-
-                mProgress.setVisibility(View.GONE);
-                nextQuestion.setVisibility(View.VISIBLE);
-
             }
         }.execute();
     }
@@ -236,6 +226,7 @@ public class RadarGraphFragment extends Fragment {
         dataSet.setLineWidth(2f);
         dataSet.setDrawHighlightCircleEnabled(true);
         dataSet.setDrawHighlightIndicators(false);
+
 
         RadarData radarData = new RadarData(dataSet);
         XAxis xAxis = chart.getXAxis();
