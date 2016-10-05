@@ -86,11 +86,6 @@ public class SpeechAnalyserActivity extends Activity {
     private int mQuestionNum = 1;
     private TreeMap<String, String> mInstructionAndAnswerMap = new TreeMap<String, String>();
     private int mInstructionCounter = 0;
-
-    private static final int PERMISSION_ALL = 1;
-    private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
     private String mFileName;
     private int numOfTasks;
     private int totalNumTasks;
@@ -168,22 +163,6 @@ public class SpeechAnalyserActivity extends Activity {
         mUsername = mAuth.getCurrentUser().getDisplayName();
         mUserEmail = mAuth.getCurrentUser().getEmail();
         //updateText();
-
-        // Check appropriate permissions
-        if (!hasPermissions(this, PERMISSIONS)) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[0]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[1]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSIONS[2])) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-            }
-        }
-
         //Check for connection with IBM Watson API
         if (!isNetworkAvailable()) {
             Log.d(TAG, "Please, check internet connection.");
@@ -225,17 +204,6 @@ public class SpeechAnalyserActivity extends Activity {
         } else {
             finishRecording();
         }
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private void speechRecognition(final File recordedResponse, final int questionNum) {
