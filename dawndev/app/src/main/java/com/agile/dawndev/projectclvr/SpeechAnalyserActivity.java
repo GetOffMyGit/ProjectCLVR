@@ -197,10 +197,10 @@ public class SpeechAnalyserActivity extends Activity {
         });
 
         mToneAnalyzerService = new ToneAnalyzer(ToneAnalyzer.VERSION_DATE_2016_05_19);
-        mToneAnalyzerService.setUsernameAndPassword("ad33f03f-e1b7-4963-a444-aef4001c5b7b", "btNKqDZhXzCY");
+        mToneAnalyzerService.setUsernameAndPassword("8079d59a-3f9d-445f-ab62-05a278b36a79", "WNVh4LVVeEYh");
 
         mPersonalityInsightsService = new PersonalityInsights();
-        mPersonalityInsightsService.setUsernameAndPassword("08370735-0a92-4d70-aa80-dc10e80c70a7", "gYZ48Vlbj6xT");
+        mPersonalityInsightsService.setUsernameAndPassword("4db983b0-c24b-4d4a-85e0-686138ddb872", "TJBxIlpWtull");
     }
 
     public void recordAudio() {

@@ -31,8 +31,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
 
         //Set content for email from constructor.
         mSendTo = CLVRResults.getInstance().getmCompanyEmail();
-        //mSendTo = "ccha504@aucklanduni.ac.nz";
-        mSentFrom = CLVRResults.getInstance().getmUserEmail();
+        mSentFrom = "clvrapplication@gmail.com";
         mSubject = "Results from "+ CLVRResults.getInstance().getmUsername()+"'s test";
         mBody = "Please review attached PDF.";
     }

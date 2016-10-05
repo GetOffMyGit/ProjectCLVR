@@ -28,9 +28,9 @@
 
     <!-- STT default credentials -->
 
-    <string name="STTdefaultUsername">cb93d862-473f-42dc-a9b9-e8acf0a3eda8</string>
+    <string name="STTdefaultUsername">73adb5da-1998-4a51-9f1d-89790aa50cbc</string>
 
-    <string name="STTdefaultPassword">Ne6WKA0ByvQJ</string>
+    <string name="STTdefaultPassword">JRaGoem8AUDH</string>
 
     <string name="STTdefaultTokenFactory">https://stream.watsonplatform.net/speech-to-text/api</string>
 
