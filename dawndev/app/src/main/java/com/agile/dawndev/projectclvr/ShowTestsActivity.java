@@ -1,12 +1,14 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,6 +45,7 @@ public class ShowTestsActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private TextView mWelcome;
     private TextView mName;
+    private TextView mSignOut;
     private static final int PERMISSION_ALL = 1;
     private FloatingActionButton mFab;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
@@ -75,6 +78,7 @@ public class ShowTestsActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
 
         mAuth = FirebaseAuth.getInstance();
+        mSignOut = (TextView) findViewById(R.id.sign_out);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mName = (TextView) findViewById(R.id.name);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -100,7 +104,26 @@ public class ShowTestsActivity extends AppCompatActivity {
         attachRecyclerViewAdapter();
 
 
-
+        mSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Sign Out")
+                        .setMessage("Are you sure you want to sign out?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
 
 
 
