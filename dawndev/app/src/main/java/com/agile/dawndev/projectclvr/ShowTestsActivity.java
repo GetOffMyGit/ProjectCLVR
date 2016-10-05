@@ -115,6 +115,8 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
         mWelcome = (TextView) findViewById(R.id.welcome);
         mWelcome.setTypeface(custom_font);
+        mSignOut.setTypeface(custom_font);
+        mName.setTypeface(custom_font);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mName.setText(mAuth.getCurrentUser().getDisplayName().toString());
 
