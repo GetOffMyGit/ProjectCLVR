@@ -152,7 +152,7 @@ public class AddCompanyActivity extends AppCompatActivity {
                     }
                 }
         );
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ShowTestsActivity.class));
         finish();
     }
 

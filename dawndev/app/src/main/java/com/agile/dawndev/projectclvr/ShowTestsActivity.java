@@ -1,11 +1,14 @@
 package com.agile.dawndev.projectclvr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -18,10 +21,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.agile.dawndev.projectclvr.Auth.LoginActivity;
 import com.agile.dawndev.projectclvr.Models.UsersCompany;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +43,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
-public class ShowTestsActivity extends AppCompatActivity {
+public class ShowTestsActivity extends Activity implements GoogleApiClient.OnConnectionFailedListener
+{
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private HashMap<String,TextView> textViews = new HashMap<String,TextView>();
@@ -46,6 +58,8 @@ public class ShowTestsActivity extends AppCompatActivity {
     private TextView mWelcome;
     private TextView mName;
     private TextView mSignOut;
+    private GoogleApiClient mGoogleApiClient;
+
     private static final int PERMISSION_ALL = 1;
     private FloatingActionButton mFab;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
@@ -77,6 +91,16 @@ public class ShowTestsActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
         mAuth = FirebaseAuth.getInstance();
         mSignOut = (TextView) findViewById(R.id.sign_out);
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -107,12 +131,12 @@ public class ShowTestsActivity extends AppCompatActivity {
         mSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(getApplicationContext())
+                new AlertDialog.Builder(ShowTestsActivity.this)
                         .setTitle("Sign Out")
                         .setMessage("Are you sure you want to sign out?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
+                                signout();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -120,7 +144,6 @@ public class ShowTestsActivity extends AppCompatActivity {
                                 // do nothing
                             }
                         })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
         });
@@ -246,6 +269,35 @@ public class ShowTestsActivity extends AppCompatActivity {
 
     }
 
+    private void signout() {
+        mGoogleApiClient.connect();
+        mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(@Nullable Bundle bundle) {
+
+                FirebaseAuth.getInstance().signOut();
+                if(mGoogleApiClient.isConnected()) {
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            if (status.isSuccess()) {
+                                Log.d(TAG, "User Logged out");
+                                Intent intent = new Intent(ShowTestsActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+                Log.d(TAG, "Google API Client Connection Suspended");
+            }
+        });
+    }
+
     public static class CompanyHolder extends RecyclerView.ViewHolder {
         View mView;
         DatabaseReference db;
@@ -337,6 +389,13 @@ public class ShowTestsActivity extends AppCompatActivity {
             });
         }
     }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
 
     @Override
     public void onResume() {

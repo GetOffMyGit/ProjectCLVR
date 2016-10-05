@@ -15,6 +15,7 @@ import com.agile.dawndev.projectclvr.MainActivity;
 import com.agile.dawndev.projectclvr.Models.User;
 import com.agile.dawndev.projectclvr.NewUserActivity;
 import com.agile.dawndev.projectclvr.R;
+import com.agile.dawndev.projectclvr.ShowTestsActivity;
 import com.agile.dawndev.projectclvr.SpeechAnalyserActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -96,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements
         // Checks on startup of users that are logged in.
         if (mAuth.getCurrentUser() != null) {
             writeNewUser();
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, ShowTestsActivity.class));
             finish();
         }
 
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
         Log.d("gotomain", "inside method");
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ShowTestsActivity.class));
         finish();
     }
 

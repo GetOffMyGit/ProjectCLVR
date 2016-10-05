@@ -20,7 +20,7 @@ public class EndOfTestActivity extends Activity {
     }
 
     public void goToHome(View view) {
-        Intent intent = new Intent(EndOfTestActivity.this, MainActivity.class);
+        Intent intent = new Intent(EndOfTestActivity.this, ShowTestsActivity.class);
         startActivity(intent);
     }
 
