@@ -62,6 +62,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
             PdfWriter.getInstance(document, foutPdf);
             document.open();
 
+            // ensures the document is empty
             document.add(new Chunk(""));
 
             CLVRResults results = CLVRResults.getInstance();
@@ -95,7 +96,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
 
                 addQuestionAnswerAndGraph( imageFile, clvrQuestion, this.haveImage);
             }
-            //close the PDF, which generates it and makes it readble by the user
+            //close the PDF, which generates it and makes it readable by the user
             document.close();
             foutPdf.close();
 
@@ -112,7 +113,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         return null;
     }
 
-    //Used to add additional graphs to the PDF. Called for each quesiton.
+    // Used to add additional graphs to the PDF. Called for each question.
     private void addGraph(Document document, File imageFile) throws DocumentException, IOException {
         Image graph = Image.getInstance(imageFile.getAbsolutePath());
         graph.scaleAbsolute(500, 500);
@@ -121,6 +122,7 @@ public class GeneratePDFAsyncTask extends AsyncTask<Void, Integer, Long> {
         document.newPage();
     }
 
+    // Add each question to the document
     public void addQuestionAnswerAndGraph(File imageFile, CLVRQuestion clvrQuestion,
                                           boolean addImage) throws DocumentException, IOException {
 

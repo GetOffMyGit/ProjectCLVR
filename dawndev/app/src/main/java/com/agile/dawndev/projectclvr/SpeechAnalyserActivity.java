@@ -126,6 +126,7 @@ public class SpeechAnalyserActivity extends Activity {
         //set the content view
         setContentView(R.layout.activity_speech_to_text);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/Montserrat-Regular.otf");
+
         //Get the key for the test in the database from the sent intent.
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -144,9 +145,9 @@ public class SpeechAnalyserActivity extends Activity {
 
 
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/question" + mQuestionNum + ".wav";
-        Log.d(TAG, "File name to transcribe: " + mFileName);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // get view elements
         mContinueButton = (FloatingActionButton) findViewById(R.id.continue_button);
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,11 +168,11 @@ public class SpeechAnalyserActivity extends Activity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
+        // set font to custom font
         mContinueText.setTypeface(custom_font);
         textviewtimer.setTypeface(custom_font);
         mTitle.setTypeface(custom_font);
         mInstruction.setTypeface(custom_font);
-
 
         populateMap();
 
@@ -180,7 +181,7 @@ public class SpeechAnalyserActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         mUsername = mAuth.getCurrentUser().getDisplayName();
         mUserEmail = mAuth.getCurrentUser().getEmail();
-        //updateText();
+
         //Check for connection with IBM Watson API
         if (!isNetworkAvailable()) {
             Log.d(TAG, "Please, check internet connection.");
@@ -225,7 +226,7 @@ public class SpeechAnalyserActivity extends Activity {
             mRecorder.release();
             mRecorder = WavAudioRecorder.getInstanse();
             mRecorder.setOutputFile(mFileName);
-            mButtonRecord.setText("Error while recording");
+            mButtonRecord.setText("Error, Try Again");
         } else {
             finishRecording();
         }
@@ -233,7 +234,6 @@ public class SpeechAnalyserActivity extends Activity {
 
     //Perform speech recognition. Detect whether voice input was sufficient in length.
     private void speechRecognition(final File recordedResponse, final int questionNum) {
-        Log.d(TAG, "START");
         new AsyncTask<Void, SpeechResults, SpeechResults>() {
             @Override
             protected SpeechResults doInBackground(Void... none) {
@@ -314,6 +314,7 @@ public class SpeechAnalyserActivity extends Activity {
                         mToneMap.put(questionNum, result);
                         doDoneDone();
                     } else {
+                        // combined result for tone analysis
                         mOverallToneAnalysis = result;
                         doDoneDone();
                     }
@@ -374,7 +375,6 @@ public class SpeechAnalyserActivity extends Activity {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     Log.d(TAG, " Recording download " + downloadUrl);
                     mRecordingURLs.put(questionNum, downloadUrl.toString());
-
                     whenDone();
                 }
             });
@@ -414,7 +414,7 @@ public class SpeechAnalyserActivity extends Activity {
 
         mButtonRecord.setText("Done");
         mButtonRecord.setEnabled(false);
-        // set the text color to grey
+        // set the button to appear disabled
         mButtonRecord.setAlpha(.5f);
         mContinueButton.setVisibility(View.VISIBLE);
         mContinueText.setVisibility(View.VISIBLE);
@@ -432,6 +432,7 @@ public class SpeechAnalyserActivity extends Activity {
             // change recording time for this question
             timerLimit = mqTimes.get(instructionKey) * 1000;
 
+            // reset the button to normal
             mButtonRecord.setAlpha(1.0f);
             mContinueText.setVisibility(View.INVISIBLE);
 
@@ -458,6 +459,7 @@ public class SpeechAnalyserActivity extends Activity {
                 mBadQuestionNumbers = new ArrayList<Integer>();
                 mBadQuestions = new ConcurrentHashMap<Integer, Integer>();
                 mBadRunCounter = 0;
+
                 showLoadingDisplay();
                 doUploadingAndRecognition();
             } else { //If the last question on the bad run has not been reached, prepare the page for the next bad question.
@@ -534,6 +536,7 @@ public class SpeechAnalyserActivity extends Activity {
         }
     }
 
+    // checks if network is avaliable
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -558,6 +561,7 @@ public class SpeechAnalyserActivity extends Activity {
                             }
                         })
                         .show();
+                // reset task number completed
                 numCompleted = new AtomicInteger(0);
                 badQuestionRun();
             } else {
@@ -618,6 +622,7 @@ public class SpeechAnalyserActivity extends Activity {
             // execute tone analysis and personality analysis on combined text
             toneAnalysis(mAllTextAnswers, -1, true);
             String[] textArray = mAllTextAnswers.split(" ");
+
             //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the CompanyListActivity.
             //If there are 100 or more words progress with personality insights.
             if(textArray.length < 100) {
@@ -676,8 +681,6 @@ public class SpeechAnalyserActivity extends Activity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-
-
         });
     }
 
