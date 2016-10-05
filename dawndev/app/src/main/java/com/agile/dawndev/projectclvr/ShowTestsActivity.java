@@ -1,16 +1,19 @@
 package com.agile.dawndev.projectclvr;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.UsersCompany;
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -129,6 +132,7 @@ public class ShowTestsActivity extends AppCompatActivity {
 
                 companyView.setName(itemKey);
                 companyView.setAvailable(itemKey);
+                companyView.setImage(itemKey);
 
                 Log.d("cj", itemKey);
                 companyView.mView.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +192,8 @@ public class ShowTestsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.company_name);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
+                    field.setTypeface(custom_font);
                     field.setText(dataSnapshot.getValue().toString());
                     Log.d(TAG, "STEP 3: " + dataSnapshot.getValue().toString());
                 }
@@ -201,6 +207,25 @@ public class ShowTestsActivity extends AppCompatActivity {
 
         }
 
+        public void setImage(String key) {
+            db = FirebaseDatabase.getInstance().getReference();
+            db.child("companies").child(key).child("logo").addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String URL = dataSnapshot.getValue(String.class);
+                    ImageView imageView = (ImageView) mView.findViewById(R.id.company_logo);
+                    Glide.with(mView.getContext()).load(URL).into(imageView);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });
+        }
+
 
         public void setAvailable(String key) {
 
@@ -209,6 +234,8 @@ public class ShowTestsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     TextView field = (TextView) mView.findViewById(R.id.number_of_tests);
+                    Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
+                    field.setTypeface(custom_font);
                     field.setText(Long.toString(dataSnapshot.getChildrenCount()) + " Tests Available");
                     Log.d("cjavailable", Long.toString(dataSnapshot.getChildrenCount()));
                 }
@@ -218,6 +245,8 @@ public class ShowTestsActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
 
     public void nameCompanies() {
