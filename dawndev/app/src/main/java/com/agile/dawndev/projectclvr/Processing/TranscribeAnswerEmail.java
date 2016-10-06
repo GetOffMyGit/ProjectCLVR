@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.Processing;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
+import com.agile.dawndev.projectclvr.R;
 import com.sendgrid.SendGrid;
 import com.sendgrid.SendGridException;
 
@@ -14,13 +15,13 @@ import java.io.IOException;
 
 /**
  * This is the async task that handles the email functionality.
- * This email is sent to the company/client by CLVR.
- * The attachment includes the questions, answers and the analysed graph results for a test.
+ * This email is sent to the user/candidate by CLVR.
+ * The attachment includes the questions and answers.
  */
-public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
+public class TranscribeAnswerEmail extends AsyncTask<Void, Void, Void> {
 
     private Context mContext;
-    private String TAG = "SendGridSendEmail";
+    private String TAG = "TranscribeAnswerEmail";
 
     //Fields for content to put into the email.
     private String mSendTo;
@@ -29,14 +30,14 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     private String mBody;
 
     //Constructor providing context and content for the email.
-    public SendGridSendEmail(Context context) {
+    public TranscribeAnswerEmail(Context context) {
         this.mContext = context;
 
         //Set content for email from constructor.
-        mSendTo = CLVRResults.getInstance().getmCompanyEmail();
+        mSendTo = CLVRResults.getInstance().getmUserEmail();
         mSentFrom = "clvrapplication@gmail.com";
-        mSubject = "Results from "+ CLVRResults.getInstance().getmUsername()+"'s test";
-        mBody = "Please review attached PDF.";
+        mSubject = "Your transcript";
+        mBody = "Please see the attached PDF for your transcript.";
     }
 
     //Async task
@@ -44,6 +45,7 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         //Create SendGrid object from SendGrid API key.
         SendGrid sendGrid = new SendGrid(mContext.getResources().getString((R.string.sendGrid_apiKey)));
+        Log.d(TAG, "start email");
         //Create a SendGrid email.
         SendGrid.Email email = new SendGrid.Email();
 
@@ -53,10 +55,10 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
         email.setSubject(mSubject);
         email.setText(mBody);
 
-        //add attachment with graphs
+        //add attachment with only the transcript answers
         File pdfDir = new File(Environment.getExternalStorageDirectory() + "/CLVR");
         try {
-            email.addAttachment("clvr.pdf", new File(pdfDir + "/graphResult.pdf"));
+            email.addAttachment("transcript.pdf", new File(pdfDir + "/transcript.pdf"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,4 +72,5 @@ public class SendGridSendEmail extends AsyncTask<Void, Void, Void> {
 
         return null;
     }
+
 }

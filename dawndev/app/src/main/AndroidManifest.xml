@@ -29,25 +29,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
-            android:name=".SpeechAnalyserActivity"
+            android:name=".Processing.SpeechAnalyserActivity"
             android:label="@string/title_activity_activity_speech_to_text" />
-        <activity android:name=".GraphGenActivity" />
-        <activity android:name=".CompanyMainActivity" />
-        <activity android:name=".TestActivity" />
-        <activity android:name=".ShowTestsActivity"/>
-        <activity android:name=".TestListActivity" />
-        <activity android:name=".NewUserActivity" />
-        <activity android:name=".TestInformationActivity" />
-        <activity android:name=".AddCompanyActivity" />
-        <activity android:name=".EndOfTestActivity"></activity>
+        <activity android:name=".Processing.GraphGenActivity" />
+        <activity android:name=".ListViews.CompanyListActivity"/>
+        <activity android:name=".ListViews.TestListActivity" />
+        <activity android:name=".UserRelations.NewUserActivity" />
+        <activity android:name=".UserRelations.TestInformationActivity" />
+        <activity android:name=".UserRelations.AddCompanyActivity" />
+        <activity android:name=".UserRelations.EndOfTestActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.Processing;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,16 +10,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
+import com.agile.dawndev.projectclvr.UserRelations.EndOfTestActivity;
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
+import com.agile.dawndev.projectclvr.R;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;

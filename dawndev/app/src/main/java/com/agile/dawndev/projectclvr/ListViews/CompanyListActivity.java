@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ListViews;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,8 +22,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.agile.dawndev.projectclvr.UserRelations.AddCompanyActivity;
 import com.agile.dawndev.projectclvr.Auth.LoginActivity;
-import com.agile.dawndev.projectclvr.Models.UsersCompany;
+import com.agile.dawndev.projectclvr.R;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.auth.api.Auth;
@@ -40,30 +40,39 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.HashMap;
 
-public class ShowTestsActivity extends Activity implements GoogleApiClient.OnConnectionFailedListener
+
+/*
+    Activity that shows the list of companies available for a user
+ */
+public class CompanyListActivity extends Activity implements GoogleApiClient.OnConnectionFailedListener
 {
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
     private HashMap<String,TextView> textViews = new HashMap<String,TextView>();
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+
     private DatabaseReference mRef;
     private DatabaseReference mCompanyRef;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
     private FirebaseRecyclerAdapter<Boolean, CompanyHolder> mRecyclerViewAdapter;
-    private static final String TAG = "ShowTestsActivity";
+
     private ProgressBar mProgressBar;
+
     private TextView mWelcome;
     private TextView mName;
     private TextView mSignOut;
+
     private GoogleApiClient mGoogleApiClient;
 
     private static final int PERMISSION_ALL = 1;
     private FloatingActionButton mFab;
     private static final String[] PERMISSIONS = {android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    private static final String TAG = "CompanyListActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,36 +111,47 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
                 .build();
 
         mAuth = FirebaseAuth.getInstance();
-        mSignOut = (TextView) findViewById(R.id.sign_out);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        mSignOut = (TextView) findViewById(R.id.sign_out);
         mName = (TextView) findViewById(R.id.name);
+        mWelcome = (TextView) findViewById(R.id.welcome);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
         mCompanyRef = mRef.child("users").child(mAuth.getCurrentUser().getUid()).child("companies");
-        mWelcome = (TextView) findViewById(R.id.welcome);
+
+        // Setting custom fonts
         mWelcome.setTypeface(custom_font);
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mSignOut.setTypeface(custom_font);
+        mName.setTypeface(custom_font);
+
+        // Set the name of the user
         mName.setText(mAuth.getCurrentUser().getDisplayName().toString());
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ShowTestsActivity.this, AddCompanyActivity.class);
+                Intent intent = new Intent(CompanyListActivity.this, AddCompanyActivity.class);
                 startActivity(intent);
             }
         });
+
+
         attachRecyclerViewAdapter();
 
 
+        // Listener for the signout button
         mSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(ShowTestsActivity.this)
+                new AlertDialog.Builder(CompanyListActivity.this)
                         .setTitle("Sign Out")
                         .setMessage("Are you sure you want to sign out?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -147,54 +167,6 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
                         .show();
             }
         });
-
-
-
-
-
-
-        //mAuth.getCurrentUser().getUid()
-//        mDatabase.child("users").child("1").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                DataSnapshot companies = dataSnapshot.child("companies");
-//                LinearLayout linearLayout = (LinearLayout)findViewById(R.id.showTestsLayout);
-//                //Loop through companies
-//                for(final DataSnapshot companySnapshot : companies.getChildren()) {
-//                    TextView companyName = new TextView(ShowTestsActivity.this);
-//                    String companyID = companySnapshot.getKey();
-//                    companyName.setText(companyID);
-//                    linearLayout.addView(companyName);
-//                    textViews.put(companyID, companyName);
-//                    //Loop through that company for their tests.
-//                    for(final DataSnapshot testSnapshot : companySnapshot.getChildren()) {
-//                        Button testButton = new Button(ShowTestsActivity.this);
-//                        testButton.setText(testSnapshot.getValue().toString());
-//
-//                        testButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Intent intent = new Intent(ShowTestsActivity.this, SpeechAnalyserActivity.class);
-//                                intent.setAction(Intent.ACTION_SEND);
-//                                intent.putExtra("companyKey", companySnapshot.getKey());
-//                                intent.putExtra("testKey", testSnapshot.getKey());
-//                                intent.setType("text/plain");
-//                                startActivity(intent);
-//                            }
-//                        });
-//                        linearLayout.addView(testButton);
-//                    }
-//
-//                }
-//                nameCompanies();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -210,7 +182,6 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
 
 
     private void attachRecyclerViewAdapter() {
-
         Log.d(TAG, "STEP 1: loading data");
         Query lastFifty = mCompanyRef.limitToLast(50);
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Boolean, CompanyHolder>(
@@ -224,12 +195,13 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
                 final String itemKey = ref.getKey();
                 Log.d(TAG, "STEP 2: company " +  position + " : " +  itemKey);
 
-
+                // set the variables within each of the cards
                 companyView.setName(itemKey);
                 companyView.setAvailable(itemKey);
                 companyView.setImage(itemKey);
 
-                Log.d("cj", itemKey);
+
+                // clicking a card takes you to the activity containing the list of tests relevant to that company
                 companyView.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -269,6 +241,7 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
 
     }
 
+    // Method that is called to sign out of google and firebase
     private void signout() {
         mGoogleApiClient.connect();
         mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -282,7 +255,7 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
                         public void onResult(@NonNull Status status) {
                             if (status.isSuccess()) {
                                 Log.d(TAG, "User Logged out");
-                                Intent intent = new Intent(ShowTestsActivity.this, LoginActivity.class);
+                                Intent intent = new Intent(CompanyListActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -298,6 +271,8 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
         });
     }
 
+
+    // Class for each card
     public static class CompanyHolder extends RecyclerView.ViewHolder {
         View mView;
         DatabaseReference db;
@@ -309,6 +284,7 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
             mView = itemView;
         }
 
+        // Sets the name of the company in the card
         public void setName(String key) {
             db = FirebaseDatabase.getInstance().getReference();
             db.child("companies").child(key).child("name").addValueEventListener(new ValueEventListener() {
@@ -330,6 +306,7 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
             });
         }
 
+        // sets the company logo
         public void setImage(String key) {
             db = FirebaseDatabase.getInstance().getReference();
             db.child("companies").child(key).child("logo").addValueEventListener(new ValueEventListener() {
@@ -350,6 +327,8 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
         }
 
 
+
+        // finds the number of tests available and displays this
         public void setAvailable(String key) {
 
             db = FirebaseDatabase.getInstance().getReference();
@@ -360,7 +339,6 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
                     Typeface custom_font = Typeface.createFromAsset(mView.getContext().getAssets(),  "fonts/Montserrat-Regular.otf");
                     field.setTypeface(custom_font);
                     field.setText(Long.toString(dataSnapshot.getChildrenCount()) + " Tests Available");
-                    Log.d("cjavailable", Long.toString(dataSnapshot.getChildrenCount()));
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -369,25 +347,6 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
         }
     }
 
-
-
-
-    public void nameCompanies() {
-        for (final String companyID : textViews.keySet()) {
-            mDatabase.child("companies").child(companyID).child("name").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    TextView companyToName = textViews.get(companyID);
-                    companyToName.setText(dataSnapshot.getValue().toString());
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -398,7 +357,7 @@ public class ShowTestsActivity extends Activity implements GoogleApiClient.OnCon
 
     @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
+        super.onResume();
 
 
 

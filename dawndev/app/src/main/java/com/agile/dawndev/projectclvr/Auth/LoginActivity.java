@@ -11,12 +11,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.agile.dawndev.projectclvr.MainActivity;
+import com.agile.dawndev.projectclvr.ListViews.CompanyListActivity;
 import com.agile.dawndev.projectclvr.Models.User;
-import com.agile.dawndev.projectclvr.NewUserActivity;
+import com.agile.dawndev.projectclvr.UserRelations.NewUserActivity;
 import com.agile.dawndev.projectclvr.R;
-import com.agile.dawndev.projectclvr.ShowTestsActivity;
-import com.agile.dawndev.projectclvr.SpeechAnalyserActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -69,12 +67,10 @@ public class LoginActivity extends AppCompatActivity implements
         mWelcomeText.setTypeface(custom_font);
         mTitleText.setTypeface(custom_font);
 
-
-        View decorView = getWindow().getDecorView();
         // Hide the status bar.
+        View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -94,10 +90,11 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Gets instance of Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
+
         // Checks on startup of users that are logged in.
         if (mAuth.getCurrentUser() != null) {
             writeNewUser();
-            startActivity(new Intent(this, ShowTestsActivity.class));
+            startActivity(new Intent(this, CompanyListActivity.class));
             finish();
         }
 
@@ -112,11 +109,8 @@ public class LoginActivity extends AppCompatActivity implements
                     goToMain();
                 } else {
                     // User is signed out
-                    //goToMain();
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // Constantly Updates the UI depending on the state of the user
-//                updateUI(user);
             }
         };
     }
@@ -141,15 +135,9 @@ public class LoginActivity extends AppCompatActivity implements
 
     // Goes to the main activity and kills the LoginActivity
     public void goToMain() {
-        startActivity(new Intent(this, ShowTestsActivity.class));
+        startActivity(new Intent(this, CompanyListActivity.class));
         finish();
     }
-
-    public void goToCompanyMain() {
-        startActivity(new Intent(this, SpeechAnalyserActivity.class));
-        finish();
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -164,8 +152,7 @@ public class LoginActivity extends AppCompatActivity implements
                 firebaseAuthWithGoogle(account);
 
             } else {
-                // Google Sign In failed, update UI appropriately
-//                updateUI(null);
+                // Google Sign In failed.
             }
         }
     }
@@ -193,6 +180,7 @@ public class LoginActivity extends AppCompatActivity implements
         );
     }
 
+    // Checks whether the user has added companies to their account yet. If not, they are redirected to the NewUserActivity
     private void checkIfExists() {
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("exists").addValueEventListener(
                 new ValueEventListener() {
@@ -246,16 +234,15 @@ public class LoginActivity extends AppCompatActivity implements
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    // Signout isn't being currently implemented here. Leaving the method here for future use.
     private void signOut() {
         // Firebase sign out
         mAuth.signOut();
-
         // Google sign out
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-//                        updateUI(null);
                     }
                 });
     }
@@ -278,7 +265,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    // Updates UI (Called from the mAuth lstener)
+    // Updates UI (Called from the mAuth lstener) Currently not being called.
     private void updateUI() {
         if (mAuth.getCurrentUser() != null) {
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
@@ -300,6 +287,8 @@ public class LoginActivity extends AppCompatActivity implements
             signIn();
         }
     }
+
+    // Make sure status bar is gone even on resuming activity
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first

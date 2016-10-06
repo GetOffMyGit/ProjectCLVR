@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.Processing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,8 +23,10 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.ListViews.CompanyListActivity;
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
+import com.agile.dawndev.projectclvr.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -623,14 +625,14 @@ public class SpeechAnalyserActivity extends Activity {
             toneAnalysis(mAllTextAnswers, -1, true);
             String[] textArray = mAllTextAnswers.split(" ");
 
-            //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the ShowTestsActivity.
+            //Check that the voice input has atleast 100 words. If not, show the insufficient dialogue message and redirect to the CompanyListActivity.
             //If there are 100 or more words progress with personality insights.
             if(textArray.length < 100) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SpeechAnalyserActivity.this);
                 dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SpeechAnalyserActivity.this, ShowTestsActivity.class);
+                        Intent intent = new Intent(SpeechAnalyserActivity.this, CompanyListActivity.class);
                         startActivity(intent);
                         finish();
                     }
