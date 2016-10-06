@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ListViews;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.agile.dawndev.projectclvr.Models.Test;
+import com.agile.dawndev.projectclvr.R;
+import com.agile.dawndev.projectclvr.UserRelations.TestInformationActivity;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;

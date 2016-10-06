@@ -1,8 +1,7 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.UserRelations;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.agile.dawndev.projectclvr.R;
+import com.agile.dawndev.projectclvr.Processing.SpeechAnalyserActivity;
 
 public class TestInformationActivity extends AppCompatActivity {
 

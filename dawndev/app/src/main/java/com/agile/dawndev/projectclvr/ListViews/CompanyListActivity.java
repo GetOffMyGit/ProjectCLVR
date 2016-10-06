@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.ListViews;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +22,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.agile.dawndev.projectclvr.UserRelations.AddCompanyActivity;
 import com.agile.dawndev.projectclvr.Auth.LoginActivity;
+import com.agile.dawndev.projectclvr.R;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.auth.api.Auth;

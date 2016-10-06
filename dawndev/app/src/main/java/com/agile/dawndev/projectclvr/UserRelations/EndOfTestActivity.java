@@ -1,9 +1,12 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.UserRelations;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.agile.dawndev.projectclvr.ListViews.CompanyListActivity;
+import com.agile.dawndev.projectclvr.R;
 
 /**
  * This activity handles all the functionality related to the end of test screen

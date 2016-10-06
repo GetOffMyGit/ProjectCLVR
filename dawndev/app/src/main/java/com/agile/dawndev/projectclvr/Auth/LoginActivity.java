@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.agile.dawndev.projectclvr.CompanyListActivity;
+import com.agile.dawndev.projectclvr.ListViews.CompanyListActivity;
 import com.agile.dawndev.projectclvr.Models.User;
-import com.agile.dawndev.projectclvr.NewUserActivity;
+import com.agile.dawndev.projectclvr.UserRelations.NewUserActivity;
 import com.agile.dawndev.projectclvr.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

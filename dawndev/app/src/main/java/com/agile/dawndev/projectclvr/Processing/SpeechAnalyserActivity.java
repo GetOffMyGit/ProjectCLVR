@@ -1,4 +1,4 @@
-package com.agile.dawndev.projectclvr;
+package com.agile.dawndev.projectclvr.Processing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,8 +23,10 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.agile.dawndev.projectclvr.ListViews.CompanyListActivity;
 import com.agile.dawndev.projectclvr.Models.CLVRQuestion;
 import com.agile.dawndev.projectclvr.Models.CLVRResults;
+import com.agile.dawndev.projectclvr.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
